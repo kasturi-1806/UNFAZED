@@ -1,8 +1,5 @@
-
 const Client = require("../models/Client");
 const User = require("../models/User");
-
-// GET ALL CLIENTS FOR LOGGED-IN THERAPIST
 const getClients = async (req, res) => {
   try {
     const therapistId = req.user.id || req.user._id;
@@ -27,7 +24,6 @@ const getClients = async (req, res) => {
   }
 };
 
-// GET SINGLE CLIENT
 const getClientById = async (req, res) => {
   try {
     const therapistId = req.user.id || req.user._id;
@@ -58,7 +54,6 @@ const getClientById = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   getClients,
   getClientById,
