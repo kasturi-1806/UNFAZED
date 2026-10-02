@@ -1,5 +1,3 @@
-/* ================= DASHBOARD ================= */
-
 .dashboard-page {
   min-height: 100vh;
   padding: 60px 8%;
@@ -136,8 +134,6 @@
   line-height: 1.6;
 }
 
-/* ================= DASHBOARD RESPONSIVE ================= */
-
 @media (max-width: 900px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -166,10 +162,6 @@
   }
 }
 
-/* =========================================
-   SESSION PACKAGES
-========================================= */
-
 .packages-section {
   margin-top: 32px;
 }
@@ -184,17 +176,11 @@
   font-size: 14px;
 }
 
-
-/* PACKAGE GRID */
-
 .packages-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
 }
-
-
-/* PACKAGE CARD */
 
 .user-package-card {
   background: #ffffff;
@@ -211,9 +197,6 @@
   transform: translateY(-3px);
   box-shadow: 0 12px 30px rgba(32, 61, 53, 0.1);
 }
-
-
-/* CARD HEADER */
 
 .package-card-header {
   display: flex;
@@ -238,10 +221,6 @@
   font-weight: 700;
   line-height: 1.35;
 }
-
-
-/* SESSION COUNT */
-
 .package-session-count {
   width: 42px;
   height: 42px;
@@ -250,12 +229,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: #dfeae3;
   color: #315f51;
-
   border-radius: 12px;
-
   font-size: 18px;
   font-weight: 700;
 }
@@ -266,14 +242,10 @@
   visibility: hidden;
 }
 
-
-/* MAIN PRICE */
-
 .package-main-price {
   display: flex;
   align-items: baseline;
   gap: 5px;
-
   margin-top: 24px;
 }
 
@@ -287,20 +259,13 @@
   color: #7b8882;
   font-size: 13px;
 }
-
-
-/* PACKAGE DETAILS */
-
 .package-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-
   margin-top: 22px;
   padding: 16px 0;
-
   border-top: 1px solid #edf2ef;
   border-bottom: 1px solid #edf2ef;
-
   gap: 10px;
 }
 
@@ -323,26 +288,17 @@
   color: #315f51;
   font-size: 13px;
 }
-
-
-/* BUY BUTTON */
-
 .package-buy-button {
   width: 100%;
   margin-top: 20px;
   padding: 12px 18px;
-
   border: none;
   border-radius: 10px;
-
   background: #315f51;
   color: #ffffff;
-
   font-size: 14px;
   font-weight: 600;
-
   cursor: pointer;
-
   transition:
     background 0.2s ease,
     transform 0.2s ease;
@@ -358,75 +314,52 @@
   cursor: not-allowed;
   transform: none;
 }
-
-
-/* EMPTY STATE */
-
 .packages-container {
   width: 100%;
 }
 
 .package-empty {
   padding: 38px 24px;
-
   background: #ffffff;
   border: 1px solid #dfeae3;
   border-radius: 18px;
-
   text-align: center;
 }
 
 .package-empty-icon {
   width: 48px;
   height: 48px;
-
   margin: 0 auto 14px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 14px;
-
   background: #dfeae3;
   color: #315f51;
-
   font-size: 22px;
 }
 
 .package-empty h3 {
   margin: 0 0 6px;
-
   color: #203d35;
   font-size: 17px;
 }
 
 .package-empty p {
   margin: 0;
-
   color: #7b8882;
   font-size: 14px;
 }
-
-
-/* SUCCESS MESSAGE */
-
 .package-success {
   margin-bottom: 16px;
   padding: 12px 16px;
-
   border: 1px solid #c9ded4;
   border-radius: 10px;
-
   background: #edf6f1;
   color: #315f51;
-
   font-size: 14px;
   font-weight: 600;
 }
-
-
-/* RESPONSIVE */
 
 @media (max-width: 1000px) {
   .packages-grid {
@@ -447,9 +380,6 @@
     padding: 20px;
   }
 }
-
-
-/* USER DASHBOARD MOBILE */
 
 @media (max-width: 900px) {
   .dashboard-grid {
@@ -483,17 +413,13 @@
     padding: 30px;
   }
 }
-/* ================= FORM MESSAGES ================= */
 
 .success-message {
   margin-top: 18px;
   padding: 12px;
-
   border-radius: 10px;
-
   background: #e2f1e8;
   color: #286044;
-
   text-align: center;
   font-size: 14px;
 }
@@ -501,18 +427,12 @@
 .error-message {
   margin-top: 18px;
   padding: 12px;
-
   border-radius: 10px;
-
   background: #f8e3e3;
   color: #a33a3a;
-
   text-align: center;
   font-size: 14px;
 }
-/* =========================================
-   PAYMENT HISTORY
-========================================= */
 
 .payment-history-section {
   margin-top: 32px;
@@ -632,54 +552,39 @@
     grid-template-columns: 1fr;
   }
 }
-/* ================= LOGIN - FINAL ================= */
 
 .auth-page {
   min-height: calc(100vh - 75px);
   width: 100%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 60px 20px;
-
   background: #e5eee9 !important;
 }
 
 .auth-card {
   width: 100%;
   max-width: 450px;
-
   padding: 45px !important;
-
   background: #ffffff !important;
-
   border-radius: 20px;
-
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
-
   text-align: left;
 }
 
 .auth-card h1 {
   font-size: 35px !important;
   line-height: 1.2;
-
   text-align: center;
-
   color: #203d35 !important;
-
   margin: 0 0 10px !important;
 }
 
 .auth-subtitle {
   text-align: center;
-
   color: #6b7772 !important;
-
   margin: 0 0 30px !important;
-
   line-height: 1.5;
 }
 
@@ -689,30 +594,20 @@
 
 .form-group label {
   display: block;
-
   margin-bottom: 8px;
-
   font-weight: 600;
-
   color: #344a44 !important;
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-
   padding: 13px 15px;
-
   border: 1px solid #ccd8d3 !important;
-
   border-radius: 10px;
-
   font-size: 15px;
-
   background: #ffffff !important;
-
   color: #344a44 !important;
-
   outline: none;
 }
 
@@ -723,21 +618,13 @@
 
 .auth-btn {
   width: 100%;
-
   padding: 14px;
-
   border: none;
-
   border-radius: 25px;
-
   background: #315f51 !important;
-
   color: #ffffff !important;
-
   font-size: 16px;
-
   font-weight: bold;
-
   cursor: pointer;
 }
 
@@ -747,40 +634,29 @@
 
 .auth-footer {
   text-align: center;
-
   margin: 25px 0 0 !important;
-
   color: #687771 !important;
 }
 
 .auth-footer a {
   color: #315f51 !important;
-
   font-weight: bold;
 }
 
 .error-message {
   margin-top: 18px;
-
   padding: 12px;
-
   border-radius: 10px;
-
   background: #f8e3e3 !important;
-
   color: #a33a3a !important;
-
   text-align: center;
 }
-/* ================= HOME PAGE ================= */
 
 .home-page {
   min-height: 100vh;
   background: #f7f8f5;
   color: #203d35;
 }
-
-/* ================= NAVBAR ================= */
 
 .navbar {
   width: 100%;
@@ -821,9 +697,6 @@
   background: #203d35;
   color: white !important;
 }
-
-/* ================= HERO ================= */
-
 .hero {
   min-height: 650px;
   padding: 100px 8%;
@@ -900,8 +773,6 @@
   color: white;
 }
 
-/* ================= WHY UNFAZED ================= */
-
 .why-section {
   padding: 90px 8%;
   text-align: center;
@@ -952,8 +823,6 @@
   line-height: 1.6;
 }
 
-/* ================= CTA ================= */
-
 .cta-section {
   padding: 90px 8%;
   text-align: center;
@@ -971,9 +840,6 @@
   margin-bottom: 30px;
   color: #62766e;
 }
-
-/* ================= FOOTER ================= */
-
 .footer {
   padding: 50px 8%;
   text-align: center;
@@ -993,9 +859,6 @@
   margin-top: 25px;
   font-size: 13px;
 }
-
-/* ================= HOME RESPONSIVE ================= */
-
 @media (max-width: 768px) {
   .navbar {
     padding: 18px 5%;
@@ -1027,7 +890,6 @@
     font-size: 32px;
   }
 }
-/* ================= AVAILABILITY ================= */
 
 .availability-card {
   max-width: 900px;
@@ -1083,8 +945,6 @@
   border: none;
 }
 
-/* Selected slots */
-
 .availability-list {
   max-width: 900px;
 }
@@ -1135,17 +995,13 @@
   color: white;
 }
 
-/* Mobile */
-
 @media (max-width: 800px) {
   .availability-form {
     grid-template-columns: 1fr;
   }
-
   .availability-form .dashboard-btn {
     width: 100%;
   }
-
   .availability-slot {
     gap: 15px;
   }
@@ -1153,7 +1009,6 @@
 .availability-reason {
   grid-column: span 2;
 }
-
 .availability-slot small {
   margin-top: 3px;
   color: #77958a;
@@ -1165,8 +1020,6 @@
     grid-column: span 1;
   }
 }
-/* ================= THERAPISTS PAGE ================= */
-
 .therapists-page {
   min-height: 100vh;
   padding: 70px 8%;
@@ -1192,8 +1045,6 @@
   font-size: 17px;
   line-height: 1.7;
 }
-
-/* Therapist cards */
 
 .therapist-grid {
   max-width: 1150px;
@@ -1222,14 +1073,11 @@
   width: 85px;
   height: 85px;
   margin: 0 auto 22px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
   background: #e9f1ec;
-
   color: #203d35;
   font-size: 32px;
   font-weight: 700;
@@ -1264,15 +1112,11 @@
 .profile-btn {
   display: inline-block;
   padding: 12px 25px;
-
   border-radius: 25px;
-
   background: #203d35;
   color: white;
-
   text-decoration: none;
   font-weight: 600;
-
   transition: 0.3s ease;
 }
 
@@ -1280,8 +1124,6 @@
   background: #172e28;
   transform: translateY(-2px);
 }
-
-/* Responsive */
 
 @media (max-width: 900px) {
   .therapist-grid {
@@ -1302,25 +1144,19 @@
     grid-template-columns: 1fr;
   }
 }
-/* ================= VIEW PROFILE BUTTON ================= */
 
 .therapist-card .profile-btn {
   display: inline-block;
   width: auto;
   padding: 12px 28px;
-
   background: #203d35;
   color: #ffffff !important;
-
   border: none;
   border-radius: 25px;
-
   text-decoration: none !important;
   font-size: 15px;
   font-weight: 600;
-
   cursor: pointer;
-
   transition: all 0.3s ease;
 }
 
@@ -1329,13 +1165,11 @@
   color: #ffffff !important;
   transform: translateY(-2px);
 }
-/* ================= THERAPIST PROFILE ================= */
 
 .profile-page {
   min-height: 100vh;
   padding: 70px 8%;
   background: #f7f8f5;
-
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -1344,83 +1178,51 @@
 .profile-card {
   width: 100%;
   max-width: 850px;
-
   padding: 50px;
-
   background: #ffffff;
-
   border: 1px solid #e1e9e4;
   border-radius: 24px;
-
   box-shadow: 0 10px 35px rgba(32, 61, 53, 0.08);
-
   text-align: center;
 }
-
-/* Avatar */
-
 .profile-avatar {
   width: 105px;
   height: 105px;
-
   margin: 0 auto 25px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #e9f1ec;
-
   color: #203d35;
-
   font-size: 40px;
   font-weight: 700;
 }
 
-/* Name */
-
 .profile-card h1 {
   margin-bottom: 10px;
-
   color: #203d35;
-
   font-size: 36px;
 }
 
-/* Specialization */
-
 .profile-specialization {
   margin-bottom: 8px;
-
   color: #527067;
-
   font-size: 18px;
   font-weight: 600;
 }
-
-/* Experience */
 
 .profile-experience {
   color: #7b8c86;
 
   font-size: 15px;
 }
-
-/* Divider */
-
 .profile-divider {
   width: 100%;
-
   height: 1px;
-
   margin: 30px 0;
-
   background: #e1e9e4;
 }
-
-/* Sections */
 
 .profile-section {
   margin-bottom: 30px;
@@ -1444,13 +1246,9 @@
   font-size: 15px;
 }
 
-/* Specialization Tags */
-
 .specialization-tags {
   display: flex;
-
   flex-wrap: wrap;
-
   gap: 10px;
 }
 
@@ -1467,12 +1265,10 @@
   font-weight: 600;
 }
 
-/* Buttons */
-
 .profile-actions {
   display: flex;
 
-  justify-content: center;
+  justity-content: center;
 
   align-items: center;
 
@@ -1533,8 +1329,6 @@
   color: #ffffff;
 }
 
-/* Mobile */
-
 @media (max-width: 600px) {
 
   .profile-page {
@@ -1559,7 +1353,6 @@
     text-align: center;
   }
 }
-/* ================= BOOKING PAGE ================= */
 
 .booking-page {
   min-height: 100vh;
@@ -1573,13 +1366,10 @@
 .booking-card {
   width: 100%;
   max-width: 650px;
-
   padding: 45px;
 
   background: #ffffff;
-
   border-radius: 24px;
-
   border: 1px solid #e1e9e4;
 
   box-shadow: 0 10px 35px rgba(32, 61, 53, 0.08);
@@ -1595,7 +1385,6 @@
 
 .booking-subtitle {
   color: #687a73;
-
   margin-bottom: 30px;
 }
 
@@ -1608,16 +1397,13 @@
   padding: 18px;
 
   margin-bottom: 30px;
-
   background: #f1f6f3;
-
   border-radius: 15px;
 }
 
 .booking-avatar {
   width: 60px;
   height: 60px;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1700,21 +1486,12 @@
     font-size: 29px;
   }
 }
-/* =========================================================
-   UNFAZED USER DASHBOARD
-========================================================= */
-
 .user-dashboard {
   min-height: 100vh;
   padding: 48px 7%;
   background: #f7f8f5;
   color: #203d35;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .user-dashboard-header {
   display: flex;
@@ -1764,11 +1541,6 @@
   color: white;
 }
 
-
-/* =========================================================
-   SECTION HEADINGS
-========================================================= */
-
 .section-heading {
   display: flex;
   justify-content: space-between;
@@ -1793,12 +1565,6 @@
 .section-link:hover {
   text-decoration: underline;
 }
-
-
-/* =========================================================
-   UPCOMING SESSION
-========================================================= */
-
 .upcoming-session-section {
   margin-bottom: 42px;
 }
@@ -1902,11 +1668,6 @@
   transform: translateY(-2px);
 }
 
-
-/* =========================================================
-   QUICK ACTIONS
-========================================================= */
-
 .quick-actions-section {
   margin-bottom: 42px;
 }
@@ -1974,12 +1735,6 @@
   color: #547568;
   font-size: 18px;
 }
-
-
-/* =========================================================
-   RECENT SESSION
-========================================================= */
-
 .recent-session-section {
   margin-bottom: 38px;
 }
@@ -2047,12 +1802,6 @@
   font-size: 13px;
   font-weight: 700;
 }
-
-
-/* =========================================================
-   SUPPORT / WELLBEING
-========================================================= */
-
 .dashboard-support {
   display: flex;
   align-items: center;
@@ -2109,11 +1858,6 @@
   transform: translateY(-2px);
   opacity: 0.92;
 }
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 1050px) {
 
@@ -2189,11 +1933,6 @@
 
 }
 
-
-/* =========================================
-   UNFAZED THERAPIST DASHBOARD
-========================================= */
-
 .therapist-dashboard {
   min-height: 100vh;
 
@@ -2203,11 +1942,6 @@
 
   color: #173f37;
 }
-
-
-/* =========================================
-   SIDEBAR
-========================================= */
 
 .therapist-sidebar {
   width: 245px;
@@ -2381,11 +2115,6 @@
   box-sizing: border-box;
 }
 
-
-/* =========================================
-   HEADER
-========================================= */
-
 .dashboard-topbar {
   display: flex;
 
@@ -2451,11 +2180,6 @@
 
   font-weight: 800;
 }
-
-
-/* =========================================
-   STATISTICS
-========================================= */
 
 .dashboard-stats {
   display: grid;
@@ -2529,11 +2253,6 @@
   font-size: 24px;
 }
 
-
-/* =========================================
-   SECTION
-========================================= */
-
 .dashboard-section {
   margin-bottom: 35px;
 }
@@ -2586,11 +2305,6 @@
 .view-all-link:hover {
   text-decoration: underline;
 }
-
-
-/* =========================================
-   ACTIVE SESSION
-========================================= */
 
 .active-session-section {
   margin-bottom: 35px;
@@ -2723,12 +2437,6 @@
 .active-session-btn:hover {
   background: #23574c;
 }
-
-
-/* =========================================
-   UPCOMING SESSIONS
-========================================= */
-
 .sessions-container {
   background: white;
 
@@ -2772,10 +2480,6 @@
 .upcoming-session.session-live {
   background: #f7fbf8;
 }
-
-
-/* DATE */
-
 .session-date-box {
   width: 52px;
 
@@ -2816,9 +2520,6 @@
   text-transform: uppercase;
 }
 
-
-/* TIME */
-
 .session-time {
   display: flex;
 
@@ -2827,22 +2528,16 @@
   gap: 4px;
 }
 
-
 .session-time strong {
   color: #173f37;
-
   font-size: 14px;
 }
 
 
 .session-time span {
   color: #899690;
-
   font-size: 10px;
 }
-
-
-/* PATIENT */
 
 .session-details {
   min-width: 0;
@@ -2855,9 +2550,7 @@
   color: #173f37;
 
   font-size: 14px;
-
   white-space: nowrap;
-
   overflow: hidden;
 
   text-overflow: ellipsis;
@@ -2871,9 +2564,6 @@
 
   font-size: 11px;
 }
-
-
-/* STATUS */
 
 .session-status {
   padding: 6px 10px;
@@ -2902,11 +2592,6 @@
 
   color: #217052;
 }
-
-
-/* =========================================
-   EMPTY STATE
-========================================= */
 
 .empty-sessions {
   min-height: 180px;
@@ -2967,11 +2652,6 @@
   font-size: 12px;
 }
 
-
-/* =========================================
-   LOADING
-========================================= */
-
 .loading-spinner {
   width: 28px;
 
@@ -2995,10 +2675,6 @@
   }
 }
 
-
-/* =========================================
-   QUICK ACTIONS
-========================================= */
 
 .quick-actions {
   display: grid;
@@ -3092,11 +2768,6 @@
   font-size: 17px;
 }
 
-
-/* =========================================
-   TABLET
-========================================= */
-
 @media (max-width: 1050px) {
 
   .therapist-sidebar {
@@ -3115,10 +2786,6 @@
 
 }
 
-
-/* =========================================
-   MOBILE
-========================================= */
 
 @media (max-width: 760px) {
 
@@ -3233,11 +2900,6 @@
 
 }
 
-
-/* =========================================
-   SMALL MOBILE
-========================================= */
-
 @media (max-width: 480px) {
 
   .therapist-sidebar {
@@ -3301,9 +2963,6 @@
   }
 
 }
-/* =========================================================
-   THERAPIST PROFILE PAGE
-========================================================= */
 
 .therapist-profile-page {
   width: min(1380px, 94%);
@@ -3311,11 +2970,6 @@
   padding: 38px 0 70px;
   color: #173c35;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .profile-header {
   display: flex;
@@ -3368,11 +3022,6 @@
   color: #173c35;
   transform: translateX(-3px);
 }
-
-
-/* =========================================================
-   PROFILE HERO
-========================================================= */
 
 .profile-hero {
   display: flex;
@@ -3530,11 +3179,6 @@
   gap: 22px;
 }
 
-
-/* =========================================================
-   CARDS
-========================================================= */
-
 .profile-card {
   min-width: 0;
   padding: 27px 30px;
@@ -3575,20 +3219,12 @@
 }
 
 
-/* =========================================================
-   TOP GRID
-========================================================= */
-
 .profile-top-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
   gap: 22px;
 }
 
-
-/* =========================================================
-   PROFESSIONAL FIELDS
-========================================================= */
 
 .profile-fields {
   display: grid;
@@ -3681,11 +3317,6 @@
   line-height: 1.65;
 }
 
-
-/* =========================================================
-   PROFILE STATUS
-========================================================= */
-
 .profile-status-card {
   background: #f7faf8;
 }
@@ -3772,11 +3403,6 @@
   color: #315f51;
 }
 
-
-/* =========================================================
-   TWO COLUMN CARDS
-========================================================= */
-
 .profile-two-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3799,10 +3425,6 @@
   font-weight: 800;
 }
 
-
-/* =========================================================
-   TAGS
-========================================================= */
 
 .tag-list {
   display: flex;
@@ -3904,10 +3526,6 @@
 }
 
 
-/* =========================================================
-   PRACTICE MANAGEMENT
-========================================================= */
-
 .practice-card {
   padding-bottom: 22px;
 }
@@ -3986,10 +3604,6 @@
 }
 
 
-/* =========================================================
-   PUBLIC PROFILE
-========================================================= */
-
 .public-profile-card {
   display: flex;
   align-items: center;
@@ -4039,10 +3653,6 @@
 }
 
 
-/* =========================================================
-   LOADING
-========================================================= */
-
 .profile-loading {
   min-height: 60vh;
 
@@ -4076,11 +3686,6 @@
     transform: rotate(360deg);
   }
 }
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 1000px) {
   .profile-top-grid {
@@ -4197,12 +3802,6 @@
     min-height: 42px;
   }
 }
-```css
-/* =========================================================
-   UNFAZED — USER DASHBOARD
-   Clean, structured SaaS / clinical design
-========================================================= */
-
 .user-dashboard {
   min-height: 100vh;
   background: #f6f8f7;
@@ -4210,10 +3809,6 @@
   padding: 36px 5%;
   box-sizing: border-box;
 }
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .dashboard-header {
   max-width: 1180px;
@@ -4265,10 +3860,6 @@
   background: #eef4f1;
 }
 
-/* =========================================================
-   COMMON SECTION
-========================================================= */
-
 .upcoming-session-section,
 .quick-actions-section,
 .recent-session-section,
@@ -4291,10 +3882,6 @@
   color: #203d35;
 }
 
-/* =========================================================
-   UPCOMING SESSION
-========================================================= */
-
 .session-card {
   background: #ffffff;
   border: 1px solid #e1e8e5;
@@ -4302,8 +3889,6 @@
   padding: 20px 22px;
   box-shadow: 0 2px 8px rgba(32, 61, 53, 0.04);
 }
-
-/* Therapist + status */
 
 .session-info {
   display: flex;
@@ -4361,7 +3946,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Session details */
 
 .session-details {
   display: grid;
@@ -4399,9 +3983,6 @@
   font-size: 14px;
   font-weight: 600;
 }
-
-/* Empty / error */
-
 .session-card > p {
   margin: 0;
   color: #77847f;
@@ -4417,10 +3998,6 @@
   font-weight: 700;
   text-decoration: none;
 }
-
-/* =========================================================
-   QUICK ACTIONS
-========================================================= */
 
 .quick-actions {
   display: grid;
@@ -4461,9 +4038,6 @@
   border-color: #c8d9d2;
   box-shadow: 0 4px 12px rgba(32, 61, 53, 0.06);
 }
-
-/* Intake Form action */
-
 .quick-action[href="/intake-form"] {
   background: #315f51;
   border-color: #315f51;
@@ -4473,11 +4047,6 @@
 .quick-action[href="/intake-form"]:hover {
   background: #274f43;
 }
-
-/* =========================================================
-   RECENT SESSION
-========================================================= */
-
 .recent-session-card {
   display: grid;
   grid-template-columns: 1.5fr 1fr auto;
@@ -4528,11 +4097,6 @@
   font-weight: 800;
   letter-spacing: 0.5px;
 }
-
-/* =========================================================
-   SUPPORT
-========================================================= */
-
 .support-section {
   margin-top: 34px;
 }
@@ -4579,10 +4143,6 @@
 .support-content a:hover {
   background: #274f43;
 }
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 850px) {
   .quick-actions {
@@ -4662,12 +4222,6 @@
   }
 }
 
-
-
-/* =========================================================
-   UNFAZED — USER PROFILE
-========================================================= */
-
 .user-profile-page {
   width: min(1120px, 92%);
   min-height: 100vh;
@@ -4676,10 +4230,6 @@
   box-sizing: border-box;
   color: #203d35;
 }
-
-
-/* ================= HEADER ================= */
-
 .user-profile-header {
   display: flex;
   justify-content: space-between;
@@ -4725,11 +4275,6 @@
   color: #203d35;
 }
 
-
-/* =========================================================
-   MAIN PROFILE CARD
-========================================================= */
-
 .user-profile-main-card,
 .user-profile-activity,
 .user-profile-actions,
@@ -4739,9 +4284,6 @@
   border-radius: 18px;
   box-shadow: 0 7px 24px rgba(32, 61, 53, 0.04);
 }
-
-
-/* ================= PROFILE HERO ================= */
 
 .user-profile-main-card {
   padding: 25px 28px 28px;
@@ -4807,11 +4349,6 @@
   background: #e7eeea;
 }
 
-
-/* =========================================================
-   SECTION HEADING
-========================================================= */
-
 .user-profile-section-heading {
   display: flex;
   align-items: flex-end;
@@ -4843,11 +4380,6 @@
 .user-profile-edit-btn:hover {
   background: #e9f1ed;
 }
-
-
-/* =========================================================
-   PERSONAL INFORMATION
-========================================================= */
 
 .user-profile-information {
   display: grid;
@@ -4882,11 +4414,6 @@
   line-height: 1.35;
   word-break: break-word;
 }
-
-
-/* =========================================================
-   ACTIVITY
-========================================================= */
 
 .user-profile-activity {
   padding: 24px 28px;
@@ -4938,11 +4465,6 @@
   color: #7f8d87;
   font-size: 10px;
 }
-
-
-/* =========================================================
-   QUICK ACCESS
-========================================================= */
 
 .user-profile-actions {
   padding: 24px 28px;
@@ -5013,11 +4535,6 @@
   font-size: 16px;
 }
 
-
-/* =========================================================
-   WELLBEING
-========================================================= */
-
 .user-profile-wellbeing {
   display: flex;
   align-items: center;
@@ -5058,11 +4575,6 @@
   font-size: 11px;
   line-height: 1.55;
 }
-
-
-/* =========================================================
-   USER PROFILE RESPONSIVE
-========================================================= */
 
 @media (max-width: 900px) {
   .user-profile-information {
@@ -5109,11 +4621,6 @@
   }
 }
 
-/* =========================================================
-   UNFAZED — PATIENT INTAKE FORM
-   Professional / structured / compact
-========================================================= */
-
 .intake-page {
   min-height: 100vh;
   background: #f6f8f7;
@@ -5126,10 +4633,6 @@
   width: min(940px, 100%);
   margin: 0 auto;
 }
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .intake-header {
   display: flex;
@@ -5182,19 +4685,12 @@
   letter-spacing: 0.7px;
 }
 
-/* =========================================================
-   FORM
-========================================================= */
-
 .intake-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* =========================================================
-   SECTION
-========================================================= */
 
 .intake-section {
   background: #ffffff;
@@ -5249,10 +4745,6 @@
   line-height: 1.4;
 }
 
-/* =========================================================
-   GRID
-========================================================= */
-
 .intake-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5263,9 +4755,6 @@
   grid-column: 1 / -1;
 }
 
-/* =========================================================
-   FIELD
-========================================================= */
 
 .intake-field {
   display: flex;
@@ -5289,10 +4778,6 @@
   color: #a05b5b;
   margin-left: 2px;
 }
-
-/* =========================================================
-   INPUTS
-========================================================= */
 
 .intake-field input,
 .intake-field textarea {
@@ -5342,10 +4827,6 @@
     0 0 0 3px rgba(49, 95, 81, 0.07);
 }
 
-/* =========================================================
-   PREVIOUS THERAPY CHECKBOX
-========================================================= */
-
 .therapy-checkbox {
   display: flex;
   align-items: center;
@@ -5385,10 +4866,6 @@
   margin-top: 16px;
 }
 
-/* =========================================================
-   PRIVACY NOTE
-========================================================= */
-
 .privacy-note {
   display: flex;
   align-items: flex-start;
@@ -5414,10 +4891,6 @@
   font-size: 11px;
 }
 
-/* =========================================================
-   MESSAGES
-========================================================= */
-
 .intake-message {
   padding: 11px 14px;
 
@@ -5439,10 +4912,6 @@
   border: 1px solid #d1e3d8;
   color: #426b56;
 }
-
-/* =========================================================
-   SUBMIT
-========================================================= */
 
 .intake-submit-area {
   display: flex;
@@ -5506,10 +4975,6 @@
   transform: none;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
 @media (max-width: 700px) {
   .intake-page {
     padding: 25px 15px 45px;
@@ -5561,9 +5026,6 @@
     height: 25px;
   }
 }
-/* =========================
-   PHONE NUMBER FIELD
-========================= */
 
 .phone-input-wrapper {
   display: flex;
@@ -5598,9 +5060,6 @@
   font-size: 12px;
   color: #718078;
 }
-/* =====================================================
-   PATIENT PROFILE PAGE
-   ===================================================== */
 
 .dashboard-page {
   min-height: 100vh;
@@ -5609,10 +5068,6 @@
   padding: 36px 5%;
   box-sizing: border-box;
 }
-
-/* =====================================================
-   HEADER
-   ===================================================== */
 
 .dashboard-header {
   max-width: 1180px;
@@ -5644,10 +5099,6 @@
   letter-spacing: 1.8px;
 }
 
-/* =====================================================
-   HEADER BUTTON
-   ===================================================== */
-
 .dashboard-logout {
   display: inline-flex;
   align-items: center;
@@ -5668,10 +5119,6 @@
   background: #eef4f1;
 }
 
-/* =====================================================
-   MAIN CARDS
-   ===================================================== */
-
 .dashboard-card {
   max-width: 1180px;
   margin: 0 auto 28px;
@@ -5682,10 +5129,6 @@
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(32, 61, 53, 0.04);
 }
-
-/* =====================================================
-   CARD HEADER
-   ===================================================== */
 
 .availability-section-header {
   display: flex;
@@ -5709,10 +5152,6 @@
   line-height: 1.5;
 }
 
-/* =====================================================
-   PATIENT PROFILE GRID
-   ===================================================== */
-
 .patient-profile-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5720,14 +5159,9 @@
   row-gap: 18px;
 }
 
-/* Each field */
-
 .patient-profile-grid > div {
   min-width: 0;
 }
-
-/* Field label */
-
 .patient-profile-grid > div > p {
   margin: 0 0 5px;
   color: #71807b;
@@ -5735,8 +5169,6 @@
   font-weight: 600;
   line-height: 1.3;
 }
-
-/* Field value */
 
 .patient-profile-grid > div > strong {
   display: block;
@@ -5747,17 +5179,9 @@
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
-
-/* Full-width field */
-
 .patient-profile-wide {
   grid-column: 1 / -1;
 }
-
-/* =====================================================
-   PRESENTING CONCERN
-   ===================================================== */
-
 .patient-concern {
   padding: 15px 17px;
   border: 1px solid #e1e8e5;
@@ -5771,11 +5195,6 @@
   font-size: 14px;
   line-height: 1.6;
 }
-
-/* =====================================================
-   PATIENT TAGS
-   ===================================================== */
-
 .patient-tags {
   display: flex;
   flex-wrap: wrap;
@@ -5800,10 +5219,6 @@
   font-weight: 600;
 }
 
-/* =====================================================
-   INFO / LOADING / ERROR
-   ===================================================== */
-
 .dashboard-info {
   padding: 18px;
   border-radius: 11px;
@@ -5823,9 +5238,6 @@
   line-height: 1.5;
 }
 
-/* =====================================================
-   BUTTON
-   ===================================================== */
 
 .dashboard-btn {
   display: inline-flex;
@@ -5852,10 +5264,6 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-
-/* =====================================================
-   SESSION NOTE FORM
-   ===================================================== */
 
 .session-note-form {
   display: flex;
@@ -5910,20 +5318,11 @@
   color: #a34d4d;
   font-size: 13px;
 }
-
-/* =====================================================
-   NOTE ACTIONS
-   ===================================================== */
-
 .session-note-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
-
-/* =====================================================
-   SESSION NOTES LIST
-   ===================================================== */
 
 .session-notes-list {
   display: flex;
@@ -5963,10 +5362,6 @@
   font-size: 13px;
   line-height: 1.6;
 }
-
-/* =====================================================
-   SESSION HISTORY
-   ===================================================== */
 
 .patients-list {
   display: flex;
@@ -6020,10 +5415,6 @@
   padding: 0 !important;
   line-height: 1.45 !important;
 }
-
-/* =====================================================
-   RESPONSIVE
-   ===================================================== */
 
 @media (max-width: 760px) {
   .dashboard-page {
@@ -6115,9 +5506,6 @@
   text-align: left !important;
 }
 
-/* =========================================
-   MOBILE
-========================================= */
 
 @media (max-width: 760px) {
 
@@ -6134,9 +5522,6 @@
     grid-template-columns: 130px minmax(0, 1fr) !important;
   }
 }
-/* =========================================
-   SESSION HISTORY
-========================================= */
 
 .session-history {
   display: flex;
@@ -6173,10 +5558,6 @@
   text-transform: capitalize;
 }
 
-/* =========================================
-   SESSION HISTORY - MOBILE
-========================================= */
-
 @media (max-width: 760px) {
   .session-history-section .patient-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -6188,32 +5569,18 @@
     grid-template-columns: 1fr;
   }
 }
-/* =========================================
-   APPOINTMENTS
-========================================= */
 
 .appointments-list {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-
-
-/* =========================================
-   APPOINTMENT CARD
-========================================= */
-
 .appointment-card {
   padding: 20px;
   border: 1px solid #e1e8e5;
   border-radius: 13px;
   background: #fbfdfc;
 }
-
-
-/* =========================================
-   CARD HEADER
-========================================= */
 
 .appointment-card-header {
   display: flex;
@@ -6242,11 +5609,6 @@
   color: #87958f;
   font-size: 12px;
 }
-
-
-/* =========================================
-   STATUS
-========================================= */
 
 .appointment-status {
   display: inline-flex;
@@ -6285,11 +5647,6 @@
   color: #984f4f;
 }
 
-
-/* =========================================
-   APPOINTMENT DETAILS
-========================================= */
-
 .appointment-details {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -6311,11 +5668,6 @@
   font-size: 13px;
   font-weight: 600;
 }
-
-
-/* =========================================
-   ACTIONS
-========================================= */
 
 .appointment-actions {
   display: flex;
@@ -6340,11 +5692,6 @@
 .cancelled-message {
   color: #984f4f;
 }
-
-
-/* =========================================
-   MOBILE
-========================================= */
 
 @media (max-width: 760px) {
   .appointment-card {
@@ -6591,11 +5938,6 @@
   align-items: center;
   gap: 14px;
 }
-```css
-/* ==========================================
-   SESSION NOTE EDITOR
-========================================== */
-
 .session-note-editor-card {
   background: #ffffff;
   border: 1px solid #e1e8e5;
@@ -6656,10 +5998,6 @@
 .session-note-field select:focus {
   border-color: #315f51;
 }
-
-/* ==========================================
-   TIPTAP
-========================================== */
 
 .tiptap-wrapper {
   overflow: hidden;
@@ -6726,10 +6064,6 @@
   font-style: italic;
 }
 
-/* ==========================================
-   MESSAGES
-========================================== */
-
 .session-note-message {
   padding: 13px 16px;
   margin-bottom: 18px;
@@ -6746,10 +6080,6 @@
   background: #fbe7e7;
   color: #a83c3c;
 }
-
-/* ==========================================
-   BUTTONS
-========================================== */
 
 .session-note-cancel,
 .session-note-secondary {
@@ -6781,10 +6111,6 @@
   cursor: not-allowed;
 }
 
-/* ==========================================
-   EXISTING NOTES
-========================================== */
-
 .session-notes-section {
   display: flex;
   flex-direction: column;
@@ -6812,10 +6138,6 @@
 .session-note-actions-small button:hover {
   background: #dfeae3;
 }
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
 
 @media (max-width: 760px) {
   .session-note-form-grid {
@@ -6845,10 +6167,6 @@
     flex-wrap: wrap;
   }
 }
-/* =========================================================
-   MY SESSIONS PAGE
-   Unique classes - will not conflict with dashboard CSS
-========================================================= */
 
 .my-sessions-page {
   width: 100%;
@@ -6857,8 +6175,6 @@
   padding: 32px 28px 50px;
   background: #f7f8f5;
 }
-
-/* HEADER */
 
 .my-sessions-header {
   display: flex;
@@ -6908,9 +6224,6 @@
   background: #203d35;
 }
 
-
-/* SECTION */
-
 .my-sessions-section {
   margin-bottom: 32px;
 }
@@ -6949,9 +6262,6 @@
   font-weight: 700;
 }
 
-
-/* SESSION LIST */
-
 .my-sessions-list {
   display: flex;
   flex-direction: column;
@@ -6978,9 +6288,6 @@
   opacity: 0.78;
 }
 
-
-/* DATE */
-
 .my-session-date {
   width: 52px;
   min-width: 52px;
@@ -7006,9 +6313,6 @@
   line-height: 1;
 }
 
-
-/* INFO */
-
 .my-session-info {
   flex: 1;
   min-width: 0;
@@ -7032,9 +6336,6 @@
   font-size: 11px;
   font-weight: 700;
 }
-
-
-/* STATUS */
 
 .my-session-status {
   padding: 6px 10px;
@@ -7060,9 +6361,6 @@
   background: #f5eedb;
   color: #96752e;
 }
-
-
-/* EMPTY */
 
 .my-sessions-empty {
   padding: 38px 20px;
@@ -7106,10 +6404,6 @@
   font-size: 11px;
   font-weight: 700;
 }
-
-
-/* NOTES */
-
 .my-sessions-notes {
   margin-top: 8px;
   padding-top: 5px;
@@ -7162,10 +6456,6 @@
   font-size: 12px;
   line-height: 1.7;
 }
-
-
-/* NOTE EMPTY */
-
 .my-sessions-notes-empty {
   display: flex;
   align-items: center;
@@ -7198,9 +6488,6 @@
   color: #89958f;
   font-size: 11px;
 }
-
-
-/* LOADING / ERROR */
 
 .my-sessions-message {
   padding: 28px;
@@ -7237,9 +6524,6 @@
     transform: rotate(360deg);
   }
 }
-
-
-/* MOBILE */
 
 @media (max-width: 700px) {
   .my-sessions-page {
