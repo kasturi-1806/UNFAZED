@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
-
 const AdminTherapists = () => {
-  const [therapists, setTherapists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
+const [therapists, setTherapists] = useState([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
   useEffect(() => {
     const fetchTherapists = async () => {
       try {
         const token = localStorage.getItem("adminToken");
-
         if (!token) {
           window.location.href = "/admin/login";
           return;
         }
-
-        // Get all therapists from admin API
         const response = await fetch(
           "http://localhost:5000/api/admin/therapists",
           {
@@ -25,7 +20,6 @@ const AdminTherapists = () => {
             },
           }
         );
-
         const data = await response.json();
 
         if (!response.ok || !data.success) {
@@ -33,22 +27,17 @@ const AdminTherapists = () => {
             data.message || "Failed to fetch therapists"
           );
         }
-
-        // Get complete public profile data for each therapist
         const therapistsWithProfileData = await Promise.all(
           (data.therapists || []).map(async (therapist) => {
             try {
               if (!therapist.slug) {
                 return therapist;
               }
-
               const profileResponse = await fetch(
                 `http://localhost:5000/api/therapists/${therapist.slug}`
               );
-
               const profileData =
                 await profileResponse.json();
-
               if (
                 profileResponse.ok &&
                 profileData.success &&
@@ -63,26 +52,22 @@ const AdminTherapists = () => {
                     profileData.therapist.languages || [],
                 };
               }
-
               return therapist;
             } catch (profileError) {
               console.error(
                 "Failed to fetch therapist profile:",
                 profileError
               );
-
               return therapist;
             }
           })
         );
-
         setTherapists(therapistsWithProfileData);
       } catch (error) {
         console.error(
           "Admin therapists error:",
           error
         );
-
         setError(
           error.message || "Failed to load therapists"
         );
@@ -90,22 +75,15 @@ const AdminTherapists = () => {
         setLoading(false);
       }
     };
-
     fetchTherapists();
   }, []);
-
-  // =========================================
-  // ASSIGN THERAPIST CODE
-  // =========================================
   const assignTherapistCode = async (therapistId) => {
     try {
       const token = localStorage.getItem("adminToken");
-
       if (!token) {
         window.location.href = "/admin/login";
         return;
       }
-
       const response = await fetch(
         `http://localhost:5000/api/admin/therapists/${therapistId}/code`,
         {
@@ -115,15 +93,12 @@ const AdminTherapists = () => {
           },
         }
       );
-
       const data = await response.json();
-
       if (!response.ok || !data.success) {
         throw new Error(
           data.message || "Failed to assign therapist code"
         );
       }
-
       setTherapists((prev) =>
         prev.map((therapist) =>
           therapist._id === therapistId
@@ -135,7 +110,6 @@ const AdminTherapists = () => {
             : therapist
         )
       );
-
       alert(
         `Therapist code assigned: ${data.therapist.therapistCode}`
       );
@@ -144,14 +118,12 @@ const AdminTherapists = () => {
         "Assign therapist code error:",
         error
       );
-
       alert(
         error.message ||
           "Failed to assign therapist code"
       );
     }
   };
-
   return (
     <div
       style={{
@@ -168,7 +140,6 @@ const AdminTherapists = () => {
           margin: "0 auto",
         }}
       >
-        {/* Header */}
         <div
           style={{
             display: "flex",
@@ -198,7 +169,6 @@ const AdminTherapists = () => {
               View all therapists registered on UNFAZED.
             </p>
           </div>
-
           <button
             onClick={() => {
               window.location.href = "/admin/dashboard";
@@ -216,8 +186,6 @@ const AdminTherapists = () => {
             Back to Dashboard
           </button>
         </div>
-
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -231,8 +199,6 @@ const AdminTherapists = () => {
             {error}
           </div>
         )}
-
-        {/* Loading */}
         {loading && (
           <div
             style={{
@@ -246,8 +212,6 @@ const AdminTherapists = () => {
             Loading therapists...
           </div>
         )}
-
-        {/* Empty */}
         {!loading &&
           !error &&
           therapists.length === 0 && (
@@ -264,8 +228,6 @@ const AdminTherapists = () => {
               No therapists found.
             </div>
           )}
-
-        {/* Therapist list */}
         {!loading &&
           !error &&
           therapists.length > 0 && (
@@ -291,7 +253,6 @@ const AdminTherapists = () => {
                 >
                   Registered Therapists
                 </h2>
-
                 <p
                   style={{
                     margin: "6px 0 0",
@@ -302,7 +263,6 @@ const AdminTherapists = () => {
                   Total: {therapists.length}
                 </p>
               </div>
-
               <div
                 style={{
                   overflowX: "auto",
@@ -336,34 +296,28 @@ const AdminTherapists = () => {
                       <th style={headerStyle}>Joined</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     {therapists.map((therapist) => (
                       <tr key={therapist._id}>
                         <td style={cellStyle}>
                           {therapist.name || "—"}
                         </td>
-
                         <td style={cellStyle}>
                           {therapist.email || "—"}
                         </td>
-
                         <td style={cellStyle}>
                           {therapist.specializations?.length
                             ? therapist.specializations.join(", ")
                             : "—"}
                         </td>
-
                         <td style={cellStyle}>
                           {therapist.languages?.length
                             ? therapist.languages.join(", ")
                             : "—"}
                         </td>
-
                         <td style={cellStyle}>
                           {therapist.slug || "—"}
                         </td>
-
                         <td style={cellStyle}>
                           {therapist.therapistCode ? (
                             <span
@@ -402,7 +356,6 @@ const AdminTherapists = () => {
                             </button>
                           )}
                         </td>
-
                         <td style={cellStyle}>
                           {therapist.createdAt
                             ? new Date(
@@ -421,7 +374,6 @@ const AdminTherapists = () => {
     </div>
   );
 };
-
 const headerStyle = {
   textAlign: "left",
   padding: "15px",
@@ -430,7 +382,6 @@ const headerStyle = {
   color: "#203d35",
   whiteSpace: "nowrap",
 };
-
 const cellStyle = {
   padding: "15px",
   borderTop: "1px solid #dfeae3",
@@ -438,5 +389,4 @@ const cellStyle = {
   color: "#315f51",
   verticalAlign: "top",
 };
-
 export default AdminTherapists;
