@@ -152,14 +152,15 @@ const AdminTherapists = () => {
           data.message || "Failed to create therapist"
         );
       }
+const newTherapist = {
+  ...data.therapist,
+  _id: data.therapist._id || data.therapist.id,
+};
 
-      const newTherapist = data.therapist;
-
-      setTherapists((prev) => [
-        newTherapist,
-        ...prev,
-      ]);
-
+setTherapists((prev) => [
+  newTherapist,
+  ...prev,
+]);
       setFormData({
         name: "",
         email: "",

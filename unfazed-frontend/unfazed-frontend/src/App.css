@@ -1267,13 +1267,9 @@
 
 .profile-actions {
   display: flex;
-
-  justity-content: center;
-
+  justify-content: center;
   align-items: center;
-
   gap: 15px;
-
   margin-top: 35px;
 }
 
