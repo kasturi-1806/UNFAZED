@@ -1,33 +1,23 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../App.css";
-
 function TherapistProfile() {
   const { slug } = useParams();
   const navigate = useNavigate();
-
   const [therapist, setTherapist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isTherapist, setIsTherapist] = useState(false);
-
-  // ================= PACKAGES =================
-
   const [packages, setPackages] = useState([]);
   const [packagesLoading, setPackagesLoading] = useState(true);
   const [packageError, setPackageError] = useState("");
   const [buyingPackage, setBuyingPackage] = useState(null);
   const [packageMessage, setPackageMessage] = useState("");
-
-  // ================= CHECK LOGGED-IN ROLE =================
-
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("user");
       const storedRole = localStorage.getItem("userRole");
-
       let therapistUser = false;
-
       if (storedUser) {
         const currentUser = JSON.parse(storedUser);
 
@@ -45,12 +35,9 @@ function TherapistProfile() {
         "Logged-in user data error:",
         userError
       );
-
       setIsTherapist(false);
     }
   }, []);
-
-  // ================= FETCH THERAPIST =================
 
   useEffect(() => {
     const fetchTherapist = async () => {
@@ -58,15 +45,12 @@ function TherapistProfile() {
         const response = await fetch(
           `http://localhost:5000/api/therapists/${slug}`
         );
-
         const data = await response.json();
-
         if (!response.ok) {
           throw new Error(
             data.message || "Failed to load therapist"
           );
         }
-
         setTherapist(data.therapist);
       } catch (error) {
         console.error(
@@ -82,8 +66,6 @@ function TherapistProfile() {
 
     fetchTherapist();
   }, [slug]);
-
-  // ================= FETCH PACKAGES =================
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -123,23 +105,16 @@ function TherapistProfile() {
     fetchPackages();
   }, [therapist]);
 
-  // ================= BUY PACKAGE =================
-
   const handleBuyPackage = async (packageId) => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       navigate("/login");
       return;
     }
-
     try {
       setBuyingPackage(packageId);
       setPackageMessage("");
       setPackageError("");
-
-      // STEP 1: CREATE CLIENT PACKAGE
-
       const purchaseResponse = await fetch(
         "http://localhost:5000/api/client-packages/purchase",
         {
@@ -153,7 +128,6 @@ function TherapistProfile() {
           }),
         }
       );
-
       const purchaseData =
         await purchaseResponse.json();
 
@@ -163,18 +137,13 @@ function TherapistProfile() {
             "Failed to purchase package"
         );
       }
-
       const clientPackage =
         purchaseData.clientPackage;
-
       if (!clientPackage?._id) {
         throw new Error(
           "Package purchase was created, but package information was not returned."
         );
       }
-
-      // STEP 2: DEMO PAYMENT
-
       const paymentResponse = await fetch(
         "http://localhost:5000/api/client-packages/demo-payment",
         {
@@ -189,17 +158,14 @@ function TherapistProfile() {
           }),
         }
       );
-
       const paymentData =
         await paymentResponse.json();
-
       if (!paymentResponse.ok) {
         throw new Error(
           paymentData.message ||
             "Package payment failed"
         );
       }
-
       setPackageMessage(
         "Package purchased successfully! You can now use these sessions while booking."
       );
@@ -214,11 +180,6 @@ function TherapistProfile() {
       setBuyingPackage(null);
     }
   };
-
-  // =========================================
-  // LOADING
-  // =========================================
-
   if (loading) {
     return (
       <div className="profile-page">
@@ -228,10 +189,6 @@ function TherapistProfile() {
       </div>
     );
   }
-
-  // =========================================
-  // ERROR
-  // =========================================
 
   if (error || !therapist) {
     return (
@@ -261,9 +218,6 @@ function TherapistProfile() {
     <div className="profile-page">
 
       <div className="profile-card">
-
-        {/* ================= AVATAR ================= */}
-
         <div className="profile-avatar">
           {therapist.name
             ?.replace("Dr. ", "")
@@ -283,18 +237,12 @@ function TherapistProfile() {
             : "Mental Health Therapist"}
         </p>
 
-        {/* ================= EXPERIENCE ================= */}
-
         <p className="profile-experience">
           Professional Mental Health Support
         </p>
 
         <div className="profile-divider"></div>
-
-        {/* ================= ABOUT ================= */}
-
         <div className="profile-section">
-
           <h2>About</h2>
 
           <p>
@@ -303,8 +251,6 @@ function TherapistProfile() {
           </p>
 
         </div>
-
-        {/* ================= SPECIALIZATIONS ================= */}
 
         <div className="profile-section">
 
@@ -325,17 +271,11 @@ function TherapistProfile() {
                 Mental Health
               </span>
             )}
-
           </div>
-
         </div>
 
-        {/* ================= LANGUAGES ================= */}
-
         <div className="profile-section">
-
           <h2>Languages</h2>
-
           <div className="specialization-tags">
 
             {therapist.languages?.length > 0 ? (
@@ -354,13 +294,9 @@ function TherapistProfile() {
 
         </div>
 
-{/* ================= PACKAGES ================= */}
-
 <div className="profile-section packages-section">
-
   <div className="section-heading">
     <h2>Available Packages</h2>
-
     <p>
       Choose a session package for your therapy
       sessions with {therapist.name}.
@@ -435,13 +371,8 @@ function TherapistProfile() {
               key={pkg._id}
               className="user-package-card"
             >
-
-              {/* CARD HEADER */}
-
               <div className="package-card-header">
-
                 <div>
-
                   <span className="package-label">
                     SESSION PACKAGE
                   </span>
@@ -449,15 +380,11 @@ function TherapistProfile() {
                   <h3>{pkg.name}</h3>
 
                 </div>
-
                 <div className="package-session-count">
                   {pkg.sessions}
                 </div>
 
               </div>
-
-              {/* MAIN PRICE */}
-
               <div className="package-main-price">
 
                 <strong>
@@ -469,9 +396,6 @@ function TherapistProfile() {
                 </span>
 
               </div>
-
-              {/* PACKAGE DETAILS */}
-
               <div className="package-details">
 
                 <div>
@@ -506,8 +430,6 @@ function TherapistProfile() {
 
               </div>
 
-              {/* BUY BUTTON */}
-
               {!isTherapist && (
                 <button
                   type="button"
@@ -532,13 +454,8 @@ function TherapistProfile() {
 
       </div>
     )}
-
 </div>
-
-        {/* ================= ACTIONS ================= */}
-
         <div className="profile-actions">
-
           {!isTherapist && (
             <button
               type="button"
@@ -555,17 +472,12 @@ function TherapistProfile() {
 
           <Link
             to="/therapists"
-            className="back-btn"
-          >
+            className="back-btn" >
             Back to Therapists
           </Link>
-
         </div>
-
       </div>
-
     </div>
   );
 }
-
 export default TherapistProfile;
