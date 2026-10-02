@@ -12,7 +12,7 @@ const [error, setError] = useState("");
           return;
         }
         const response = await fetch(
-          "http://localhost:5000/api/admin/users",
+          "https://unfazed-692q.onrender.com/api/admin/users",
           {
             method: "GET",
             headers: {

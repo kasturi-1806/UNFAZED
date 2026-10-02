@@ -43,7 +43,7 @@ function TherapistProfile() {
     const fetchTherapist = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/therapists/${slug}`
+          `https://unfazed-692q.onrender.com/api/therapists/${slug}`
         );
         const data = await response.json();
         if (!response.ok) {
@@ -78,7 +78,7 @@ function TherapistProfile() {
         setPackageError("");
 
         const response = await fetch(
-          `http://localhost:5000/api/packages/therapist/${therapist._id}`
+          `https://unfazed-692q.onrender.com/api/packages/therapist/${therapist._id}`
         );
 
         const data = await response.json();
@@ -116,7 +116,7 @@ function TherapistProfile() {
       setPackageMessage("");
       setPackageError("");
       const purchaseResponse = await fetch(
-        "http://localhost:5000/api/client-packages/purchase",
+        "https://unfazed-692q.onrender.com/api/client-packages/purchase",
         {
           method: "POST",
           headers: {
@@ -145,7 +145,7 @@ function TherapistProfile() {
         );
       }
       const paymentResponse = await fetch(
-        "http://localhost:5000/api/client-packages/demo-payment",
+        "https://unfazed-692q.onrender.com/api/client-packages/demo-payment",
         {
           method: "POST",
           headers: {

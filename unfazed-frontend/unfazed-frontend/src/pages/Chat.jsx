@@ -61,7 +61,7 @@ function Chat() {
           setError("");
           const response =
             await fetch(
-              `http://localhost:5000/api/messages/${otherUserRole}/${otherUserId}`,
+              `https://unfazed-692q.onrender.com/api/messages/${otherUserRole}/${otherUserId}`,
               {
                 method: "GET",
                 headers: {
@@ -98,7 +98,7 @@ function Chat() {
     fetchConversation();
 
     const socket = io(
-      "http://localhost:5000",
+      "https://unfazed-692q.onrender.com",
       {
         transports: [
           "websocket",
@@ -197,7 +197,7 @@ function Chat() {
       setError("");
       const response =
         await fetch(
-          "http://localhost:5000/api/messages",
+          "https://unfazed-692q.onrender.com/api/messages",
           {
             method: "POST",
             headers: {

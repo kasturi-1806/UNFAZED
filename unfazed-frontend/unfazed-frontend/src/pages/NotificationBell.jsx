@@ -18,7 +18,7 @@ function NotificationBell() {
       const token = getToken();
       if (!token) return;
       const response = await fetch(
-        "http://localhost:5000/api/notifications",
+        "https://unfazed-692q.onrender.com/api/notifications",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ function NotificationBell() {
       const token = getToken();
       if (!token) return;
       const response = await fetch(
-        "http://localhost:5000/api/notifications/unread-count",
+        "https://unfazed-692q.onrender.com/api/notifications/unread-count",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ function NotificationBell() {
       const token = getToken();
       if (!token) return;
       const response = await fetch(
-        `http://localhost:5000/api/notifications/${notificationId}/read`,
+        `https://unfazed-692q.onrender.com/api/notifications/${notificationId}/read`,
         {
           method: "PUT",
           headers: {
@@ -179,7 +179,7 @@ function NotificationBell() {
       const token = getToken();
       if (!token) return;
       const response = await fetch(
-        "http://localhost:5000/api/notifications/read-all",
+        "https://unfazed-692q.onrender.com/api/notifications/read-all",
         {
           method: "PUT",
           headers: {

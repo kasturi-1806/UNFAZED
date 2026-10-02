@@ -45,7 +45,7 @@ function Profile() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/therapists",
+          "https://unfazed-692q.onrender.com/api/therapists",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -190,7 +190,7 @@ function Profile() {
         return;
       }
       const response = await fetch(
-        "http://localhost:5000/api/therapists/profile",
+        "https://unfazed-692q.onrender.com/api/therapists/profile",
         {
           method: "PUT",
           headers: {

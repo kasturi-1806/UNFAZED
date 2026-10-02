@@ -12,7 +12,7 @@ const [error, setError] = useState("");
           return;
         }
         const response = await fetch(
-          "http://localhost:5000/api/admin/therapists",
+          "https://unfazed-692q.onrender.com/api/admin/therapists",
           {
             method: "GET",
             headers: {
@@ -34,7 +34,7 @@ const [error, setError] = useState("");
                 return therapist;
               }
               const profileResponse = await fetch(
-                `http://localhost:5000/api/therapists/${therapist.slug}`
+                `https://unfazed-692q.onrender.com/api/therapists/${therapist.slug}`
               );
               const profileData =
                 await profileResponse.json();
@@ -85,7 +85,7 @@ const [error, setError] = useState("");
         return;
       }
       const response = await fetch(
-        `http://localhost:5000/api/admin/therapists/${therapistId}/code`,
+        `https://unfazed-692q.onrender.com/api/admin/therapists/${therapistId}/code`,
         {
           method: "POST",
           headers: {

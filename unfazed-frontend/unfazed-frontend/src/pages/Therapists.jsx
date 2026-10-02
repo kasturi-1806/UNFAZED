@@ -9,7 +9,7 @@ function Therapists() {
     const fetchTherapists = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/therapists"
+          "https://unfazed-692q.onrender.com/api/therapists"
         );
         const data = await response.json();
         if (!response.ok) {

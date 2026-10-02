@@ -104,7 +104,7 @@ function TherapistDashboard() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/appointments/therapist",
+          "https://unfazed-692q.onrender.com/api/appointments/therapist",
           {
             method: "GET",
             headers: {

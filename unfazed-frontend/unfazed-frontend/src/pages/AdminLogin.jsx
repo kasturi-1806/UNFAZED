@@ -12,7 +12,7 @@ const handleSubmit = async (e) => {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/admin/login",
+        "https://unfazed-692q.onrender.com/api/admin/login",
         {
           method: "POST",
           headers: {

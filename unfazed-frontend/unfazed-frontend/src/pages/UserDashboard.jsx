@@ -41,7 +41,7 @@ function UserDashboard() {
           return;
         }
         const response = await fetch(
-          "http://localhost:5000/api/appointments/user",
+          "https://unfazed-692q.onrender.com/api/appointments/user",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -107,7 +107,7 @@ function UserDashboard() {
       setLoadingMyPackages(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/client-packages/my",
+        "https://unfazed-692q.onrender.com/api/client-packages/my",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -163,7 +163,7 @@ function UserDashboard() {
         setLoadingPayments(true);
 
         const response = await fetch(
-          "http://localhost:5000/api/payments/my",
+          "https://unfazed-692q.onrender.com/api/payments/my",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -321,7 +321,7 @@ function UserDashboard() {
         setPackageError("");
 
         const response = await fetch(
-          `http://localhost:5000/api/packages/therapist/${therapistId}`
+          `https://unfazed-692q.onrender.com/api/packages/therapist/${therapistId}`
         );
 
         const contentType =
@@ -423,7 +423,7 @@ const handlePurchasePackage = async (
 
     const purchaseResponse =
       await fetch(
-        "http://localhost:5000/api/client-packages/purchase",
+        "https://unfazed-692q.onrender.com/api/client-packages/purchase",
         {
           method: "POST",
           headers: {
@@ -477,7 +477,7 @@ const handlePurchasePackage = async (
     }
     const orderResponse =
       await fetch(
-        "http://localhost:5000/api/client-packages/razorpay/order",
+        "https://unfazed-692q.onrender.com/api/client-packages/razorpay/order",
         {
           method: "POST",
           headers: {
@@ -530,7 +530,7 @@ const handlePurchasePackage = async (
           setPackageError("");
           const verifyResponse =
             await fetch(
-              "http://localhost:5000/api/client-packages/razorpay/verify",
+              "https://unfazed-692q.onrender.com/api/client-packages/razorpay/verify",
               {
                 method: "POST",
                 headers: {
@@ -657,7 +657,7 @@ const handlePurchasePackage = async (
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/payments/my",
+        "https://unfazed-692q.onrender.com/api/payments/my",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -699,7 +699,7 @@ const handlePurchasePackage = async (
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/payments/invoice/${encodeURIComponent(
+        `https://unfazed-692q.onrender.com/api/payments/invoice/${encodeURIComponent(
           fileName
         )}`,
         {
@@ -892,7 +892,7 @@ const handlePurchasePackage = async (
         setLoadingMessages(true);
 
         const response = await fetch(
-          `http://localhost:5000/api/messages/therapist/${therapistId}`,
+          `https://unfazed-692q.onrender.com/api/messages/therapist/${therapistId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -936,7 +936,7 @@ const handlePurchasePackage = async (
     fetchMessages();
 
     const socket = io(
-      "http://localhost:5000",
+      "https://unfazed-692q.onrender.com",
       {
         transports: ["websocket"],
       }

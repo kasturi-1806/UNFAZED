@@ -32,7 +32,7 @@ function PatientProfile() {
           return;
         }
         const response = await fetch(
-          `http://localhost:5000/api/clients/${patientId}`,
+          `https://unfazed-692q.onrender.com/api/clients/${patientId}`,
           {
             method: "GET",
             headers: {
@@ -73,7 +73,7 @@ function PatientProfile() {
         } else {
           try {
             const intakeResponse = await fetch(
-              `http://localhost:5000/api/intake/patient/${userId}`,
+              `https://unfazed-692q.onrender.com/api/intake/patient/${userId}`,
               {
                 method: "GET",
                 headers: {
@@ -115,7 +115,7 @@ function PatientProfile() {
         try {
           const appointmentsResponse =
             await fetch(
-              `http://localhost:5000/api/appointments/patient/${patientId}`,
+              `https://unfazed-692q.onrender.com/api/appointments/patient/${patientId}`,
               {
                 method: "GET",
                 headers: {
@@ -159,7 +159,7 @@ function PatientProfile() {
         } else {
           try {
             const notesResponse = await fetch(
-              `http://localhost:5000/api/session-notes/patient/${userId}`,
+              `https://unfazed-692q.onrender.com/api/session-notes/patient/${userId}`,
               {
                 method: "GET",
                 headers: {
@@ -252,7 +252,7 @@ function PatientProfile() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/session-notes",
+        "https://unfazed-692q.onrender.com/api/session-notes",
         {
           method: "POST",
           headers: {

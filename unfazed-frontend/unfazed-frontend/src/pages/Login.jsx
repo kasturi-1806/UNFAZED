@@ -12,8 +12,8 @@ function Login() {
     try {
       const endpoint =
         role === "therapist"
-          ? "http://localhost:5000/api/auth/therapist/login"
-          : "http://localhost:5000/api/auth/user/login";
+          ? "https://unfazed-692q.onrender.com/api/auth/therapist/login"
+          : "https://unfazed-692q.onrender.com/api/auth/user/login";
 
       console.log("Calling endpoint:", endpoint);
 

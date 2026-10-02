@@ -28,7 +28,7 @@ function Availability() {
           return;
         }
         const response = await fetch(
-          "http://localhost:5000/api/availability",
+          "https://unfazed-692q.onrender.com/api/availability",
           {
             method: "GET",
             headers: {
@@ -144,7 +144,7 @@ function Availability() {
       }
       setSaving(true);
       const response = await fetch(
-        "http://localhost:5000/api/availability",
+        "https://unfazed-692q.onrender.com/api/availability",
         {
           method: "PUT",
           headers: {

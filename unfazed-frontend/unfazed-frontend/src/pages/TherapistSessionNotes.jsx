@@ -33,7 +33,7 @@ function TherapistSessionNotes() {
         const [appointmentsResponse, notesResponse] =
           await Promise.all([
             fetch(
-              "http://localhost:5000/api/appointments/therapist",
+              "https://unfazed-692q.onrender.com/api/appointments/therapist",
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -42,7 +42,7 @@ function TherapistSessionNotes() {
             ),
 
             fetch(
-              "http://localhost:5000/api/session-notes/therapist",
+              "https://unfazed-692q.onrender.com/api/session-notes/therapist",
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -176,8 +176,8 @@ function TherapistSessionNotes() {
       };
 
       const url = editingNoteId
-        ? `http://localhost:5000/api/session-notes/${editingNoteId}`
-        : "http://localhost:5000/api/session-notes";
+        ? `https://unfazed-692q.onrender.com/api/session-notes/${editingNoteId}`
+        : "https://unfazed-692q.onrender.com/api/session-notes";
 
       const response = await fetch(url, {
         method: editingNoteId ? "PUT" : "POST",
@@ -289,7 +289,7 @@ function TherapistSessionNotes() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/session-notes/${noteId}`,
+        `https://unfazed-692q.onrender.com/api/session-notes/${noteId}`,
         {
           method: "DELETE",
           headers: {

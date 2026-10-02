@@ -29,8 +29,8 @@ function Register() {
     try {
       const endpoint =
         formData.role === "therapist"
-          ? "http://localhost:5000/api/auth/therapist/register"
-          : "http://localhost:5000/api/auth/user/register";
+          ? "https://unfazed-692q.onrender.com/api/auth/therapist/register"
+          : "https://unfazed-692q.onrender.com/api/auth/user/register";
 
       const slug = formData.name
         .toLowerCase()

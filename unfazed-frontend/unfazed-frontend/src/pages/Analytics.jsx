@@ -11,7 +11,7 @@ const Analytics = () => {
       setLoading(true);
       setError("");
       const response = await fetch(
-        `http://localhost:5000/api/analytics/dashboard?depth=${depth}`,
+        `https://unfazed-692q.onrender.com/api/analytics/dashboard?depth=${depth}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

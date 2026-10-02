@@ -18,7 +18,7 @@ function Patients() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/clients",
+          "https://unfazed-692q.onrender.com/api/clients",
           {
             method: "GET",
             headers: {

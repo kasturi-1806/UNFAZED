@@ -56,7 +56,7 @@ function Booking() {
     const fetchTherapist = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/therapists/${slug}`
+          `https://unfazed-692q.onrender.com/api/therapists/${slug}`
         );
         const data = await response.json();
         if (!response.ok) {
@@ -88,7 +88,7 @@ function Booking() {
           calendarMonth.getMonth() + 1
         ).padStart(2, "0");
         const response = await fetch(
-          `http://localhost:5000/api/availability/public/${slug}/calendar?month=${year}-${month}`
+          `https://unfazed-692q.onrender.com/api/availability/public/${slug}/calendar?month=${year}-${month}`
         );
         const data = await response.json();
 
@@ -149,7 +149,7 @@ function Booking() {
       try {
         setPackagesLoading(true);
         const response = await fetch(
-          "http://localhost:5000/api/client-packages/my",
+          "https://unfazed-692q.onrender.com/api/client-packages/my",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -211,7 +211,7 @@ function Booking() {
         setTime("");
         setError("");
         const response = await fetch(
-          `http://localhost:5000/api/availability/public/${slug}/slots?date=${date}`
+          `https://unfazed-692q.onrender.com/api/availability/public/${slug}/slots?date=${date}`
         );
         const data = await response.json();
         console.log(
@@ -288,7 +288,7 @@ function Booking() {
       );
       const verificationResponse =
         await fetch(
-          "http://localhost:5000/api/payments/razorpay/verify",
+          "https://unfazed-692q.onrender.com/api/payments/razorpay/verify",
           {
             method: "POST",
             headers: {
@@ -488,7 +488,7 @@ function Booking() {
       );
       const appointmentResponse =
         await fetch(
-          "http://localhost:5000/api/appointments",
+          "https://unfazed-692q.onrender.com/api/appointments",
           {
             method: "POST",
             headers: {
@@ -584,7 +584,7 @@ function Booking() {
       );
       const paymentResponse =
         await fetch(
-          "http://localhost:5000/api/payments/razorpay/order",
+          "https://unfazed-692q.onrender.com/api/payments/razorpay/order",
           {
             method: "POST",
             headers: {

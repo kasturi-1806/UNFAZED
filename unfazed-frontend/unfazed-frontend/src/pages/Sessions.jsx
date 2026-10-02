@@ -12,7 +12,7 @@ function Sessions() {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          "http://localhost:5000/api/appointments/user",
+          "https://unfazed-692q.onrender.com/api/appointments/user",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -42,7 +42,7 @@ function Sessions() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          "http://localhost:5000/api/session-notes/client/shared",
+          "https://unfazed-692q.onrender.com/api/session-notes/client/shared",
           {
             headers: {
               Authorization: `Bearer ${token}`,
