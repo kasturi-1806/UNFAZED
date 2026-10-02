@@ -5,9 +5,6 @@ const Admin = require("../models/Admin");
 const User = require("../models/User");
 const Therapist = require("../models/Therapist");
 
-// =========================
-// ADMIN LOGIN
-// =========================
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -70,9 +67,6 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-// =========================
-// ADMIN DASHBOARD
-// =========================
 const getAdminDashboard = async (req, res) => {
   try {
     const therapistCount = await Therapist.countDocuments();
@@ -95,9 +89,6 @@ const getAdminDashboard = async (req, res) => {
   }
 };
 
-// =========================
-// GET ALL THERAPISTS
-// =========================
 const getAllTherapists = async (req, res) => {
    try {
     const therapists = await Therapist.find({}).lean();
@@ -137,9 +128,7 @@ const getAllTherapists = async (req, res) => {
     });
   }
 }
-// =========================
-// GET ALL USERS
-// =========================
+
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
@@ -159,9 +148,7 @@ const getAllUsers = async (req, res) => {
     });
   }
 };
-// =========================
-// ASSIGN THERAPIST CODE
-// =========================
+
 const assignTherapistCode = async (req, res) => {
   try {
     const { therapistId } = req.params;
@@ -182,7 +169,6 @@ const assignTherapistCode = async (req, res) => {
       });
     }
 
-    // Generate a short unique code
     let therapistCode;
     let existingCode;
 
