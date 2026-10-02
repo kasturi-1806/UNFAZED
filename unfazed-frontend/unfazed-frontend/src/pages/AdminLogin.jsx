@@ -1,21 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 const AdminLogin = () => {
-  const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e) => {
+const navigate = useNavigate();
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
+const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError("");
     setLoading(true);
-
     try {
       const response = await fetch(
         "http://localhost:5000/api/admin/login",
@@ -32,21 +26,16 @@ const AdminLogin = () => {
       );
 
       const data = await response.json();
-
       if (!response.ok || !data.success) {
         throw new Error(
           data.message || "Admin login failed"
         );
       }
-
-      // Store admin authentication
       localStorage.setItem("adminToken", data.token);
       localStorage.setItem(
         "adminData",
         JSON.stringify(data.admin)
       );
-
-      // Go to admin dashboard
       navigate("/admin/dashboard");
     } catch (error) {
       console.error("Admin login error:", error);
@@ -55,7 +44,6 @@ const AdminLogin = () => {
       setLoading(false);
     }
   };
-
   return (
     <div
       style={{
@@ -111,7 +99,6 @@ const AdminLogin = () => {
             >
               Email
             </label>
-
             <input
               type="email"
               value={email}
@@ -129,7 +116,6 @@ const AdminLogin = () => {
               }}
             />
           </div>
-
           <div style={{ marginBottom: "20px" }}>
             <label
               style={{
@@ -141,7 +127,6 @@ const AdminLogin = () => {
             >
               Password
             </label>
-
             <input
               type="password"
               value={password}
@@ -159,7 +144,6 @@ const AdminLogin = () => {
               }}
             />
           </div>
-
           {error && (
             <div
               style={{
@@ -174,7 +158,6 @@ const AdminLogin = () => {
               {error}
             </div>
           )}
-
           <button
             type="submit"
             disabled={loading}
@@ -198,5 +181,4 @@ const AdminLogin = () => {
     </div>
   );
 };
-
 export default AdminLogin;
