@@ -42,9 +42,7 @@ const loginAdmin = async (req, res) => {
         role: "admin",
       },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
 
     return res.json({
@@ -90,15 +88,19 @@ const getAdminDashboard = async (req, res) => {
 };
 
 const getAllTherapists = async (req, res) => {
-   try {
+  try {
     const therapists = await Therapist.find({}).lean();
-    console.log("ADMIN THERAPIST DATA:",therapists.map((t) => ({
-    id: t._id,
-    name: t.name,
-    specializations: t.specializations,
-    languages: t.languages,
-  }))
-);
+
+    console.log(
+      "ADMIN THERAPIST DATA:",
+      therapists.map((t) => ({
+        id: t._id,
+        name: t.name,
+        specializations: t.specializations,
+        languages: t.languages,
+      }))
+    );
+
     const formattedTherapists = therapists.map((therapist) => ({
       _id: therapist._id,
       name: therapist.name || "",
@@ -127,7 +129,7 @@ const getAllTherapists = async (req, res) => {
       message: "Failed to fetch therapists",
     });
   }
-}
+};
 
 const getAllUsers = async (req, res) => {
   try {
@@ -200,14 +202,132 @@ const assignTherapistCode = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(
-      "Assign therapist code error:",
-      error
-    );
+    console.error("Assign therapist code error:", error);
 
     return res.status(500).json({
       success: false,
       message: "Failed to assign therapist code",
+    });
+  }
+};
+
+const createTherapist = async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      password,
+      slug,
+      bio,
+      specializations,
+      languages,
+    } = req.body || {};
+
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email and password are required",
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const existingTherapist = await Therapist.findOne({
+      email: normalizedEmail,
+    });
+
+    if (existingTherapist) {
+      return res.status(409).json({
+        success: false,
+        message: "Therapist with this email already exists",
+      });
+    }
+
+    const makeSlug = (value) => {
+      return value
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    };
+
+    const toArray = (value) => {
+      if (Array.isArray(value)) {
+        return value
+          .map((item) => item.toString().trim())
+          .filter(Boolean);
+      }
+
+      if (typeof value === "string") {
+        return value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      return [];
+    };
+
+    const baseSlug = makeSlug(slug || name);
+
+    if (!baseSlug) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid therapist name or slug is required",
+      });
+    }
+
+    let therapistSlug = baseSlug;
+
+    let slugExists = await Therapist.findOne({
+      slug: therapistSlug,
+    });
+
+    let counter = 2;
+
+    while (slugExists) {
+      therapistSlug = `${baseSlug}-${counter}`;
+
+      slugExists = await Therapist.findOne({
+        slug: therapistSlug,
+      });
+
+      counter++;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const therapist = await Therapist.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      password_hash: passwordHash,
+      slug: therapistSlug,
+      bio: bio ? bio.trim() : "",
+      specializations: toArray(specializations),
+      languages: toArray(languages),
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Therapist created successfully",
+      therapist: {
+        id: therapist._id,
+        name: therapist.name,
+        email: therapist.email,
+        slug: therapist.slug,
+        therapistCode: therapist.therapistCode || "",
+        bio: therapist.bio,
+        specializations: therapist.specializations,
+        languages: therapist.languages,
+      },
+    });
+  } catch (error) {
+    console.error("Create therapist error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create therapist",
     });
   }
 };
@@ -218,4 +338,5 @@ module.exports = {
   getAllTherapists,
   getAllUsers,
   assignTherapistCode,
+  createTherapist,
 };

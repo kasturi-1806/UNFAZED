@@ -477,7 +477,7 @@ function Chat() {
               handleSendMessage
             }
             style={{ display:"flex", gap:"10px",marginTop: "15px",borderTop: "1px solid #e5e5e5", paddingTop: "15px",}} >
-            <inputtype="text" value={ message} onChange={(e) =>setMessage( e.target.value ) }
+            <input type="text" value={ message} onChange={(e) =>setMessage( e.target.value ) }
               placeholder="Type a message..."
               disabled={
                 sending
