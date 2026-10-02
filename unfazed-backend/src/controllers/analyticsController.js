@@ -1,23 +1,11 @@
 const mongoose = require("mongoose");
-
 const Payment = require("../models/Payment");
 const Appointment = require("../models/Appointment");
 const Client = require("../models/Client");
-
 const { canAccess } = require("../services/entitlementService");
-
-// ==========================================
-// GET THERAPIST ANALYTICS
-// ==========================================
-
 const getTherapistAnalytics = async (req, res) => {
   try {
     const therapistId = req.user.id;
-
-    // ==========================================
-    // CHECK BASIC ANALYTICS ACCESS
-    // ==========================================
-
     const analyticsAccess = await canAccess(
       therapistId,
       "analytics"
@@ -30,11 +18,6 @@ const getTherapistAnalytics = async (req, res) => {
         feature: "analytics",
       });
     }
-
-    // ==========================================
-    // GET REQUESTED ANALYTICS DEPTH
-    // ==========================================
-
     const requestedDepth =
       req.query.depth || "basic";
 
@@ -49,11 +32,6 @@ const getTherapistAnalytics = async (req, res) => {
           "Analytics depth must be basic, standard or advanced.",
       });
     }
-
-    // ==========================================
-    // CHECK ANALYTICS DEPTH ENTITLEMENT
-    // ==========================================
-
     const depthAccess = await canAccess(
       therapistId,
       "analytics-depth",
@@ -71,10 +49,6 @@ const getTherapistAnalytics = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // DATE RANGE BASED ON PLAN
-    // ==========================================
-
     const monthsByDepth = {
       basic: 3,
       standard: 6,
@@ -90,16 +64,8 @@ const getTherapistAnalytics = async (req, res) => {
       startDate.getMonth() - months
     );
 
-    // ==========================================
-    // THERAPIST OBJECT ID
-    // ==========================================
-
     const therapistObjectId =
       new mongoose.Types.ObjectId(therapistId);
-
-    // ==========================================
-    // REVENUE TREND
-    // ==========================================
 
     const revenueTrend =
       await Payment.aggregate([
@@ -152,10 +118,6 @@ const getTherapistAnalytics = async (req, res) => {
         },
       ]);
 
-    // ==========================================
-    // ACTIVE CLIENT COUNT
-    // ==========================================
-
     const activeClientResult =
       await Client.aggregate([
         {
@@ -183,11 +145,6 @@ const getTherapistAnalytics = async (req, res) => {
 
     const activeClients =
       activeClientResult[0]?.activeClients || 0;
-
-    // ==========================================
-    // NO-SHOW RATE
-    // ==========================================
-
     const noShowResult =
       await Appointment.aggregate([
         {
@@ -254,24 +211,14 @@ const getTherapistAnalytics = async (req, res) => {
             ).toFixed(2)
           )
         : 0;
-
-    // ==========================================
-    // RESPONSE
-    // ==========================================
-
     return res.json({
       success: true,
-
       analytics: {
         depth: requestedDepth,
         periodMonths: months,
-
         revenueTrend,
-
         activeClients,
-
         noShowRate,
-
         sessionStats: {
           totalSessions,
           noShows,
@@ -283,7 +230,6 @@ const getTherapistAnalytics = async (req, res) => {
       "Get therapist analytics error:",
       error
     );
-
     return res.status(500).json({
       success: false,
       message: "Failed to fetch analytics",
