@@ -35,10 +35,6 @@ const therapistSchema = new mongoose.Schema(
       sparse: true,
       trim: true,
     },
-
-    // =========================================
-    // SUBSCRIPTION TIER
-    // =========================================
     subscriptionTier: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubscriptionTierConfig",
