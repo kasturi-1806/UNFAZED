@@ -2,31 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-
-
 function TherapistSessionNotes() {
   const [appointments, setAppointments] = useState([]);
   const [notes, setNotes] = useState([]);
-
   const [selectedAppointment, setSelectedAppointment] =
     useState("");
-
   const [title, setTitle] = useState("");
   const [sessionDate, setSessionDate] = useState("");
   const [noteType, setNoteType] = useState("private");
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
   const [editingNoteId, setEditingNoteId] = useState(null);
-
-  // ==========================================
-  // TIPTAP EDITOR
-  // ==========================================
-
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -38,16 +26,10 @@ function TherapistSessionNotes() {
       },
     },
   });
-
-  // ==========================================
-  // FETCH APPOINTMENTS + NOTES
-  // ==========================================
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-
         const [appointmentsResponse, notesResponse] =
           await Promise.all([
             fetch(
@@ -71,9 +53,7 @@ function TherapistSessionNotes() {
 
         const appointmentsData =
           await appointmentsResponse.json();
-
         const notesData = await notesResponse.json();
-
         if (!appointmentsResponse.ok) {
           throw new Error(
             appointmentsData.message ||
@@ -87,7 +67,6 @@ function TherapistSessionNotes() {
               "Failed to load session notes"
           );
         }
-
         setAppointments(
           appointmentsData.appointments || []
         );
@@ -108,29 +87,20 @@ function TherapistSessionNotes() {
     fetchData();
   }, []);
 
-  // ==========================================
-  // SELECT APPOINTMENT
-  // ==========================================
-
   const handleAppointmentChange = (e) => {
     const appointmentId = e.target.value;
-
     setSelectedAppointment(appointmentId);
     setMessage("");
     setError("");
-
     const appointment = appointments.find(
       (item) => item._id === appointmentId
     );
-
     if (appointment) {
       const appointmentDate = new Date(
         appointment.date
       );
-
       const year =
         appointmentDate.getFullYear();
-
       const month = String(
         appointmentDate.getMonth() + 1
       ).padStart(2, "0");
@@ -145,10 +115,6 @@ function TherapistSessionNotes() {
     }
   };
 
-  // ==========================================
-  // RESET FORM
-  // ==========================================
-
   const resetForm = () => {
     setSelectedAppointment("");
     setTitle("");
@@ -160,10 +126,6 @@ function TherapistSessionNotes() {
       editor.commands.setContent("");
     }
   };
-
-  // ==========================================
-  // SAVE / UPDATE NOTE
-  // ==========================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -181,12 +143,10 @@ function TherapistSessionNotes() {
       setError("Please select an appointment.");
       return;
     }
-
     if (!sessionDate) {
       setError("Please select a session date.");
       return;
     }
-
     if (editor.isEmpty) {
       setError("Please write the session note.");
       return;
@@ -272,11 +232,6 @@ function TherapistSessionNotes() {
       setSaving(false);
     }
   };
-
-  // ==========================================
-  // EDIT NOTE
-  // ==========================================
-
   const handleEdit = (note) => {
     setEditingNoteId(note._id);
 
@@ -321,10 +276,6 @@ function TherapistSessionNotes() {
     });
   };
 
-  // ==========================================
-  // DELETE NOTE
-  // ==========================================
-
   const handleDelete = async (noteId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this session note?"
@@ -348,7 +299,6 @@ function TherapistSessionNotes() {
       );
 
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(
           data.message ||
@@ -378,11 +328,6 @@ function TherapistSessionNotes() {
       setError(error.message);
     }
   };
-
-  // ==========================================
-  // FORMAT DATE
-  // ==========================================
-
   const formatDate = (date) => {
     if (!date) {
       return "";
@@ -397,11 +342,6 @@ function TherapistSessionNotes() {
       }
     );
   };
-
-  // ==========================================
-  // CLEAN HTML FOR NOTE PREVIEW
-  // ==========================================
-
   const getPreviewText = (html) => {
     const temporaryElement =
       document.createElement("div");
@@ -427,18 +367,13 @@ function TherapistSessionNotes() {
 
   return (
     <div className="dashboard-page">
-      {/* ==========================================
-          HEADER
-      ========================================== */}
-
+    
       <div className="dashboard-header">
         <div>
           <p className="section-label">
             UNFAZED
           </p>
-
           <h1>Session Notes</h1>
-
           <p>
             Create and manage clinical session
             documentation.
@@ -452,11 +387,6 @@ function TherapistSessionNotes() {
           Back to Dashboard
         </Link>
       </div>
-
-      {/* ==========================================
-          MESSAGE
-      ========================================== */}
-
       {message && (
         <div className="session-note-message success">
           {message}
@@ -468,11 +398,6 @@ function TherapistSessionNotes() {
           {error}
         </div>
       )}
-
-      {/* ==========================================
-          NOTE FORM
-      ========================================== */}
-
       <div className="session-note-editor-card">
         <div className="session-note-editor-header">
           <div>
@@ -501,8 +426,6 @@ function TherapistSessionNotes() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* CLIENT / APPOINTMENT */}
-
           <div className="session-note-form-grid">
             <div className="session-note-field">
               <label>
@@ -554,8 +477,6 @@ function TherapistSessionNotes() {
             </div>
           </div>
 
-          {/* TITLE / TYPE */}
-
           <div className="session-note-form-grid">
             <div className="session-note-field">
               <label>
@@ -593,8 +514,6 @@ function TherapistSessionNotes() {
               </select>
             </div>
           </div>
-
-          {/* TIPTAP TOOLBAR */}
 
           <div className="session-note-field">
             <label>
@@ -734,8 +653,6 @@ function TherapistSessionNotes() {
             </div>
           </div>
 
-          {/* ACTIONS */}
-
           <div className="session-note-actions">
             <button
               type="submit"
@@ -761,11 +678,6 @@ function TherapistSessionNotes() {
           </div>
         </form>
       </div>
-
-      {/* ==========================================
-          EXISTING NOTES
-      ========================================== */}
-
       <div className="session-notes-section">
         <div className="section-heading">
           <div>
@@ -849,6 +761,4 @@ function TherapistSessionNotes() {
     </div>
   );
 }
-
 export default TherapistSessionNotes;
-
