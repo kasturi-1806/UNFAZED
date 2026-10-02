@@ -1,17 +1,9 @@
-
 const IntakeForm = require("../models/IntakeForm");
 const Client = require("../models/Client");
 
-// =========================
-// CREATE / UPDATE INTAKE FORM
-// =========================
 const saveIntakeForm = async (req, res) => {
   try {
-    // IMPORTANT:
-    // User ID comes from the verified JWT.
-    // We do NOT trust userId from frontend.
     const userId = req.user.id || req.user._id;
-
     const {
       therapistId,
       fullName,
@@ -27,9 +19,6 @@ const saveIntakeForm = async (req, res) => {
       emergencyContactPhone,
     } = req.body;
 
-    // =========================
-    // REQUIRED FIELDS
-    // =========================
     if (!therapistId || !fullName || !fullName.trim()) {
       return res.status(400).json({
         success: false,
@@ -38,9 +27,6 @@ const saveIntakeForm = async (req, res) => {
       });
     }
 
-    // =========================
-    // NAME VALIDATION
-    // =========================
     const nameRegex = /^[A-Za-z\s.'-]+$/;
 
     if (!nameRegex.test(fullName.trim())) {
@@ -61,10 +47,6 @@ const saveIntakeForm = async (req, res) => {
           "Emergency contact name can contain only letters, spaces, apostrophes, dots, and hyphens.",
       });
     }
-
-    // =========================
-    // PHONE VALIDATION
-    // =========================
     const indianMobileRegex =
       /^\+91[6-9]\d{9}$/;
 
@@ -89,9 +71,6 @@ const saveIntakeForm = async (req, res) => {
       });
     }
 
-    // =========================
-    // CHECK PATIENT CONNECTION
-    // =========================
     const client = await Client.findOne({
       therapist: therapistId,
       user: userId,
@@ -105,9 +84,6 @@ const saveIntakeForm = async (req, res) => {
       });
     }
 
-    // =========================
-    // CREATE / UPDATE INTAKE
-    // =========================
     const intakeForm =
       await IntakeForm.findOneAndUpdate(
         {
@@ -155,23 +131,15 @@ const saveIntakeForm = async (req, res) => {
   }
 };
 
-// =========================
-// GET INTAKE FORM FOR PATIENT
-// =========================
 const getPatientIntakeForm = async (
   req,
   res
 ) => {
   try {
-    // Therapist ID comes from JWT
+
     const therapistId =
       req.user.id || req.user._id;
-
     const { userId } = req.params;
-
-    // =========================
-    // CHECK PATIENT CONNECTION
-    // =========================
     const client = await Client.findOne({
       therapist: therapistId,
       user: userId,
@@ -185,9 +153,6 @@ const getPatientIntakeForm = async (
       });
     }
 
-    // =========================
-    // FIND INTAKE FORM
-    // =========================
     const intakeForm =
       await IntakeForm.findOne({
         therapist: therapistId,
@@ -217,9 +182,7 @@ const getPatientIntakeForm = async (
     });
   }
 };
-
 module.exports = {
   saveIntakeForm,
   getPatientIntakeForm,
 };
-
