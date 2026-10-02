@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 function Sessions() {
   const [sessions, setSessions] = useState([]);
   const [notes, setNotes] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [notesLoading, setNotesLoading] = useState(true);
-
   const [error, setError] = useState("");
   const [notesError, setNotesError] = useState("");
-
   useEffect(() => {
     const fetchSessions = async () => {
       try {
         const token = localStorage.getItem("token");
-
         const response = await fetch(
           "http://localhost:5000/api/appointments/user",
           {
@@ -24,9 +19,7 @@ function Sessions() {
             },
           }
         );
-
         const data = await response.json();
-
         if (!response.ok) {
           throw new Error(data.message || "Failed to load sessions");
         }
@@ -58,7 +51,6 @@ function Sessions() {
         );
 
         const data = await response.json();
-
         if (!response.ok) {
           throw new Error(
             data.message || "Failed to load shared notes"
@@ -78,7 +70,6 @@ function Sessions() {
   }, []);
 
   const today = new Date();
-
   const upcomingSessions = sessions.filter(
     (session) => new Date(session.date) >= today
   );
@@ -89,14 +80,10 @@ function Sessions() {
 
   return (
     <div className="my-sessions-page">
-
-      {/* HEADER */}
       <div className="my-sessions-header">
         <div>
           <span className="my-sessions-label">UNFAZED</span>
-
           <h1>My Sessions</h1>
-
           <p>
             Your appointments and shared session notes, all in one place.
           </p>
@@ -106,44 +93,33 @@ function Sessions() {
           ← Dashboard
         </Link>
       </div>
-
-      {/* LOADING */}
       {loading && (
         <div className="my-sessions-message">
           <div className="my-sessions-loading"></div>
           <p>Loading your sessions...</p>
         </div>
       )}
-
-      {/* ERROR */}
       {!loading && error && (
         <div className="my-sessions-message my-sessions-error">
           <h3>Unable to load sessions</h3>
           <p>{error}</p>
         </div>
       )}
-
-      {/* UPCOMING */}
       {!loading && !error && (
         <section className="my-sessions-section">
-
           <div className="my-sessions-section-heading">
             <div>
               <h2>Upcoming Sessions</h2>
               <p>Your scheduled appointments</p>
             </div>
-
             <span className="my-sessions-count">
               {upcomingSessions.length}
             </span>
           </div>
-
           {upcomingSessions.length === 0 ? (
             <div className="my-sessions-empty">
               <div className="my-sessions-empty-icon">📅</div>
-
               <h3>No upcoming sessions</h3>
-
               <p>
                 You don't have any scheduled sessions yet.
               </p>
@@ -208,8 +184,6 @@ function Sessions() {
           )}
         </section>
       )}
-
-      {/* PAST */}
       {!loading &&
         !error &&
         pastSessions.length > 0 && (
@@ -277,7 +251,6 @@ function Sessions() {
           </section>
         )}
 
-      {/* SHARED NOTES */}
       <section className="my-sessions-notes">
 
         <div className="my-sessions-section-heading">
@@ -285,18 +258,15 @@ function Sessions() {
             <h2>Shared Session Notes</h2>
             <p>Notes your therapist has shared with you</p>
           </div>
-
           <span className="my-sessions-count">
             {notes.length}
           </span>
         </div>
-
         {notesLoading && (
           <div className="my-sessions-notes-message">
             Loading shared notes...
           </div>
         )}
-
         {!notesLoading && notesError && (
           <div className="my-sessions-notes-message">
             {notesError}
@@ -359,5 +329,4 @@ function Sessions() {
     </div>
   );
 }
-
 export default Sessions;
