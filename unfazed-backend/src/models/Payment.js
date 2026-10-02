@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const paymentSchema = new mongoose.Schema(
   {
     user: {
@@ -14,14 +13,12 @@ const paymentSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Used for normal appointment payments
     appointment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Appointment",
       default: null,
     },
 
-    // Used for package payments
     clientPackage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ClientPackage",
