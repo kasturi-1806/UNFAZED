@@ -1,5 +1,4 @@
 const express = require("express");
-
 const {
   demoPayment,
   createRazorpayOrder,
@@ -8,24 +7,13 @@ const {
   getMyPayments,
   downloadInvoice,
 } = require("../controllers/paymentController");
-
 const authMiddleware = require("../middleware/authMiddleware");
-
 const router = express.Router();
-
-// ==========================================
-// DEMO PAYMENT
-// ==========================================
-
 router.post(
   "/demo",
   authMiddleware,
   demoPayment
 );
-
-// ==========================================
-// RAZORPAY ORDER
-// ==========================================
 
 router.post(
   "/razorpay/order",
@@ -33,41 +21,22 @@ router.post(
   createRazorpayOrder
 );
 
-// ==========================================
-// RAZORPAY PAYMENT VERIFICATION
-// ==========================================
-
 router.post(
   "/razorpay/verify",
   authMiddleware,
   verifyRazorpayPayment
 );
 
-// ==========================================
-// RAZORPAY WEBHOOK
-// IMPORTANT: No authMiddleware here
-// Razorpay calls this endpoint directly
-// ==========================================
-
 router.post(
   "/razorpay/webhook",
   razorpayWebhook
 );
-
-// ==========================================
-// PAYMENT HISTORY
-// ==========================================
 
 router.get(
   "/my",
   authMiddleware,
   getMyPayments
 );
-
-// ==========================================
-// DOWNLOAD INVOICE
-// ==========================================
-
 router.get(
   "/invoice/:fileName",
   authMiddleware,
