@@ -1,12 +1,7 @@
 const Package = require("../models/Package");
-
-// ==========================================
-// CREATE PACKAGE
-// ==========================================
 const createPackage = async (req, res) => {
   try {
     const therapistId = req.user.id;
-
     const {
       name,
       sessions,
@@ -77,13 +72,9 @@ const createPackage = async (req, res) => {
   }
 };
 
-// ==========================================
-// GET MY PACKAGES
-// ==========================================
 const getMyPackages = async (req, res) => {
   try {
     const therapistId = req.user.id;
-
     const packages = await Package.find({
       therapist: therapistId,
     }).sort({
@@ -96,21 +87,15 @@ const getMyPackages = async (req, res) => {
     });
   } catch (error) {
     console.error("Get packages error:", error);
-
     return res.status(500).json({
       success: false,
       message: "Failed to fetch packages",
     });
   }
 };
-
-// ==========================================
-// GET PUBLIC THERAPIST PACKAGES
-// ==========================================
 const getTherapistPackages = async (req, res) => {
   try {
     const { therapistId } = req.params;
-
     const packages = await Package.find({
       therapist: therapistId,
       isActive: true,
@@ -134,10 +119,6 @@ const getTherapistPackages = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// UPDATE PACKAGE
-// ==========================================
 const updatePackage = async (req, res) => {
   try {
     const therapistId = req.user.id;
@@ -228,15 +209,10 @@ const updatePackage = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// DELETE PACKAGE
-// ==========================================
 const deletePackage = async (req, res) => {
   try {
     const therapistId = req.user.id;
     const { packageId } = req.params;
-
     const packageItem = await Package.findOneAndDelete({
       _id: packageId,
       therapist: therapistId,
