@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
-
 const AdminUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
+const [users, setUsers] = useState([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("adminToken");
-
         if (!token) {
           window.location.href = "/admin/login";
           return;
         }
-
         const response = await fetch(
           "http://localhost:5000/api/admin/users",
           {
@@ -24,19 +20,15 @@ const AdminUsers = () => {
             },
           }
         );
-
         const data = await response.json();
-
         if (!response.ok || !data.success) {
           throw new Error(
             data.message || "Failed to fetch users"
           );
         }
-
         setUsers(data.users || []);
       } catch (error) {
         console.error("Admin users error:", error);
-
         setError(
           error.message || "Failed to load users"
         );
@@ -44,10 +36,8 @@ const AdminUsers = () => {
         setLoading(false);
       }
     };
-
     fetchUsers();
   }, []);
-
   return (
     <div
       style={{
@@ -64,7 +54,6 @@ const AdminUsers = () => {
           margin: "0 auto",
         }}
       >
-        {/* Header */}
         <div
           style={{
             display: "flex",
@@ -112,8 +101,6 @@ const AdminUsers = () => {
             Back to Dashboard
           </button>
         </div>
-
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -127,8 +114,6 @@ const AdminUsers = () => {
             {error}
           </div>
         )}
-
-        {/* Loading */}
         {loading && (
           <div
             style={{
@@ -142,8 +127,6 @@ const AdminUsers = () => {
             Loading users...
           </div>
         )}
-
-        {/* Empty */}
         {!loading &&
           !error &&
           users.length === 0 && (
@@ -160,8 +143,6 @@ const AdminUsers = () => {
               No users found.
             </div>
           )}
-
-        {/* Users table */}
         {!loading &&
           !error &&
           users.length > 0 && (
@@ -252,7 +233,6 @@ const AdminUsers = () => {
     </div>
   );
 };
-
 const headerStyle = {
   textAlign: "left",
   padding: "15px",
@@ -261,7 +241,6 @@ const headerStyle = {
   color: "#203d35",
   whiteSpace: "nowrap",
 };
-
 const cellStyle = {
   padding: "15px",
   borderTop: "1px solid #dfeae3",
@@ -269,5 +248,4 @@ const cellStyle = {
   color: "#315f51",
   verticalAlign: "top",
 };
-
 export default AdminUsers;
