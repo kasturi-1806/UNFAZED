@@ -1,12 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 const User = require("../models/User");
 const Therapist = require("../models/Therapist");
 
-// =========================
-// USER REGISTER
-// =========================
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -54,9 +50,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// =========================
-// USER LOGIN
-// =========================
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -117,9 +110,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-// =========================
-// THERAPIST REGISTER
-// =========================
 const registerTherapist = async (req, res) => {
   try {
     console.log("REQUEST BODY:", req.body);
@@ -194,7 +184,6 @@ const loginTherapist = async (req, res) => {
       password,
     } = req.body || {};
 
-    // Therapist code is required
     if (!therapistCode || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -203,7 +192,6 @@ const loginTherapist = async (req, res) => {
       });
     }
 
-    // Find therapist using email
     const therapist = await Therapist.findOne({
       email: email.toLowerCase().trim(),
     });
@@ -215,7 +203,6 @@ const loginTherapist = async (req, res) => {
       });
     }
 
-    // Verify therapist code
     const enteredCode = therapistCode
       .trim()
       .toUpperCase();
@@ -231,7 +218,6 @@ const loginTherapist = async (req, res) => {
       });
     }
 
-    // Verify password
     const isMatch = await bcrypt.compare(
       password,
       therapist.password_hash
@@ -244,7 +230,6 @@ const loginTherapist = async (req, res) => {
       });
     }
 
-    // Create therapist JWT
     const token = jwt.sign(
       {
         id: therapist._id,
@@ -276,14 +261,12 @@ const loginTherapist = async (req, res) => {
       "Therapist login error:",
       error
     );
-
     res.status(500).json({
       success: false,
       message: "Server error",
     });
   }
 };
-
 module.exports = {
   registerUser,
   loginUser,
