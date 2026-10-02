@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -31,104 +30,82 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         <Route
           path="/therapists"
           element={<Therapists />}
         />
-
         <Route
           path="/therapists/:slug"
           element={<TherapistProfile />}
         />
-
         <Route
           path="/user-dashboard"
           element={<UserDashboard />}
         />
-
         <Route
           path="/therapist-dashboard"
           element={<TherapistDashboard />}
         />
-
         <Route
           path="/sessions"
           element={<Sessions />}
         />
-
         <Route
           path="/profile"
           element={<Profile />}
         />
-
         <Route
           path="/appointments"
           element={<Appointments />}
         />
-
         <Route
           path="/patients"
           element={<Patients />}
         />
-
         <Route
           path="/patients/:patientId"
           element={<PatientProfile />}
         />
-
         <Route
           path="/availability"
           element={<Availability />}
         />
-
         <Route
           path="/book-session/:slug"
           element={<Booking />}
         />
-
         <Route
           path="/session-notes"
           element={<TherapistSessionNotes />}
         />
-
         <Route
           path="/user-profile"
           element={<UserProfile />}
         />
-
         <Route
           path="/intake-form"
           element={<IntakeForm />}
         />
-
         <Route
           path="/packages"
           element={<Packages />}
         />
-
-        {/* Chat */}
         <Route
           path="/chat/:otherUserRole/:otherUserId"
           element={<Chat />}
         />
-
-        {/* Admin */}
         <Route
           path="/admin/login"
           element={<AdminLogin />}
         />
-
         <Route
           path="/admin/dashboard"
           element={<AdminDashboard />}
         />
-
         <Route
           path="/admin/users"
           element={<AdminUsers />}
         />
-
         <Route
           path="/admin/therapists"
           element={<AdminTherapists />}
@@ -141,5 +118,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;
