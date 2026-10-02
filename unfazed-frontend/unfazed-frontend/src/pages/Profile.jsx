@@ -1,7 +1,5 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-
 function Profile() {
   const [profile, setProfile] = useState({
     name: "",
@@ -15,28 +13,20 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-
   const [specializationInput, setSpecializationInput] =
     useState("");
 
   const [languageInput, setLanguageInput] =
     useState("");
-
-  // =========================================
-  // LOAD PROFILE
-  // =========================================
   useEffect(() => {
     const loadProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-
         if (!token) {
           console.error("No token found");
           return;
         }
-
         const storedUser = localStorage.getItem("user");
-
         let currentUser = null;
 
         if (storedUser) {
@@ -99,13 +89,9 @@ function Profile() {
         setLoading(false);
       }
     };
-
     loadProfile();
   }, []);
 
-  // =========================================
-  // INPUT CHANGE
-  // =========================================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -114,10 +100,6 @@ function Profile() {
       [name]: value,
     }));
   };
-
-  // =========================================
-  // ADD SPECIALIZATION
-  // =========================================
   const addSpecialization = () => {
     const value = specializationInput.trim();
 
@@ -144,9 +126,6 @@ function Profile() {
     setSpecializationInput("");
   };
 
-  // =========================================
-  // REMOVE SPECIALIZATION
-  // =========================================
   const removeSpecialization = (index) => {
     setProfile((prev) => ({
       ...prev,
@@ -157,24 +136,17 @@ function Profile() {
     }));
   };
 
-  // =========================================
-  // ADD LANGUAGE
-  // =========================================
   const addLanguage = () => {
     const value = languageInput.trim();
-
     if (!value) return;
-
     const exists = profile.languages.some(
       (item) =>
         item.toLowerCase() === value.toLowerCase()
     );
-
     if (exists) {
       setLanguageInput("");
       return;
     }
-
     setProfile((prev) => ({
       ...prev,
       languages: [
@@ -186,9 +158,6 @@ function Profile() {
     setLanguageInput("");
   };
 
-  // =========================================
-  // REMOVE LANGUAGE
-  // =========================================
   const removeLanguage = (index) => {
     setProfile((prev) => ({
       ...prev,
@@ -198,12 +167,8 @@ function Profile() {
     }));
   };
 
-  // =========================================
-  // PROFILE COMPLETION
-  // =========================================
   const completion = useMemo(() => {
     let completed = 0;
-
     if (profile.name.trim()) completed++;
     if (profile.bio.trim()) completed++;
     if (profile.specializations.length > 0)
@@ -215,13 +180,9 @@ function Profile() {
     return Math.round((completed / 5) * 100);
   }, [profile]);
 
-  // =========================================
-  // SAVE PROFILE
-  // =========================================
   const handleSave = async () => {
     try {
       setSaving(true);
-
       const token = localStorage.getItem("token");
       if (!profile.name.trim()) {
         alert("Your name is required before saving.");
@@ -248,9 +209,7 @@ function Profile() {
           }),
         }
       );
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(
           data.message || "Failed to update profile"
@@ -304,16 +263,10 @@ function Profile() {
     }
   };
 
-  // =========================================
-  // CANCEL EDITING
-  // =========================================
   const handleCancel = () => {
     window.location.reload();
   };
 
-  // =========================================
-  // LOADING
-  // =========================================
   if (loading) {
     return (
       <div className="profile-loading">
@@ -325,45 +278,24 @@ function Profile() {
 
   return (
     <div className="therapist-profile-page">
-
-      {/* =====================================
-          PAGE HEADER
-      ====================================== */}
       <header className="profile-header">
-
         <div className="profile-header-text">
-
           <span className="profile-eyebrow">
             THERAPIST WORKSPACE
           </span>
-
           <h1>My Profile</h1>
-
           <p>
             Manage the professional information
             patients see when they visit your
             profile.
           </p>
-
         </div>
-
         <Link
           to="/therapist-dashboard"
-          className="back-dashboard-btn"
-        >
-          ← Dashboard
-        </Link>
-
+          className="back-dashboard-btn" > ← Dashboard</Link>
       </header>
-
-
-      {/* =====================================
-          PROFILE HERO
-      ====================================== */}
       <section className="profile-hero">
-
         <div className="profile-identity">
-
           <div className="profile-avatar-large">
             {profile.name
               ? profile.name
@@ -373,7 +305,6 @@ function Profile() {
           </div>
 
           <div className="profile-hero-info">
-
             {editing ? (
               <input
                 type="text"
@@ -453,53 +384,30 @@ function Profile() {
         </div>
 
       </section>
-
-
-      {/* =====================================
-          MAIN CONTENT
-      ====================================== */}
       <main className="profile-content">
-
-        {/* =====================================
-            TOP GRID
-        ====================================== */}
         <div className="profile-top-grid">
-
-          {/* PROFESSIONAL INFORMATION */}
           <section className="profile-card professional-card">
-
             <div className="profile-card-heading">
-
               <div>
-
                 <span className="card-eyebrow">
                   PROFESSIONAL
                 </span>
-
                 <h2>
                   Professional Information
                 </h2>
-
                 <p>
                   Information patients use to
                   understand your professional
                   background.
                 </p>
-
               </div>
-
             </div>
 
-
             <div className="profile-fields">
-
-              {/* NAME */}
               <div className="profile-field">
-
                 <label>
                   Full Name
                 </label>
-
                 {editing ? (
                   <input
                     type="text"
@@ -516,9 +424,6 @@ function Profile() {
                 )}
 
               </div>
-
-
-              {/* EMAIL */}
               <div className="profile-field">
 
                 <label>
@@ -529,21 +434,15 @@ function Profile() {
                   {profile.email ||
                     "Not available"}
                 </div>
-
                 <small>
                   Linked to your therapist account
                 </small>
-
               </div>
-
-
-              {/* BIO */}
               <div className="profile-field profile-field-full">
 
                 <label>
                   Professional Bio
                 </label>
-
                 {editing ? (
                   <textarea
                     name="bio"
@@ -560,19 +459,12 @@ function Profile() {
                 )}
 
               </div>
-
             </div>
-
           </section>
 
-
-          {/* PROFILE STATUS */}
           <aside className="profile-card profile-status-card">
-
             <div className="status-card-top">
-
               <div>
-
                 <span className="card-eyebrow">
                   PROFILE STATUS
                 </span>
@@ -582,16 +474,11 @@ function Profile() {
                 </h2>
 
               </div>
-
               <div className="completion-number">
                 {completion}%
               </div>
-
             </div>
-
-
             <div className="completion-track">
-
               <div
                 className="completion-progress"
                 style={{
@@ -626,8 +513,6 @@ function Profile() {
 
                 Professional name
               </div>
-
-
               <div
                 className={
                   profile.bio
@@ -640,11 +525,8 @@ function Profile() {
                     ? "✓"
                     : "○"}
                 </span>
-
                 Professional bio
               </div>
-
-
               <div
                 className={
                   profile.specializations.length
@@ -677,62 +559,37 @@ function Profile() {
 
                 Languages
               </div>
-
             </div>
-
           </aside>
-
         </div>
-
-
-        {/* =====================================
-            EXPERTISE + LANGUAGES
-        ====================================== */}
         <div className="profile-two-card-grid">
-
-          {/* SPECIALIZATIONS */}
           <section className="profile-card">
-
             <div className="profile-card-heading">
-
               <div>
-
                 <span className="card-eyebrow">
                   EXPERTISE
                 </span>
-
                 <h2>
                   Specializations
                 </h2>
-
                 <p>
                   Areas of practice patients can
                   book you for.
                 </p>
-
               </div>
 
               <span className="section-count">
                 {profile.specializations.length}
               </span>
-
             </div>
-
-
             <div className="tag-list">
-
               {profile.specializations.length > 0 ? (
                 profile.specializations.map(
                   (item, index) => (
                     <div
                       className="profile-tag"
-                      key={`${item}-${index}`}
-                    >
-
-                      <span>
-                        {item}
-                      </span>
-
+                      key={`${item}-${index}`} >
+                      <span> {item} </span>
                       {editing && (
                         <button
                           type="button"
@@ -751,20 +608,12 @@ function Profile() {
                   )
                 )
               ) : (
-                <p className="empty-profile-text">
-                  No specializations added yet.
-                </p>
+                <p className="empty-profile-text">No specializations added yet.</p>
               )}
-
             </div>
-
-
             {editing && (
               <div className="add-tag-row">
-
-                <input
-                  type="text"
-                  value={specializationInput}
+                <input type="text"value={specializationInput}
                   onChange={(e) =>
                     setSpecializationInput(
                       e.target.value
@@ -778,63 +627,40 @@ function Profile() {
                   }}
                   placeholder="e.g. Anxiety"
                 />
-
                 <button
                   type="button"
-                  onClick={addSpecialization}
-                >
-                  + Add
-                </button>
-
+                  onClick={addSpecialization}>+ Add</button>
               </div>
             )}
-
           </section>
-
-
-          {/* LANGUAGES */}
+          
           <section className="profile-card">
-
             <div className="profile-card-heading">
-
               <div>
-
                 <span className="card-eyebrow">
                   COMMUNICATION
                 </span>
-
                 <h2>
                   Languages
                 </h2>
-
                 <p>
                   Languages you can use during
                   appointments.
                 </p>
-
               </div>
-
               <span className="section-count">
                 {profile.languages.length}
               </span>
-
             </div>
 
-
             <div className="tag-list">
-
               {profile.languages.length > 0 ? (
                 profile.languages.map(
                   (item, index) => (
                     <div
                       className="profile-tag"
-                      key={`${item}-${index}`}
-                    >
-
-                      <span>
-                        {item}
-                      </span>
-
+                      key={`${item}-${index}`} >
+                      <span> {item}  </span>
                       {editing && (
                         <button
                           type="button"
@@ -855,16 +681,11 @@ function Profile() {
                   No languages added yet.
                 </p>
               )}
-
             </div>
-
 
             {editing && (
               <div className="add-tag-row">
-
-                <input
-                  type="text"
-                  value={languageInput}
+                <input type="text"value={languageInput}
                   onChange={(e) =>
                     setLanguageInput(
                       e.target.value
@@ -885,53 +706,28 @@ function Profile() {
                 >
                   + Add
                 </button>
-
               </div>
             )}
-
           </section>
-
         </div>
-
-
-        {/* =====================================
-            PRACTICE MANAGEMENT
-        ====================================== */}
         <section className="profile-card practice-card">
 
           <div className="profile-card-heading">
-
             <div>
-
-              <span className="card-eyebrow">
-                PRACTICE MANAGEMENT
-              </span>
-
-              <h2>
-                Manage Your Practice
-              </h2>
-
+              <span className="card-eyebrow">PRACTICE MANAGEMENT  </span>
+              <h2>Manage Your Practice </h2>
               <p>
                 Quickly access the tools you use
                 to manage your practice.
               </p>
-
             </div>
-
           </div>
 
-
           <div className="practice-settings">
-
             <Link
               to="/availability"
-              className="practice-setting"
-            >
-
-              <div className="practice-setting-icon">
-                ◷
-              </div>
-
+              className="practice-setting">
+              <div className="practice-setting-icon">◷ </div>
               <div className="practice-setting-content">
 
                 <h3>
@@ -944,70 +740,41 @@ function Profile() {
                 </p>
 
               </div>
-
-              <span className="practice-setting-arrow">
-                →
-              </span>
-
+              <span className="practice-setting-arrow"> →</span>
             </Link>
-
 
             <Link
               to="/appointments"
-              className="practice-setting"
-            >
+              className="practice-setting">
 
-              <div className="practice-setting-icon">
-                ▣
-              </div>
-
+              <div className="practice-setting-icon"> ▣ </div>
               <div className="practice-setting-content">
-
-                <h3>
-                  Appointments
-                </h3>
-
+                <h3> Appointments</h3>
                 <p>
                   Review booking requests and
                   manage patient appointments.
                 </p>
-
               </div>
-
-              <span className="practice-setting-arrow">
-                →
-              </span>
+              <span className="practice-setting-arrow">→ </span>
 
             </Link>
 
           </div>
-
         </section>
-
-
-        {/* =====================================
-            PUBLIC PROFILE
-        ====================================== */}
         <section className="profile-card public-profile-card">
-
           <div className="public-profile-info">
-
             <span className="card-eyebrow">
               PATIENT VIEW
             </span>
-
             <h2>
               Your Public Profile
             </h2>
-
             <p>
               See exactly what patients can view
               before they book an appointment
               with you.
             </p>
-
           </div>
-
 
           <Link
             to={
@@ -1020,14 +787,9 @@ function Profile() {
             View Public Profile
             <span>→</span>
           </Link>
-
         </section>
-
       </main>
-
     </div>
   );
 }
-
 export default Profile;
-
