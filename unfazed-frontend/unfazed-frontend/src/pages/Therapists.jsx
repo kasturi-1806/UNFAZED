@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../App.css";
-
 function Therapists() {
   const [therapists, setTherapists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   useEffect(() => {
     const fetchTherapists = async () => {
       try {
         const response = await fetch(
           "http://localhost:5000/api/therapists"
         );
-
         const data = await response.json();
-
         if (!response.ok) {
           throw new Error(
             data.message || "Failed to load therapists"
@@ -106,32 +102,22 @@ function Therapists() {
               therapist.specializations.length > 0
                 ? therapist.specializations[0]
                 : "Mental Health Therapist"}
-
             </p>
-
             <p className="experience">
-
               {therapist.bio
                 ? therapist.bio
                 : "Professional mental health support"}
-
             </p>
-
             <Link
               to={`/therapists/${therapist.slug}`}
               className="profile-btn"
             >
               View Profile
             </Link>
-
           </div>
-
         ))}
-
       </div>
-
     </div>
   );
 }
-
 export default Therapists;
