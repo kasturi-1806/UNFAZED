@@ -1,6 +1,4 @@
-
 const mongoose = require("mongoose");
-
 const clientSchema = new mongoose.Schema(
   {
     therapist: {
@@ -42,7 +40,6 @@ const clientSchema = new mongoose.Schema(
   }
 );
 
-// A user should have only one client record for the same therapist.
 clientSchema.index(
   { therapist: 1, user: 1 },
   { unique: true }
