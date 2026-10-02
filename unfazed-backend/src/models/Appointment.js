@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const appointmentSchema = new mongoose.Schema(
   {
     user: {
@@ -13,10 +12,6 @@ const appointmentSchema = new mongoose.Schema(
       ref: "Therapist",
       required: true,
     },
-
-    // ==========================================
-    // CLIENT PACKAGE USED FOR THIS APPOINTMENT
-    // ==========================================
     clientPackage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ClientPackage",
@@ -65,10 +60,6 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-
-    // =========================
-    // PAYMENT DETAILS
-    // =========================
 
     paymentStatus: {
       type: String,
