@@ -4,9 +4,7 @@ const Client = require("../models/Client");
 const ClientPackage = require("../models/ClientPackage");
 const Notification = require("../models/Notification");
 const { canAccess } = require("../services/entitlementService");
-// =========================
-// CREATE APPOINTMENT
-// =========================
+
 const createAppointment = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -20,20 +18,12 @@ const createAppointment = async (req, res) => {
       clientPackageId,
     } = req.body;
 
-    // ==========================================
-    // BASIC VALIDATION
-    // ==========================================
-
     if (!therapistId || !date || !time) {
       return res.status(400).json({
         success: false,
         message: "Therapist, date and time are required",
       });
     }
-
-    // ==========================================
-    // FIND THERAPIST
-    // ==========================================
 
     const therapist = await Therapist.findById(
       therapistId
@@ -45,9 +35,6 @@ const createAppointment = async (req, res) => {
         message: "Therapist not found",
       });
     }
-// ==========================================
-// CHECK ACTIVE CLIENT SUBSCRIPTION LIMIT
-// ==========================================
 
 const existingClient = await Client.findOne({
   therapist: therapistId,
@@ -75,10 +62,6 @@ if (!existingClient) {
     });
   }
 }
-    // ==========================================
-    // FIND AND VALIDATE CLIENT PACKAGE
-    // ==========================================
-
     let clientPackage = null;
 
     if (clientPackageId) {
@@ -90,7 +73,6 @@ if (!existingClient) {
         status: "active",
       });
 
-      // Package not found
       if (!clientPackage) {
         return res.status(400).json({
           success: false,
@@ -98,10 +80,6 @@ if (!existingClient) {
             "Invalid or inactive package. Please select a valid paid package.",
         });
       }
-
-      // ==========================================
-      // CHECK PACKAGE EXPIRY
-      // ==========================================
 
       if (
         clientPackage.expiryDate &&
@@ -118,10 +96,6 @@ if (!existingClient) {
         });
       }
 
-      // ==========================================
-      // CHECK REMAINING SESSIONS
-      // ==========================================
-
       if (clientPackage.sessionsRemaining <= 0) {
         clientPackage.status = "completed";
 
@@ -135,15 +109,9 @@ if (!existingClient) {
       }
     }
 
-    // ==========================================
-    // CREATE APPOINTMENT
-    // ==========================================
-
     const appointment = await Appointment.create({
       user: userId,
       therapist: therapistId,
-
-      // Save package used for this appointment
       clientPackage: clientPackage
         ? clientPackage._id
         : null,
@@ -154,27 +122,15 @@ if (!existingClient) {
       notes: notes || "",
       status: "pending",
     });
-
-    // ==========================================
-    // DEDUCT ONE PACKAGE SESSION
-    // ==========================================
-
     if (clientPackage) {
       clientPackage.sessionsRemaining -= 1;
 
-      // If no sessions are left,
-      // mark package as completed
       if (clientPackage.sessionsRemaining === 0) {
         clientPackage.status = "completed";
       }
 
       await clientPackage.save();
     }
-
-    // ==========================================
-    // CREATE CLIENT
-    // ==========================================
-
     await Client.findOneAndUpdate(
       {
         therapist: therapistId,
@@ -192,10 +148,6 @@ if (!existingClient) {
       }
     );
 
-    // ==========================================
-    // NOTIFY THERAPIST
-    // ==========================================
-
     await Notification.create({
       recipient: therapistId,
       type: "appointment-booked",
@@ -204,9 +156,6 @@ if (!existingClient) {
       appointment: appointment._id,
     });
 
-    // ==========================================
-    // GET POPULATED APPOINTMENT
-    // ==========================================
 
     const populatedAppointment =
       await Appointment.findById(
@@ -218,11 +167,6 @@ if (!existingClient) {
           "name email slug specializations languages"
         )
         .populate("clientPackage");
-
-    // ==========================================
-    // RESPONSE
-    // ==========================================
-
     return res.status(201).json({
       success: true,
 
@@ -251,9 +195,6 @@ if (!existingClient) {
   }
 };
 
-// =========================
-// GET USER APPOINTMENTS
-// =========================
 const getUserAppointments = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -286,9 +227,6 @@ const getUserAppointments = async (req, res) => {
   }
 };
 
-// =========================
-// GET THERAPIST APPOINTMENTS
-// =========================
 const getTherapistAppointments = async (req, res) => {
   try {
     const therapistId = req.user.id;
@@ -318,16 +256,10 @@ const getTherapistAppointments = async (req, res) => {
   }
 };
 
-// =========================
-// GET APPOINTMENTS FOR ONE PATIENT
-// =========================
 const getPatientAppointments = async (req, res) => {
   try {
     const therapistId = req.user.id;
     const { clientId } = req.params;
-
-    // Make sure this client belongs
-    // to the logged-in therapist
     const client = await Client.findOne({
       _id: clientId,
       therapist: therapistId,
@@ -339,9 +271,6 @@ const getPatientAppointments = async (req, res) => {
         message: "Patient not found",
       });
     }
-
-    // Get appointments between
-    // this therapist and patient
     const appointments = await Appointment.find({
       therapist: therapistId,
       user: client.user,
@@ -368,9 +297,6 @@ const getPatientAppointments = async (req, res) => {
   }
 };
 
-// =========================
-// UPDATE APPOINTMENT STATUS
-// =========================
 const updateAppointmentStatus = async (
   req,
   res
@@ -392,11 +318,6 @@ const updateAppointmentStatus = async (
         message: "Appointment not found",
       });
     }
-
-    // ---------------------------------
-    // CONFIRM APPOINTMENT
-    // ---------------------------------
-
     if (status === "confirmed") {
       if (appointment.status !== "pending") {
         return res.status(400).json({
@@ -410,7 +331,6 @@ const updateAppointmentStatus = async (
 
       await appointment.save();
 
-      // Notify patient
       await Notification.create({
         recipient: appointment.user,
         type: "appointment-confirmed",
@@ -426,11 +346,6 @@ const updateAppointmentStatus = async (
         appointment,
       });
     }
-
-    // ---------------------------------
-    // CANCEL APPOINTMENT
-    // ---------------------------------
-
     if (status === "cancelled") {
       if (
         appointment.status === "completed" ||
@@ -447,7 +362,6 @@ const updateAppointmentStatus = async (
 
       await appointment.save();
 
-      // Notify patient
       await Notification.create({
         recipient: appointment.user,
         type: "appointment-cancelled",
@@ -463,11 +377,6 @@ const updateAppointmentStatus = async (
         appointment,
       });
     }
-
-    // ---------------------------------
-    // START SESSION
-    // ---------------------------------
-
     if (status === "in-session") {
       if (appointment.status !== "confirmed") {
         return res.status(400).json({
@@ -477,7 +386,6 @@ const updateAppointmentStatus = async (
         });
       }
 
-      // Prevent overwriting original start time
       if (!appointment.sessionStartedAt) {
         appointment.sessionStartedAt =
           new Date();
@@ -487,7 +395,6 @@ const updateAppointmentStatus = async (
 
       await appointment.save();
 
-      // Notify patient
       await Notification.create({
         recipient: appointment.user,
         type: "session-started",
@@ -504,11 +411,6 @@ const updateAppointmentStatus = async (
         appointment,
       });
     }
-
-    // ---------------------------------
-    // COMPLETE SESSION
-    // ---------------------------------
-
     if (status === "completed") {
       if (appointment.status !== "in-session") {
         return res.status(400).json({
@@ -518,18 +420,13 @@ const updateAppointmentStatus = async (
         });
       }
 
-      // Make sure start time exists
       if (!appointment.sessionStartedAt) {
         appointment.sessionStartedAt =
           new Date();
       }
-
       appointment.status = "completed";
       appointment.completedAt = new Date();
-
       await appointment.save();
-
-      // Update client last session
       await Client.findOneAndUpdate(
         {
           therapist: therapistId,
@@ -542,8 +439,6 @@ const updateAppointmentStatus = async (
           },
         }
       );
-
-      // Notify patient
       await Notification.create({
         recipient: appointment.user,
         type: "session-completed",
@@ -560,11 +455,6 @@ const updateAppointmentStatus = async (
         appointment,
       });
     }
-
-    // ---------------------------------
-    // NO-SHOW
-    // ---------------------------------
-
     if (status === "no-show") {
       if (appointment.status !== "confirmed") {
         return res.status(400).json({
@@ -575,9 +465,7 @@ const updateAppointmentStatus = async (
       }
 
       appointment.status = "no-show";
-
       await appointment.save();
-
       return res.json({
         success: true,
         message:
@@ -585,11 +473,6 @@ const updateAppointmentStatus = async (
         appointment,
       });
     }
-
-    // ---------------------------------
-    // INVALID STATUS
-    // ---------------------------------
-
     return res.status(400).json({
       success: false,
       message:
@@ -608,9 +491,6 @@ const updateAppointmentStatus = async (
   }
 };
 
-// =========================
-// CANCEL APPOINTMENT - USER
-// =========================
 const cancelAppointment = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -670,10 +550,6 @@ const cancelAppointment = async (req, res) => {
     });
   }
 };
-
-// =========================
-// EXPORTS
-// =========================
 module.exports = {
   createAppointment,
   getUserAppointments,
