@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 function Register() {
   const navigate = useNavigate();
 
@@ -16,7 +15,6 @@ function Register() {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -24,9 +22,7 @@ function Register() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async (e) => { e.preventDefault();
     setMessage("");
     setError("");
 
@@ -49,15 +45,12 @@ function Register() {
         slug,
       };
 
-      // Therapist-specific information
       if (formData.role === "therapist") {
         body.bio = formData.bio;
-
         body.specializations = formData.specializations
           .split(",")
           .map((item) => item.trim())
           .filter((item) => item !== "");
-
         body.languages = formData.languages
           .split(",")
           .map((item) => item.trim())
@@ -66,7 +59,6 @@ function Register() {
 
       const response = await fetch(endpoint, {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
         },
@@ -75,17 +67,14 @@ function Register() {
       });
 
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(
           data.message || "Registration failed"
         );
       }
-
       setMessage(
         "Registration successful! You can now login."
       );
-
       setTimeout(() => {
         navigate("/login");
       }, 1500);
@@ -93,23 +82,16 @@ function Register() {
       setError(error.message);
     }
   };
-
   return (
     <div className="auth-page">
       <div className="auth-card">
-
         <h1>Create Your Account</h1>
-
         <p className="auth-subtitle">
           Join Unfazed and start your journey.
         </p>
-
         <form onSubmit={handleSubmit}>
-
-          {/* NAME */}
           <div className="form-group">
             <label>Name</label>
-
             <input
               type="text"
               name="name"
@@ -119,11 +101,8 @@ function Register() {
               required
             />
           </div>
-
-          {/* EMAIL */}
           <div className="form-group">
             <label>Email</label>
-
             <input
               type="email"
               name="email"
@@ -134,10 +113,8 @@ function Register() {
             />
           </div>
 
-          {/* PASSWORD */}
           <div className="form-group">
             <label>Password</label>
-
             <input
               type="password"
               name="password"
@@ -148,27 +125,20 @@ function Register() {
             />
           </div>
 
-          {/* ROLE */}
           <div className="form-group">
             <label>Register as</label>
-
             <select
               name="role"
               value={formData.role}
-              onChange={handleChange}
-            >
+              onChange={handleChange} >
               <option value="user">User</option>
               <option value="therapist">Therapist</option>
             </select>
           </div>
-
-          {/* THERAPIST FIELDS */}
           {formData.role === "therapist" && (
             <>
-              {/* BIO */}
               <div className="form-group">
                 <label>Professional Bio</label>
-
                 <textarea
                   name="bio"
                   value={formData.bio}
@@ -178,10 +148,8 @@ function Register() {
                 />
               </div>
 
-              {/* SPECIALIZATIONS */}
               <div className="form-group">
                 <label>Specializations</label>
-
                 <input
                   type="text"
                   name="specializations"
@@ -189,13 +157,10 @@ function Register() {
                   placeholder="e.g. Anxiety, Depression, Stress"
                   onChange={handleChange}
                 />
-
                 <small>
                   Separate multiple specializations with commas.
                 </small>
               </div>
-
-              {/* LANGUAGES */}
               <div className="form-group">
                 <label>Languages</label>
 
@@ -213,36 +178,23 @@ function Register() {
               </div>
             </>
           )}
-
           <button
             type="submit"
-            className="auth-btn"
-          >
-            Create Account
-          </button>
-
+            className="auth-btn"> Create Account </button>
         </form>
-
         {message && (
-          <p className="success-message">
-            {message}
-          </p>
-        )}
-
+          <p className="success-message">{message}</p>)}
         {error && (
           <p className="error-message">
             {error}
           </p>
         )}
-
         <p className="auth-footer">
           Already have an account?{" "}
           <Link to="/login">Login</Link>
         </p>
-
       </div>
     </div>
   );
 }
-
 export default Register;
