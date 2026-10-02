@@ -1,5 +1,4 @@
 const express = require("express");
-
 const {
   loginAdmin,
   getAdminDashboard,
@@ -10,20 +9,14 @@ const {
 
 const authMiddleware = require("../middleware/authMiddleware");
 const requireRole = require("../middleware/roleMiddleware");
-
 const router = express.Router();
-
-// Admin login
 router.post("/login", loginAdmin);
-
-// Protected admin routes
 router.get(
   "/dashboard",
   authMiddleware,
   requireRole("admin"),
   getAdminDashboard
 );
-
 router.get(
   "/therapists",
   authMiddleware,
@@ -43,6 +36,4 @@ router.post(
   requireRole("admin"),
   assignTherapistCode
 );
-
-
 module.exports = router;
