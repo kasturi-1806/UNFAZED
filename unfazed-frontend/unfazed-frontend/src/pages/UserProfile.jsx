@@ -1,19 +1,14 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
 function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
-
   const [profile, setProfile] = useState({
     name: "Alex User",
     email: "alex@example.com",
     phone: "+91 98765 43210",
     memberSince: "September 2026",
   });
-
   const [editProfile, setEditProfile] = useState(profile);
-
   const handleEdit = () => {
     setEditProfile(profile);
     setIsEditing(true);
@@ -43,15 +38,11 @@ function UserProfile() {
 
   return (
     <div className="user-profile-page">
-
-      {/* ================= HEADER ================= */}
       <div className="user-profile-header">
 
         <div>
           <p className="user-profile-eyebrow">UNFAZED</p>
-
           <h1>My Profile</h1>
-
           <p>
             Manage your personal information and account details.
           </p>
@@ -62,9 +53,6 @@ function UserProfile() {
         </Link>
 
       </div>
-
-
-      {/* ================= PROFILE CARD ================= */}
       <section className="user-profile-main-card">
 
         <div className="user-profile-top">
@@ -82,16 +70,10 @@ function UserProfile() {
             <h2>{profile.name}</h2>
 
             <p>{profile.email}</p>
-
           </div>
-
         </div>
 
-
         <div className="user-profile-line" />
-
-
-        {/* ================= PERSONAL INFORMATION ================= */}
         <div className="user-profile-section">
 
           <div className="user-profile-section-heading">
@@ -137,14 +119,10 @@ function UserProfile() {
 
           </div>
 
-
           <div className="user-profile-information">
 
-            {/* NAME */}
             <div className="user-profile-info-item">
-
               <span>Name</span>
-
               {isEditing ? (
                 <input
                   type="text"
@@ -158,13 +136,8 @@ function UserProfile() {
               )}
 
             </div>
-
-
-            {/* EMAIL */}
             <div className="user-profile-info-item">
-
               <span>Email</span>
-
               {isEditing ? (
                 <input
                   type="email"
@@ -176,15 +149,9 @@ function UserProfile() {
               ) : (
                 <strong>{profile.email}</strong>
               )}
-
             </div>
-
-
-            {/* PHONE */}
             <div className="user-profile-info-item">
-
               <span>Phone</span>
-
               {isEditing ? (
                 <input
                   type="tel"
@@ -196,36 +163,23 @@ function UserProfile() {
               ) : (
                 <strong>{profile.phone}</strong>
               )}
-
             </div>
 
-
-            {/* MEMBER SINCE */}
             <div className="user-profile-info-item">
-
               <span>Member since</span>
-
               <strong>{profile.memberSince}</strong>
-
             </div>
-
           </div>
-
         </div>
 
       </section>
-
-
-      {/* ================= ACTIVITY ================= */}
       <section className="user-profile-activity">
 
         <div className="user-profile-section-heading">
-
           <div>
             <span className="user-profile-label">
               YOUR ACTIVITY
             </span>
-
             <h2>Your journey with UNFAZED</h2>
           </div>
 
@@ -272,19 +226,13 @@ function UserProfile() {
               <strong>0</strong>
               <span>Therapists explored</span>
             </div>
-
           </div>
-
         </div>
 
       </section>
-
-
-      {/* ================= QUICK ACTIONS ================= */}
       <section className="user-profile-actions">
 
         <div className="user-profile-section-heading">
-
           <div>
             <span className="user-profile-label">
               QUICK ACCESS
@@ -361,22 +309,15 @@ function UserProfile() {
 
       </section>
 
-
-      {/* ================= WELLBEING ================= */}
       <section className="user-profile-wellbeing">
-
         <div className="user-profile-wellbeing-icon">
           ♡
         </div>
-
         <div>
-
           <span className="user-profile-label">
             YOUR WELLBEING
           </span>
-
           <h2>Taking care of yourself matters.</h2>
-
           <p>
             Your mental wellbeing is a journey. Whenever you
             need support, UNFAZED is here to help you take
@@ -390,6 +331,4 @@ function UserProfile() {
     </div>
   );
 }
-
 export default UserProfile;
-
