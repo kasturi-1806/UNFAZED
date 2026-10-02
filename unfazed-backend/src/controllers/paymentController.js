@@ -1,17 +1,11 @@
-
 const crypto = require("crypto");
 const path = require("path");
-
 const Appointment = require("../models/Appointment");
 const Payment = require("../models/Payment");
 const User = require("../models/User");
 const Therapist = require("../models/Therapist");
 const razorpay = require("../config/razorpay");
 const generateInvoice = require("../utils/invoiceGenerator");
-
-// ==========================================
-// HELPER: SAFE SIGNATURE COMPARISON
-// ==========================================
 
 const safeCompare = (expected, received) => {
   if (!expected || !received) {
@@ -30,10 +24,6 @@ const safeCompare = (expected, received) => {
     receivedBuffer
   );
 };
-
-// ==========================================
-// DEMO PAYMENT
-// ==========================================
 
 const demoPayment = async (req, res) => {
   try {
@@ -157,10 +147,6 @@ const demoPayment = async (req, res) => {
   }
 };
 
-// ==========================================
-// CREATE RAZORPAY ORDER
-// ==========================================
-
 const createRazorpayOrder = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -195,32 +181,16 @@ const createRazorpayOrder = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // SESSION AMOUNT
-    // ==========================================
-
-    // UNFAZED currently uses ₹500
-    // for a normal therapy session.
-
     const paymentAmount = 500;
 
-    // Razorpay expects amount in paise.
     const amountInPaise =
       Math.round(paymentAmount * 100);
-
-    // ==========================================
-    // CREATE RAZORPAY ORDER
-    // ==========================================
 
     const order = await razorpay.orders.create({
       amount: amountInPaise,
       currency: "INR",
       receipt: `appointment_${appointment._id}`,
     });
-
-    // ==========================================
-    // CREATE PAYMENT RECORD
-    // ==========================================
 
     const payment = await Payment.create({
       user: appointment.user,
@@ -237,15 +207,12 @@ const createRazorpayOrder = async (req, res) => {
 
     return res.status(201).json({
       message: "Razorpay order created successfully",
-
       order: {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
       },
-
       paymentId: payment._id,
-
       keyId: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
@@ -261,10 +228,6 @@ const createRazorpayOrder = async (req, res) => {
   }
 };
 
-// ==========================================
-// VERIFY RAZORPAY PAYMENT
-// ==========================================
-
 const verifyRazorpayPayment = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -274,10 +237,6 @@ const verifyRazorpayPayment = async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
     } = req.body;
-
-    // ==========================================
-    // VALIDATE REQUEST
-    // ==========================================
 
     if (
       !razorpay_order_id ||
@@ -291,10 +250,6 @@ const verifyRazorpayPayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // FIND PAYMENT
-    // ==========================================
-
     const payment = await Payment.findOne({
       razorpayOrderId: razorpay_order_id,
       user: userId,
@@ -307,10 +262,6 @@ const verifyRazorpayPayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // IDEMPOTENCY CHECK
-    // ==========================================
-
     if (payment.status === "captured") {
       return res.status(200).json({
         success: true,
@@ -318,10 +269,6 @@ const verifyRazorpayPayment = async (req, res) => {
         payment,
       });
     }
-
-    // ==========================================
-    // CREATE SIGNATURE
-    // ==========================================
 
     const keySecret =
       process.env.RAZORPAY_KEY_SECRET;
@@ -345,10 +292,6 @@ const verifyRazorpayPayment = async (req, res) => {
       )
       .digest("hex");
 
-    // ==========================================
-    // COMPARE SIGNATURES SAFELY
-    // ==========================================
-
     const isSignatureValid = safeCompare(
       generatedSignature,
       razorpay_signature
@@ -361,10 +304,6 @@ const verifyRazorpayPayment = async (req, res) => {
           "Invalid Razorpay payment signature",
       });
     }
-
-    // ==========================================
-    // FIND APPOINTMENT
-    // ==========================================
 
     const appointment = await Appointment.findOne({
       _id: payment.appointment,
@@ -386,10 +325,6 @@ const verifyRazorpayPayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // SAVE RAZORPAY PAYMENT DETAILS
-    // ==========================================
-
     payment.razorpayPaymentId =
       razorpay_payment_id;
 
@@ -403,18 +338,10 @@ const verifyRazorpayPayment = async (req, res) => {
 
     await payment.save();
 
-    // ==========================================
-    // UPDATE APPOINTMENT
-    // ==========================================
-
     appointment.paymentStatus = "paid";
     appointment.paymentAmount = payment.amount;
 
     await appointment.save();
-
-    // ==========================================
-    // GET CLIENT + THERAPIST
-    // ==========================================
 
     const user = await User.findById(
       appointment.user
@@ -423,10 +350,6 @@ const verifyRazorpayPayment = async (req, res) => {
     const therapist = await Therapist.findById(
       appointment.therapist
     ).select("name");
-
-    // ==========================================
-    // GENERATE INVOICE
-    // ==========================================
 
     let invoice = null;
 
@@ -482,18 +405,10 @@ const verifyRazorpayPayment = async (req, res) => {
   }
 };
 
-// ==========================================
-// RAZORPAY WEBHOOK
-// ==========================================
-
 const razorpayWebhook = async (req, res) => {
   try {
     const webhookSecret =
       process.env.RAZORPAY_WEBHOOK_SECRET;
-
-    // ==========================================
-    // VALIDATE WEBHOOK SECRET
-    // ==========================================
 
     if (!webhookSecret) {
       console.error(
@@ -507,10 +422,6 @@ const razorpayWebhook = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // GET SIGNATURE
-    // ==========================================
-
     const receivedSignature =
       req.headers["x-razorpay-signature"];
 
@@ -520,10 +431,6 @@ const razorpayWebhook = async (req, res) => {
         message: "Webhook signature missing",
       });
     }
-
-    // ==========================================
-    // RAW BODY REQUIRED
-    // ==========================================
 
     if (!req.rawBody) {
       console.error(
@@ -535,10 +442,6 @@ const razorpayWebhook = async (req, res) => {
         message: "Raw webhook body is missing",
       });
     }
-
-    // ==========================================
-    // VERIFY WEBHOOK SIGNATURE
-    // ==========================================
 
     const generatedSignature = crypto
       .createHmac("sha256", webhookSecret)
@@ -561,10 +464,6 @@ const razorpayWebhook = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // GET EVENT
-    // ==========================================
-
     const event = req.body?.event;
 
     const webhookEventId =
@@ -584,10 +483,6 @@ const razorpayWebhook = async (req, res) => {
         message: "Webhook event is missing",
       });
     }
-
-    // ==========================================
-    // PAYMENT CAPTURED
-    // ==========================================
 
     if (event === "payment.captured") {
       const paymentEntity =
@@ -611,10 +506,6 @@ const razorpayWebhook = async (req, res) => {
         });
       }
 
-      // ==========================================
-      // FIND LOCAL PAYMENT
-      // ==========================================
-
       const payment = await Payment.findOne({
         razorpayOrderId:
           paymentEntity.order_id,
@@ -626,19 +517,11 @@ const razorpayWebhook = async (req, res) => {
           paymentEntity.order_id
         );
 
-        // Razorpay should receive 200 so it does
-        // not continuously retry an event that
-        // does not belong to this application.
-
         return res.status(200).json({
           success: true,
           message: "Webhook received",
         });
       }
-
-      // ==========================================
-      // VALIDATE AMOUNT
-      // ==========================================
 
       const expectedAmountInPaise =
         Math.round(Number(payment.amount) * 100);
@@ -670,10 +553,6 @@ const razorpayWebhook = async (req, res) => {
         });
       }
 
-      // ==========================================
-      // VALIDATE CURRENCY
-      // ==========================================
-
       const paymentCurrency =
         paymentEntity.currency || "INR";
 
@@ -699,10 +578,6 @@ const razorpayWebhook = async (req, res) => {
         });
       }
 
-      // ==========================================
-      // IDEMPOTENT PAYMENT UPDATE
-      // ==========================================
-
       if (payment.status !== "captured") {
         payment.status = "captured";
 
@@ -719,9 +594,6 @@ const razorpayWebhook = async (req, res) => {
           paymentEntity.id
         );
       } else {
-        // Keep Razorpay IDs synchronized even if
-        // this is a duplicate webhook.
-
         let changed = false;
 
         if (
@@ -750,10 +622,6 @@ const razorpayWebhook = async (req, res) => {
         );
       }
 
-      // ==========================================
-      // NORMAL SESSION PAYMENT
-      // ==========================================
-
       if (payment.appointment) {
         const appointment =
           await Appointment.findById(
@@ -775,10 +643,6 @@ const razorpayWebhook = async (req, res) => {
 
             await appointment.save();
           }
-
-          // ========================================
-          // GENERATE INVOICE IF NOT ALREADY CREATED
-          // ========================================
 
           if (!payment.invoiceFileName) {
             try {
@@ -823,10 +687,6 @@ const razorpayWebhook = async (req, res) => {
         }
       }
 
-      // ==========================================
-      // PACKAGE PAYMENT
-      // ==========================================
-
       if (payment.clientPackage) {
         const ClientPackage =
           require("../models/ClientPackage");
@@ -868,10 +728,6 @@ const razorpayWebhook = async (req, res) => {
           if (packageChanged) {
             await clientPackage.save();
           }
-
-          // ========================================
-          // PACKAGE INVOICE
-          // ========================================
 
           if (!payment.invoiceFileName) {
             try {
@@ -924,10 +780,6 @@ const razorpayWebhook = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // PAYMENT FAILED
-    // ==========================================
-
     if (event === "payment.failed") {
       const paymentEntity =
         req.body.payload?.payment?.entity;
@@ -964,11 +816,6 @@ const razorpayWebhook = async (req, res) => {
         });
       }
 
-      // ==========================================
-      // IMPORTANT:
-      // NEVER CHANGE A CAPTURED PAYMENT TO FAILED
-      // ==========================================
-
       if (payment.status === "captured") {
         console.log(
           "Ignoring payment.failed because payment is already captured:",
@@ -982,7 +829,6 @@ const razorpayWebhook = async (req, res) => {
         });
       }
 
-      // Do not change an already refunded payment.
       if (payment.status === "refunded") {
         return res.status(200).json({
           success: true,
@@ -1015,10 +861,6 @@ const razorpayWebhook = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // REFUND CREATED
-    // ==========================================
-
     if (event === "refund.created") {
       const refundEntity =
         req.body.payload?.refund?.entity;
@@ -1035,26 +877,12 @@ const razorpayWebhook = async (req, res) => {
         refundEntity.id
       );
 
-      // IMPORTANT:
-      // refund.created means the refund request
-      // has been created, not necessarily completed.
-      //
-      // Therefore we DO NOT mark the local payment
-      // as refunded here.
-      //
-      // The actual local refund state is updated
-      // when refund.processed is received.
-
       return res.status(200).json({
         success: true,
         message:
           "Refund creation event received",
       });
     }
-
-    // ==========================================
-    // REFUND PROCESSED
-    // ==========================================
 
     if (event === "refund.processed") {
       const refundEntity =
@@ -1092,10 +920,6 @@ const razorpayWebhook = async (req, res) => {
         });
       }
 
-      // ==========================================
-      // IDEMPOTENT REFUND UPDATE
-      // ==========================================
-
       if (payment.status !== "refunded") {
         payment.status = "refunded";
 
@@ -1111,10 +935,6 @@ const razorpayWebhook = async (req, res) => {
           refundEntity.id
         );
       }
-
-      // ==========================================
-      // NORMAL APPOINTMENT REFUND
-      // ==========================================
 
       if (payment.appointment) {
         const appointment =
@@ -1134,10 +954,6 @@ const razorpayWebhook = async (req, res) => {
           }
         }
       }
-
-      // ==========================================
-      // PACKAGE REFUND
-      // ==========================================
 
       if (payment.clientPackage) {
         const ClientPackage =
@@ -1184,10 +1000,6 @@ const razorpayWebhook = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // OTHER EVENTS
-    // ==========================================
-
     console.log(
       "Unhandled Razorpay webhook event:",
       event
@@ -1209,10 +1021,6 @@ const razorpayWebhook = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// GET MY PAYMENT HISTORY
-// ==========================================
 
 const getMyPayments = async (req, res) => {
   try {
@@ -1258,10 +1066,6 @@ const getMyPayments = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// DOWNLOAD MY INVOICE
-// ==========================================
 
 const downloadInvoice = async (req, res) => {
   try {
@@ -1323,10 +1127,6 @@ const downloadInvoice = async (req, res) => {
   }
 };
 
-// ==========================================
-// EXPORTS
-// ==========================================
-
 module.exports = {
   demoPayment,
   createRazorpayOrder,
@@ -1335,4 +1135,3 @@ module.exports = {
   getMyPayments,
   downloadInvoice,
 };
-
