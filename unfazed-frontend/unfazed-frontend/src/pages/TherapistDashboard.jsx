@@ -1,32 +1,23 @@
-
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import NotificationBell from "../pages/NotificationBell";
-
 const getAppointmentDateTime = (appointment) => {
   const date = new Date(appointment.date);
-
   const time = appointment.time?.trim() || "";
-
   let hours = 0;
   let minutes = 0;
 
-  // 24-hour format: 10:30
   if (/^\d{1,2}:\d{2}$/.test(time)) {
     [hours, minutes] = time.split(":").map(Number);
   }
 
-  // 12-hour format: 10:30 AM
   else if (/^\d{1,2}:\d{2}\s?(AM|PM)$/i.test(time)) {
     const match = time.match(
       /^(\d{1,2}):(\d{2})\s?(AM|PM)$/i
     );
-
     hours = Number(match[1]);
     minutes = Number(match[2]);
-
     const period = match[3].toUpperCase();
-
     if (period === "PM" && hours !== 12) {
       hours += 12;
     }
@@ -47,10 +38,6 @@ const getAppointmentDateTime = (appointment) => {
   );
 };
 
-
-// =========================================
-// CHECK WHETHER APPOINTMENT IS TODAY
-// =========================================
 const isToday = (appointment) => {
   const appointmentDate = getAppointmentDateTime(appointment);
   const today = new Date();
@@ -62,10 +49,6 @@ const isToday = (appointment) => {
   );
 };
 
-
-// =========================================
-// FORMAT TIME
-// =========================================
 const formatAppointmentTime = (appointment) => {
   const date = getAppointmentDateTime(appointment);
 
@@ -76,10 +59,6 @@ const formatAppointmentTime = (appointment) => {
   });
 };
 
-
-// =========================================
-// FORMAT DATE
-// =========================================
 const formatAppointmentDate = (appointment) => {
   const date = getAppointmentDateTime(appointment);
 
@@ -89,25 +68,15 @@ const formatAppointmentDate = (appointment) => {
   });
 };
 
-
-// =========================================
-// THERAPIST DASHBOARD
-// =========================================
 function TherapistDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(true);
 
   const [therapistName, setTherapistName] =
     useState("Therapist");
-
-
-  // =========================================
-  // GET THERAPIST NAME
-  // =========================================
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("user");
-
       if (storedUser) {
         const user = JSON.parse(storedUser);
 
@@ -122,11 +91,6 @@ function TherapistDashboard() {
       );
     }
   }, []);
-
-
-  // =========================================
-  // FETCH THERAPIST APPOINTMENTS
-  // =========================================
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -150,7 +114,6 @@ function TherapistDashboard() {
         );
 
         const data = await response.json();
-
         if (!response.ok) {
           console.error(
             "Appointment fetch failed:",
@@ -173,10 +136,6 @@ function TherapistDashboard() {
     fetchAppointments();
   }, []);
 
-
-  // =========================================
-  // PENDING APPOINTMENTS
-  // =========================================
   const pendingAppointments = useMemo(() => {
     return appointments.filter(
       (appointment) =>
@@ -184,10 +143,6 @@ function TherapistDashboard() {
     );
   }, [appointments]);
 
-
-  // =========================================
-  // COMPLETED APPOINTMENTS
-  // =========================================
   const completedAppointments = useMemo(() => {
     return appointments.filter(
       (appointment) =>
@@ -195,19 +150,13 @@ function TherapistDashboard() {
     );
   }, [appointments]);
 
-
-  // =========================================
-  // UPCOMING APPOINTMENTS
-  // =========================================
   const upcomingAppointments = useMemo(() => {
     const now = new Date();
-
     return appointments
       .filter((appointment) => {
         if (appointment.status !== "confirmed") {
           return false;
         }
-
         const appointmentDate =
           getAppointmentDateTime(appointment);
 
@@ -219,11 +168,6 @@ function TherapistDashboard() {
           getAppointmentDateTime(b)
       );
   }, [appointments]);
-
-
-  // =========================================
-  // TODAY'S APPOINTMENTS
-  // =========================================
   const todayAppointments = useMemo(() => {
     return appointments
       .filter((appointment) => {
@@ -243,10 +187,6 @@ function TherapistDashboard() {
       );
   }, [appointments]);
 
-
-  // =========================================
-  // TOTAL UNIQUE PATIENTS
-  // =========================================
   const totalPatients = useMemo(() => {
     const uniquePatients = new Set();
 
@@ -279,245 +219,140 @@ function TherapistDashboard() {
     return uniquePatients.size;
   }, [appointments]);
 
-
-  // =========================================
-  // STATISTICS
-  // =========================================
   const pendingCount = pendingAppointments.length;
   const upcomingCount = upcomingAppointments.length;
   const completedCount = completedAppointments.length;
-
-
-  // =========================================
-  // LOGOUT
-  // =========================================
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userRole");
-
     window.location.href = "/";
   };
-
-
   return (
     <div className="therapist-dashboard">
-
-      {/* =====================================
-          SIDEBAR
-      ====================================== */}
-
       <aside className="therapist-sidebar">
-
         <div className="sidebar-brand">
           <span>UNFAZED</span>
           <p>Therapist Workspace</p>
         </div>
-
-
         <nav className="sidebar-nav">
-
           <Link
             to="/therapist-dashboard"
-            className="sidebar-link active"
-          >
+            className="sidebar-link active">
             <span>⌂</span>
             <strong>Dashboard</strong>
           </Link>
-
-
           <Link
             to="/appointments"
-            className="sidebar-link"
-          >
+            className="sidebar-link">
             <span>▣</span>
             <strong>Appointments</strong>
           </Link>
-
-
           <Link
             to="/patients"
-            className="sidebar-link"
-          >
+            className="sidebar-link" >
             <span>♟</span>
             <strong>Patients</strong>
           </Link>
           <Link
             to="/session-notes"
-            className="sidebar-link"
-          >
+            className="sidebar-link">
           <span>✎</span>
           <strong>Session Notes</strong>
           </Link>
-
-
           <Link
             to="/availability"
-            className="sidebar-link"
-          >
+            className="sidebar-link">
             <span>◷</span>
             <strong>Availability</strong>
           </Link>
-
-
-          {/* PACKAGES */}
-
           <Link
             to="/packages"
-            className="sidebar-link"
-          >
+            className="sidebar-link">
             <span>▤</span>
             <strong>Packages</strong>
           </Link>
-
-
           <Link
             to="/profile"
-            className="sidebar-link"
-          >
+            className="sidebar-link">
             <span>◉</span>
             <strong>My Profile</strong>
           </Link>
-
         </nav>
 
-
         <div className="sidebar-bottom">
-
           <button
             className="sidebar-logout"
-            onClick={handleLogout}
-          >
+            onClick={handleLogout} >
             <span>↪</span>
             <strong>Logout</strong>
           </button>
-
         </div>
-
       </aside>
-
-
-      {/* =====================================
-          MAIN CONTENT
-      ====================================== */}
-
       <main className="therapist-main">
-
-        {/* =====================================
-            HEADER
-        ====================================== */}
-
         <header className="dashboard-topbar">
-
           <div>
-
             <p className="dashboard-eyebrow">
               THERAPIST WORKSPACE
             </p>
-
             <h1>
               Good morning, {therapistName}
             </h1>
-
             <p className="dashboard-subtitle">
               Here's what's happening with your
               practice today.
             </p>
-
           </div>
 
-
           <div className="dashboard-header-actions">
-
             <NotificationBell />
-
             <div className="therapist-avatar">
               {therapistName
                 ? therapistName.charAt(0).toUpperCase()
                 : "T"}
             </div>
-
           </div>
-
         </header>
-
-
-        {/* =====================================
-            DASHBOARD STATISTICS
-        ====================================== */}
 
         <section className="dashboard-stats">
 
           <div className="stat-card">
-
-            <div className="stat-icon pending">
-              ⌄
-            </div>
-
+            <div className="stat-icon pending">⌄</div>
             <div>
               <p>Pending Appointments</p>
               <strong>{pendingCount}</strong>
             </div>
-
           </div>
 
-
           <div className="stat-card">
-
-            <div className="stat-icon patients">
-              ♟
-            </div>
-
+            <div className="stat-icon patients">♟</div>
             <div>
               <p>Total Patients</p>
               <strong>{totalPatients}</strong>
             </div>
-
           </div>
 
-
           <div className="stat-card">
-
-            <div className="stat-icon today">
-              ▣
-            </div>
-
+            <div className="stat-icon today"> ▣</div>
             <div>
               <p>Upcoming Appointments</p>
               <strong>{upcomingCount}</strong>
             </div>
-
           </div>
 
-
           <div className="stat-card">
-
-            <div className="stat-icon completed">
-              ✓
-            </div>
-
+            <div className="stat-icon completed">✓ </div>
             <div>
               <p>Completed Appointments</p>
               <strong>{completedCount}</strong>
             </div>
-
           </div>
-
         </section>
-
-
-        {/* =====================================
-            TODAY'S APPOINTMENTS
-        ====================================== */}
-
         <section className="dashboard-section">
-
           <div className="section-heading">
-
             <div>
-
               <p className="section-eyebrow">
                 TODAY
               </p>
@@ -525,57 +360,32 @@ function TherapistDashboard() {
               <h2>
                 Today's Appointments
               </h2>
-
             </div>
-
-
             <Link
               to="/appointments"
-              className="view-all-link"
-            >
-              View all →
-            </Link>
-
+              className="view-all-link" >View all → </Link>
           </div>
 
-
           <div className="sessions-container">
-
             {loadingAppointments ? (
-
               <div className="empty-sessions">
-
                 <div className="loading-spinner"></div>
-
                 <h3>
                   Loading appointments...
                 </h3>
-
               </div>
-
             ) : todayAppointments.length === 0 ? (
-
               <div className="empty-sessions">
-
-                <div className="empty-icon">
-                  ▣
-                </div>
-
-                <h3>
-                  No appointments today
-                </h3>
-
+                <div className="empty-icon">▣</div>
+                <h3>No appointments today </h3>
                 <p>
                   Your scheduled appointments for today
                   will appear here.
                 </p>
-
               </div>
-
             ) : (
 
               <div className="upcoming-session-list">
-
                 {todayAppointments.map(
                   (appointment) => {
 
@@ -586,8 +396,7 @@ function TherapistDashboard() {
                     return (
                       <div
                         className="upcoming-session"
-                        key={appointment._id}
-                      >
+                        key={appointment._id}>
 
                         <div className="session-time">
 
@@ -596,30 +405,23 @@ function TherapistDashboard() {
                               appointment
                             )}
                           </strong>
-
                           <span>
                             {appointment.duration ||
                               50} min
                           </span>
-
                         </div>
 
-
                         <div className="session-details">
-
                           <h3>
                             {appointment.user?.name ||
                               "Patient"}
                           </h3>
-
                           <p>
                             {isPending
                               ? "Awaiting confirmation"
                               : "Confirmed appointment"}
                           </p>
-
                         </div>
-
 
                         <div
                           className={`session-status ${
@@ -635,26 +437,14 @@ function TherapistDashboard() {
                     );
                   }
                 )}
-
               </div>
-
             )}
-
           </div>
-
         </section>
 
-
-        {/* =====================================
-            UPCOMING APPOINTMENTS
-        ====================================== */}
-
         <section className="dashboard-section">
-
           <div className="section-heading">
-
             <div>
-
               <p className="section-eyebrow">
                 SCHEDULE
               </p>
@@ -662,34 +452,20 @@ function TherapistDashboard() {
               <h2>
                 Upcoming Appointments
               </h2>
-
             </div>
-
-
             <Link
               to="/appointments"
-              className="view-all-link"
-            >
-              View all →
-            </Link>
-
+              className="view-all-link" >View all →</Link>
           </div>
 
-
           <div className="sessions-container">
-
             {loadingAppointments ? (
-
               <div className="empty-sessions">
-
                 <div className="loading-spinner"></div>
-
                 <h3>
                   Loading appointments...
                 </h3>
-
               </div>
-
             ) : upcomingAppointments.length === 0 ? (
 
               <div className="empty-sessions">
@@ -795,17 +571,9 @@ function TherapistDashboard() {
                   })}
 
               </div>
-
             )}
-
           </div>
-
         </section>
-
-
-        {/* =====================================
-            QUICK ACCESS
-        ====================================== */}
 
         <section className="dashboard-section">
 
@@ -908,40 +676,28 @@ function TherapistDashboard() {
                   Create and manage session packages
                 </p>
               </div>
-
               <span>→</span>
-
             </Link>
-
 
             <Link
               to="/profile"
-              className="quick-action"
-            >
-
+              className="quick-action">
               <div className="quick-action-icon">
                 ◉
               </div>
-
               <div>
                 <h3>My Profile</h3>
                 <p>
                   Update professional details
                 </p>
               </div>
-
               <span>→</span>
-
             </Link>
 
           </div>
-
         </section>
-
       </main>
-
     </div>
   );
 }
-
 export default TherapistDashboard;
