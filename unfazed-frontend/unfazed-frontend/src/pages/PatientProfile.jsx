@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
 function PatientProfile() {
   const { patientId } = useParams();
-
   const [patient, setPatient] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [intakeForm, setIntakeForm] = useState(null);
   const [sessionNotes, setSessionNotes] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [intakeLoading, setIntakeLoading] = useState(true);
   const [notesLoading, setNotesLoading] = useState(true);
   const [savingNote, setSavingNote] = useState(false);
-
   const [error, setError] = useState("");
   const [intakeError, setIntakeError] = useState("");
   const [notesError, setNotesError] = useState("");
-
   const [showNoteForm, setShowNoteForm] = useState(false);
-
   const [noteForm, setNoteForm] = useState({
     sessionDate: new Date().toISOString().split("T")[0],
     title: "",
@@ -30,7 +24,6 @@ function PatientProfile() {
     const fetchPatient = async () => {
       try {
         const token = localStorage.getItem("token");
-
         if (!token) {
           setError("Please login as a therapist first.");
           setLoading(false);
@@ -38,11 +31,6 @@ function PatientProfile() {
           setNotesLoading(false);
           return;
         }
-
-        // =====================================================
-        // 1. FETCH PATIENT / CLIENT
-        // =====================================================
-
         const response = await fetch(
           `http://localhost:5000/api/clients/${patientId}`,
           {
@@ -52,9 +40,7 @@ function PatientProfile() {
             },
           }
         );
-
         const patientData = await response.json();
-
         console.log(
           "PATIENT API:",
           response.status,
@@ -67,30 +53,17 @@ function PatientProfile() {
               "Failed to fetch patient"
           );
         }
-
-        const client = patientData.client;
-
+        const client = patientData.client
         if (!client) {
           throw new Error("Patient data not found");
-        }
-
+        
         setPatient(client);
-
-        // =====================================================
-        // 2. GET USER ID
-        // =====================================================
-
         const userId =
           client.user?._id ||
           client.user?.id ||
           client.user;
-
         console.log("CLIENT:", client);
         console.log("USER ID:", userId);
-
-        // =====================================================
-        // 3. FETCH INTAKE FORM
-        // =====================================================
 
         if (!userId) {
           setIntakeError(
@@ -139,11 +112,6 @@ function PatientProfile() {
             setIntakeLoading(false);
           }
         }
-
-        // =====================================================
-        // 4. FETCH PATIENT APPOINTMENTS
-        // =====================================================
-
         try {
           const appointmentsResponse =
             await fetch(
@@ -183,11 +151,6 @@ function PatientProfile() {
 
           setAppointments([]);
         }
-
-        // =====================================================
-        // 5. FETCH SESSION NOTES
-        // =====================================================
-
         if (!userId) {
           setNotesError(
             "Patient user ID is not available."
@@ -207,7 +170,6 @@ function PatientProfile() {
 
             const notesData =
               await notesResponse.json();
-
             console.log(
               "SESSION NOTES API:",
               notesResponse.status,
@@ -220,7 +182,6 @@ function PatientProfile() {
                   "Failed to fetch session notes"
               );
             }
-
             setSessionNotes(
               notesData.sessionNotes || []
             );
@@ -250,10 +211,6 @@ function PatientProfile() {
     fetchPatient();
   }, [patientId]);
 
-  // =====================================================
-  // HANDLE NOTE INPUT
-  // =====================================================
-
   const handleNoteChange = (e) => {
     const { name, value } = e.target;
 
@@ -262,28 +219,18 @@ function PatientProfile() {
       [name]: value,
     }));
   };
-
-  // =====================================================
-  // SAVE SESSION NOTE
-  // =====================================================
-
-  const handleSaveNote = async (e) => {
-    e.preventDefault();
-
+  const handleSaveNote = async (e) => { e.preventDefault();
     const token = localStorage.getItem("token");
-
     if (!token) {
       setNotesError(
         "Please login as a therapist first."
       );
       return;
     }
-
     if (!noteForm.sessionDate) {
       setNotesError("Please select a session date.");
       return;
     }
-
     if (!noteForm.content.trim()) {
       setNotesError("Please enter the session note.");
       return;
@@ -363,10 +310,6 @@ function PatientProfile() {
     }
   };
 
-  // =====================================================
-  // DATE FORMAT
-  // =====================================================
-
   const formatDate = (date) => {
     if (!date) {
       return "Not available";
@@ -382,26 +325,18 @@ function PatientProfile() {
     );
   };
 
-  // =====================================================
-  // TIME FORMAT
-  // =====================================================
-
   const formatTime = (time) => {
     if (!time) {
       return "Not available";
     }
-
     const [hours, minutes] = time.split(":");
-
     const date = new Date();
-
     date.setHours(
       Number(hours),
       Number(minutes),
       0,
       0
     );
-
     return date.toLocaleTimeString(
       "en-US",
       {
@@ -412,20 +347,13 @@ function PatientProfile() {
     );
   };
 
-  // =====================================================
-  // UPCOMING / PREVIOUS APPOINTMENTS
-  // =====================================================
-
   const today = new Date();
-
   today.setHours(0, 0, 0, 0);
-
   const upcomingAppointments =
     appointments.filter((appointment) => {
       const appointmentDate = new Date(
         appointment.date
       );
-
       appointmentDate.setHours(0, 0, 0, 0);
 
       return appointmentDate >= today;
@@ -441,11 +369,6 @@ function PatientProfile() {
 
       return appointmentDate < today;
     });
-
-  // =====================================================
-  // LOADING
-  // =====================================================
-
   if (loading) {
     return (
       <div className="dashboard-page">
@@ -461,18 +384,12 @@ function PatientProfile() {
     );
   }
 
-  // =====================================================
-  // ERROR
-  // =====================================================
-
   if (error) {
     return (
       <div className="dashboard-page">
         <div className="dashboard-info">
           <h2>Unable to Load Patient</h2>
-
           <p>{error}</p>
-
           <Link
             to="/patients"
             className="dashboard-btn"
@@ -483,41 +400,28 @@ function PatientProfile() {
       </div>
     );
   }
-
-  // =====================================================
-  // PATIENT NOT FOUND
-  // =====================================================
 
   if (!patient) {
     return (
       <div className="dashboard-page">
         <div className="dashboard-info">
           <h2>Patient Not Found</h2>
-
           <Link
             to="/patients"
-            className="dashboard-btn"
-          >
+            className="dashboard-btn" >
             Back to Patients
           </Link>
         </div>
       </div>
     );
   }
-
   return (
     <div className="dashboard-page">
-
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
       <div className="dashboard-header">
         <div>
           <p className="section-label">
             UNFAZED
           </p>
-
           <h1>
             {patient.user?.name ||
               "Unnamed Patient"}
@@ -528,26 +432,16 @@ function PatientProfile() {
             and session history.
           </p>
         </div>
-
         <Link
           to="/patients"
-          className="dashboard-logout"
-        >
+          className="dashboard-logout">
           Back to Patients
         </Link>
       </div>
-
-
-      {/* =====================================================
-          PATIENT INFORMATION
-      ===================================================== */}
-
       <div className="dashboard-card">
-
         <div className="availability-section-header">
           <div>
             <h2>Patient Information</h2>
-
             <p>
               Basic information about this patient.
             </p>
@@ -555,16 +449,13 @@ function PatientProfile() {
         </div>
 
         <div className="patient-profile-grid">
-
           <div>
             <p>Name</p>
-
             <strong>
               {patient.user?.name ||
                 "Not available"}
             </strong>
           </div>
-
           <div>
             <p>Email</p>
 
@@ -599,17 +490,10 @@ function PatientProfile() {
         </div>
       </div>
 
-
-      {/* =====================================================
-          INTAKE FORM
-      ===================================================== */}
-
       <div className="dashboard-card">
-
         <div className="availability-section-header">
           <div>
             <h2>Intake Form</h2>
-
             <p>
               Information submitted by the patient
               during intake.
@@ -620,14 +504,12 @@ function PatientProfile() {
         {intakeLoading && (
           <div className="dashboard-info">
             <h3>Loading Intake Form...</h3>
-
             <p>
               Please wait while we load the
               patient's intake information.
             </p>
           </div>
         )}
-
         {!intakeLoading && intakeError && (
           <div className="dashboard-info">
             <h3>Unable to Load Intake Form</h3>
@@ -635,7 +517,6 @@ function PatientProfile() {
             <p>{intakeError}</p>
           </div>
         )}
-
         {!intakeLoading &&
           !intakeError &&
           !intakeForm && (
@@ -648,21 +529,17 @@ function PatientProfile() {
               </p>
             </div>
           )}
-
         {!intakeLoading &&
           !intakeError &&
           intakeForm && (
             <div className="patient-profile-grid">
-
               <div>
                 <p>Full Name</p>
-
                 <strong>
                   {intakeForm.fullName ||
                     "Not provided"}
                 </strong>
               </div>
-
               <div>
                 <p>Age</p>
 
@@ -680,7 +557,6 @@ function PatientProfile() {
                     "Not provided"}
                 </strong>
               </div>
-
               <div>
                 <p>Occupation</p>
 
@@ -692,7 +568,6 @@ function PatientProfile() {
 
               <div>
                 <p>Reason for Seeking Help</p>
-
                 <strong>
                   {intakeForm.reasonForSeekingHelp ||
                     "Not provided"}
@@ -708,7 +583,6 @@ function PatientProfile() {
                     : "No"}
                 </strong>
               </div>
-
               {intakeForm.previousTherapy && (
                 <div>
                   <p>Previous Therapy Details</p>
@@ -740,7 +614,6 @@ function PatientProfile() {
 
               <div>
                 <p>Emergency Contact Phone</p>
-
                 <strong>
                   {intakeForm.emergencyContactPhone ||
                     "Not provided"}
@@ -749,7 +622,6 @@ function PatientProfile() {
 
               <div>
                 <p>Submitted On</p>
-
                 <strong>
                   {intakeForm.submittedAt
                     ? formatDate(
@@ -771,18 +643,10 @@ function PatientProfile() {
             </div>
           )}
       </div>
-
-
-      {/* =====================================================
-          PRESENTING CONCERN
-      ===================================================== */}
-
       <div className="dashboard-card">
-
         <div className="availability-section-header">
           <div>
             <h2>Presenting Concern</h2>
-
             <p>
               Main concern associated with this
               patient.
@@ -798,11 +662,6 @@ function PatientProfile() {
           </p>
         </div>
       </div>
-
-
-      {/* =====================================================
-          TAGS
-      ===================================================== */}
 
       <div className="dashboard-card">
 
@@ -835,15 +694,8 @@ function PatientProfile() {
         </div>
       </div>
 
-
-      {/* =====================================================
-          SESSION NOTES
-      ===================================================== */}
-
       <div className="dashboard-card">
-
         <div className="availability-section-header">
-
           <div>
             <h2>Session Notes</h2>
 
@@ -852,7 +704,6 @@ function PatientProfile() {
               patient's sessions.
             </p>
           </div>
-
           {!showNoteForm && (
             <button
               type="button"
@@ -868,24 +719,15 @@ function PatientProfile() {
 
         </div>
 
-
-        {/* =================================================
-            ADD NOTE FORM
-        ================================================= */}
-
         {showNoteForm && (
           <form
             onSubmit={handleSaveNote}
-            className="session-note-form"
-          >
-
-            <div className="session-note-form-grid">
-
+            className="session-note-form">
+            <div className="session-note-form-grid"
               <div>
                 <label htmlFor="sessionDate">
                   Session Date
                 </label>
-
                 <input
                   id="sessionDate"
                   name="sessionDate"
@@ -895,7 +737,6 @@ function PatientProfile() {
                   required
                 />
               </div>
-
               <div>
                 <label htmlFor="title">
                   Note Title
@@ -911,9 +752,7 @@ function PatientProfile() {
                   maxLength="100"
                 />
               </div>
-
             </div>
-
             <div>
               <label htmlFor="content">
                 Session Note
@@ -929,7 +768,6 @@ function PatientProfile() {
                 required
               />
             </div>
-
             {notesError && (
               <p className="form-error">
                 {notesError}
@@ -974,11 +812,6 @@ function PatientProfile() {
           </form>
         )}
 
-
-        {/* =================================================
-            NOTES ERROR
-        ================================================= */}
-
         {!showNoteForm &&
           notesError && (
             <div className="dashboard-info">
@@ -989,12 +822,6 @@ function PatientProfile() {
               <p>{notesError}</p>
             </div>
           )}
-
-
-        {/* =================================================
-            NOTES LOADING
-        ================================================= */}
-
         {notesLoading && (
           <div className="dashboard-info">
             <h3>Loading Session Notes...</h3>
@@ -1005,11 +832,6 @@ function PatientProfile() {
             </p>
           </div>
         )}
-
-
-        {/* =================================================
-            NO NOTES
-        ================================================= */}
 
         {!notesLoading &&
           !notesError &&
@@ -1024,11 +846,6 @@ function PatientProfile() {
               </p>
             </div>
           )}
-
-
-        {/* =================================================
-            NOTES LIST
-        ================================================= */}
 
         {!notesLoading &&
           sessionNotes.length > 0 && (
@@ -1073,11 +890,6 @@ function PatientProfile() {
 
       </div>
 
-
-      {/* =====================================================
-          SESSION HISTORY
-      ===================================================== */}
-
       <div className="dashboard-card">
 
         <div className="availability-section-header">
@@ -1104,50 +916,35 @@ function PatientProfile() {
           </div>
         ) : (
           <div className="session-history">
-
-            {/* =================================================
-                UPCOMING SESSIONS
-            ================================================= */}
-
             {upcomingAppointments.length > 0 && (
               <div className="session-history-section">
-
                 <h3 className="session-history-title">
                   Upcoming Sessions
                 </h3>
-
                 <div className="patients-list">
-
                   {upcomingAppointments.map(
                     (appointment) => (
                       <div
                         key={appointment._id}
-                        className="patient-card"
-                      >
-
+                        className="patient-card" >
                         <div>
                           <p>Date</p>
-
                           <strong>
                             {formatDate(
                               appointment.date
                             )}
                           </strong>
                         </div>
-
                         <div>
                           <p>Time</p>
-
                           <strong>
                             {formatTime(
                               appointment.time
                             )}
                           </strong>
                         </div>
-
                         <div>
                           <p>Status</p>
-
                           <strong className="appointment-status">
                             {appointment.status
                               ? appointment.status
@@ -1157,7 +954,6 @@ function PatientProfile() {
                               : "Unknown"}
                           </strong>
                         </div>
-
                         <div>
                           <p>Duration</p>
 
@@ -1167,60 +963,42 @@ function PatientProfile() {
                               : "Not available"}
                           </strong>
                         </div>
-
                       </div>
                     )
                   )}
-
                 </div>
-
               </div>
             )}
 
-
-            {/* =================================================
-                PREVIOUS SESSIONS
-            ================================================= */}
-
             {previousAppointments.length > 0 && (
               <div className="session-history-section">
-
                 <h3 className="session-history-title">
                   Previous Sessions
                 </h3>
-
                 <div className="patients-list">
-
                   {previousAppointments.map(
                     (appointment) => (
                       <div
                         key={appointment._id}
-                        className="patient-card"
-                      >
-
+                        className="patient-card">
                         <div>
                           <p>Date</p>
-
                           <strong>
                             {formatDate(
                               appointment.date
                             )}
                           </strong>
                         </div>
-
                         <div>
                           <p>Time</p>
-
                           <strong>
                             {formatTime(
                               appointment.time
                             )}
                           </strong>
                         </div>
-
                         <div>
                           <p>Status</p>
-
                           <strong className="appointment-status">
                             {appointment.status
                               ? appointment.status
@@ -1230,7 +1008,6 @@ function PatientProfile() {
                               : "Unknown"}
                           </strong>
                         </div>
-
                         <div>
                           <p>Duration</p>
 
@@ -1240,23 +1017,17 @@ function PatientProfile() {
                               : "Not available"}
                           </strong>
                         </div>
-
                       </div>
                     )
                   )}
 
                 </div>
-
               </div>
             )}
-
           </div>
         )}
-
       </div>
-
     </div>
   );
 }
-
 export default PatientProfile;
