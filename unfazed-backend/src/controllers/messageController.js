@@ -1,14 +1,10 @@
 const Message = require("../models/Message");
 const User = require("../models/User");
 const Therapist = require("../models/Therapist");
-
 const {
   createNotification,
 } = require("./notificationController");
 
-// =========================
-// SEND MESSAGE
-// =========================
 const sendMessage = async (req, res) => {
   try {
     const {
@@ -92,10 +88,6 @@ const sendMessage = async (req, res) => {
         message: "Receiver not found",
       });
     }
-
-    // =========================
-    // SAVE MESSAGE
-    // =========================
     const newMessage =
       await Message.create({
         sender: senderId,
@@ -115,9 +107,6 @@ const sendMessage = async (req, res) => {
         message: message.trim(),
       });
 
-    // =========================
-    // CREATE CHAT NOTIFICATION
-    // =========================
     const notification =
       await createNotification({
         recipient: receiverId,
@@ -175,10 +164,6 @@ const sendMessage = async (req, res) => {
     });
   }
 };
-
-// =========================
-// GET CONVERSATION
-// =========================
 const getConversation = async (
   req,
   res
@@ -296,10 +281,6 @@ const getConversation = async (
     });
   }
 };
-
-// =========================
-// MARK MESSAGE AS READ
-// =========================
 const markMessageAsRead = async (
   req,
   res
