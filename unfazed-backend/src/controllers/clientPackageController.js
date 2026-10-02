@@ -9,10 +9,6 @@ const Therapist = require("../models/Therapist");
 const razorpay = require("../config/razorpay");
 const generateInvoice = require("../utils/invoiceGenerator");
 
-// ==========================================
-// PURCHASE PACKAGE
-// ==========================================
-
 const purchasePackage = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -69,10 +65,6 @@ const purchasePackage = async (req, res) => {
   }
 };
 
-// ==========================================
-// DEMO PACKAGE PAYMENT
-// ==========================================
-
 const demoPackagePayment = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -83,10 +75,6 @@ const demoPackagePayment = async (req, res) => {
         message: "Client package ID is required",
       });
     }
-
-    // ==========================================
-    // FIND CLIENT PACKAGE
-    // ==========================================
 
     const clientPackage = await ClientPackage.findOne({
       _id: clientPackageId,
@@ -114,10 +102,6 @@ const demoPackagePayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // CHECK EXPIRY
-    // ==========================================
-
     if (
       clientPackage.expiryDate &&
       new Date(clientPackage.expiryDate) < new Date()
@@ -130,10 +114,6 @@ const demoPackagePayment = async (req, res) => {
         message: "This package has expired",
       });
     }
-
-    // ==========================================
-    // PACKAGE AMOUNT
-    // ==========================================
 
     const paymentAmount = Number(
       clientPackage.package?.totalPrice
@@ -148,16 +128,8 @@ const demoPackagePayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // PAYMENT AMOUNTS
-    // ==========================================
-
     const platformFee = 0;
     const netAmount = paymentAmount;
-
-    // ==========================================
-    // CREATE PAYMENT
-    // ==========================================
 
     const payment = await Payment.create({
       user: clientPackage.user,
@@ -171,35 +143,19 @@ const demoPackagePayment = async (req, res) => {
       status: "captured",
     });
 
-    // ==========================================
-    // MARK PACKAGE AS PAID
-    // ==========================================
-
     clientPackage.paymentStatus = "paid";
     clientPackage.paymentId = payment._id;
     clientPackage.status = "active";
 
     await clientPackage.save();
 
-    // ==========================================
-    // GET CLIENT
-    // ==========================================
-
     const user = await User.findById(
       clientPackage.user
     ).select("name email");
 
-    // ==========================================
-    // GET THERAPIST
-    // ==========================================
-
     const therapist = await Therapist.findById(
       clientPackage.therapist
     ).select("name");
-
-    // ==========================================
-    // GENERATE INVOICE
-    // ==========================================
 
     let invoice = null;
 
@@ -232,18 +188,11 @@ const demoPackagePayment = async (req, res) => {
       );
     }
 
-    // ==========================================
-    // RESPONSE
-    // ==========================================
-
     return res.status(201).json({
       message:
         "Package payment successful and invoice generated",
-
       clientPackage,
-
       payment,
-
       invoice,
     });
   } catch (error) {
@@ -259,10 +208,6 @@ const demoPackagePayment = async (req, res) => {
   }
 };
 
-// ==========================================
-// CREATE RAZORPAY PACKAGE ORDER
-// ==========================================
-
 const createRazorpayPackageOrder = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -274,10 +219,6 @@ const createRazorpayPackageOrder = async (req, res) => {
         message: "Client package ID is required",
       });
     }
-
-    // ==========================================
-    // FIND CLIENT PACKAGE
-    // ==========================================
 
     const clientPackage = await ClientPackage.findOne({
       _id: clientPackageId,
@@ -291,20 +232,12 @@ const createRazorpayPackageOrder = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // CHECK PAYMENT STATUS
-    // ==========================================
-
     if (clientPackage.paymentStatus === "paid") {
       return res.status(400).json({
         success: false,
         message: "Package is already paid",
       });
     }
-
-    // ==========================================
-    // CHECK PACKAGE STATUS
-    // ==========================================
 
     if (
       clientPackage.status === "expired" ||
@@ -315,10 +248,6 @@ const createRazorpayPackageOrder = async (req, res) => {
         message: "This package cannot be paid for",
       });
     }
-
-    // ==========================================
-    // CHECK EXPIRY
-    // ==========================================
 
     if (
       clientPackage.expiryDate &&
@@ -334,10 +263,6 @@ const createRazorpayPackageOrder = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // GET PACKAGE AMOUNT
-    // ==========================================
-
     const amount = Number(
       clientPackage.package?.totalPrice
     );
@@ -349,26 +274,14 @@ const createRazorpayPackageOrder = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // CREATE RAZORPAY ORDER
-    // ==========================================
-
     const razorpayOrder = await razorpay.orders.create({
       amount: Math.round(amount * 100),
       currency: "INR",
       receipt: `package_${clientPackage._id}`,
     });
 
-    // ==========================================
-    // PAYMENT AMOUNTS
-    // ==========================================
-
     const platformFee = 0;
     const netAmount = amount;
-
-    // ==========================================
-    // CREATE PAYMENT RECORD
-    // ==========================================
 
     const payment = await Payment.create({
       user: clientPackage.user,
@@ -382,22 +295,15 @@ const createRazorpayPackageOrder = async (req, res) => {
       status: "created",
     });
 
-    // ==========================================
-    // RESPONSE
-    // ==========================================
-
     return res.status(201).json({
       success: true,
       message: "Razorpay package order created",
-
       order: {
         id: razorpayOrder.id,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
       },
-
       paymentId: payment._id,
-
       keyId: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
@@ -413,10 +319,6 @@ const createRazorpayPackageOrder = async (req, res) => {
   }
 };
 
-// ==========================================
-// VERIFY RAZORPAY PACKAGE PAYMENT
-// ==========================================
-
 const verifyRazorpayPackagePayment = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -426,10 +328,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
     } = req.body;
-
-    // ==========================================
-    // VALIDATE PAYMENT DATA
-    // ==========================================
 
     if (
       !razorpay_order_id ||
@@ -441,10 +339,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
         message: "Razorpay payment details are required",
       });
     }
-
-    // ==========================================
-    // FIND PAYMENT
-    // ==========================================
 
     const payment = await Payment.findOne({
       razorpayOrderId: razorpay_order_id,
@@ -459,10 +353,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // PREVENT DUPLICATE VERIFICATION
-    // ==========================================
-
     if (payment.status === "captured") {
       return res.status(200).json({
         success: true,
@@ -470,10 +360,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
         payment,
       });
     }
-
-    // ==========================================
-    // CHECK RAZORPAY SECRET
-    // ==========================================
 
     const secret = process.env.RAZORPAY_KEY_SECRET;
 
@@ -483,10 +369,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
         message: "Razorpay secret is not configured",
       });
     }
-
-    // ==========================================
-    // GENERATE SIGNATURE
-    // ==========================================
 
     const generatedSignature = crypto
       .createHmac("sha256", secret)
@@ -503,10 +385,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
       generatedSignature
     );
 
-    // ==========================================
-    // VERIFY SIGNATURE
-    // ==========================================
-
     if (
       signatureBuffer.length !==
         generatedBuffer.length ||
@@ -521,10 +399,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // FIND CLIENT PACKAGE
-    // ==========================================
-
     const clientPackage =
       await ClientPackage.findOne({
         _id: payment.clientPackage,
@@ -538,10 +412,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
       });
     }
 
-    // ==========================================
-    // CHECK PACKAGE STATUS
-    // ==========================================
-
     if (
       clientPackage.status === "expired" ||
       clientPackage.status === "cancelled"
@@ -551,10 +421,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
         message: "This package cannot be paid for",
       });
     }
-
-    // ==========================================
-    // SAVE RAZORPAY PAYMENT DETAILS
-    // ==========================================
 
     payment.razorpayPaymentId =
       razorpay_payment_id;
@@ -569,35 +435,19 @@ const verifyRazorpayPackagePayment = async (req, res) => {
 
     await payment.save();
 
-    // ==========================================
-    // MARK CLIENT PACKAGE AS PAID
-    // ==========================================
-
     clientPackage.paymentStatus = "paid";
     clientPackage.paymentId = payment._id;
     clientPackage.status = "active";
 
     await clientPackage.save();
 
-    // ==========================================
-    // GET CLIENT
-    // ==========================================
-
     const user = await User.findById(
       clientPackage.user
     ).select("name email");
 
-    // ==========================================
-    // GET THERAPIST
-    // ==========================================
-
     const therapist = await Therapist.findById(
       clientPackage.therapist
     ).select("name");
-
-    // ==========================================
-    // GENERATE INVOICE
-    // ==========================================
 
     let invoice = null;
 
@@ -630,19 +480,12 @@ const verifyRazorpayPackagePayment = async (req, res) => {
       );
     }
 
-    // ==========================================
-    // RESPONSE
-    // ==========================================
-
     return res.status(200).json({
       success: true,
       message:
         "Package payment successful and invoice generated",
-
       clientPackage,
-
       payment,
-
       invoice,
     });
   } catch (error) {
@@ -658,10 +501,6 @@ const verifyRazorpayPackagePayment = async (req, res) => {
   }
 };
 
-// ==========================================
-// GET MY PACKAGES
-// ==========================================
-
 const getMyPackages = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -674,10 +513,6 @@ const getMyPackages = async (req, res) => {
       .sort({
         createdAt: -1,
       });
-
-    // ==========================================
-    // AUTOMATICALLY MARK EXPIRED PACKAGES
-    // ==========================================
 
     const now = new Date();
 
@@ -709,10 +544,6 @@ const getMyPackages = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// GET SINGLE CLIENT PACKAGE
-// ==========================================
 
 const getClientPackage = async (req, res) => {
   try {
@@ -758,10 +589,6 @@ const getClientPackage = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// EXPORTS
-// ==========================================
 
 module.exports = {
   purchasePackage,
