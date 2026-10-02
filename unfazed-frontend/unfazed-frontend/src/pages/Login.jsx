@@ -1,21 +1,14 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 function Login() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [therapistCode, setTherapistCode] = useState("");
   const [role, setRole] = useState("user");
   const [error, setError] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async (e) => {e.preventDefault();
     setError("");
-
     try {
       const endpoint =
         role === "therapist"
@@ -39,22 +32,16 @@ function Login() {
           }),
         }),
       });
-
       const data = await response.json();
-
       console.log("Login response:", data);
-
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-
       localStorage.setItem("userEmail", email);
       localStorage.setItem("userRole", role);
-
       if (data.user) {
         localStorage.setItem(
           "user",
@@ -63,7 +50,6 @@ function Login() {
             role,
           })
         );
-
         localStorage.setItem(
           "userName",
           data.user.name || ""
@@ -76,18 +62,14 @@ function Login() {
             role: "therapist",
           })
         );
-
         localStorage.setItem(
           "userName",
           data.therapist.name || ""
         );
-      } else {
-        // Prevent previous account information
-        // from being reused.
+      } else 
         localStorage.removeItem("user");
         localStorage.removeItem("userName");
       }
-
       if (role === "therapist") {
         navigate("/therapist-dashboard");
       } else {
@@ -98,23 +80,16 @@ function Login() {
       setError(error.message);
     }
   };
-
   return (
     <div className="auth-page">
       <div className="auth-card">
-
         <h1>Welcome Back</h1>
-
         <p className="auth-subtitle">
           Sign in to continue your Unfazed journey.
         </p>
-
         <form onSubmit={handleSubmit}>
-
-          {/* LOGIN ROLE */}
           <div className="form-group">
             <label>Login as</label>
-
             <select
               value={role}
               onChange={(e) => {
@@ -127,12 +102,9 @@ function Login() {
               <option value="therapist">Therapist</option>
             </select>
           </div>
-
-          {/* THERAPIST CODE */}
           {role === "therapist" && (
             <div className="form-group">
               <label>Therapist Code</label>
-
               <input
                 type="text"
                 placeholder="Enter your therapist code"
@@ -144,7 +116,6 @@ function Login() {
                 }
                 required
               />
-
               <small
                 style={{
                   display: "block",
@@ -157,11 +128,8 @@ function Login() {
               </small>
             </div>
           )}
-
-          {/* EMAIL */}
           <div className="form-group">
             <label>Email</label>
-
             <input
               type="email"
               placeholder="Enter your email"
@@ -170,11 +138,8 @@ function Login() {
               required
             />
           </div>
-
-          {/* PASSWORD */}
           <div className="form-group">
             <label>Password</label>
-
             <input
               type="password"
               placeholder="Enter your password"
@@ -183,24 +148,19 @@ function Login() {
               required
             />
           </div>
-
           <button type="submit" className="auth-btn">
             Login
           </button>
-
         </form>
-
         {error && (
           <p className="error-message">
             {error}
           </p>
         )}
-
         <p className="auth-footer">
           Don't have an account?{" "}
           <Link to="/register">Create an account</Link>
         </p>
-
       </div>
     </div>
   );
