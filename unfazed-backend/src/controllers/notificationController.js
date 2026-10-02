@@ -1,8 +1,4 @@
 const Notification = require("../models/Notification");
-
-// ==========================================
-// GET MY NOTIFICATIONS
-// ==========================================
 const getMyNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -12,17 +8,12 @@ const getMyNotifications = async (req, res) => {
       userRole === "therapist"
         ? "Therapist"
         : "User";
-
-    // Use recipient ID as the main lookup.
-    // ObjectIds are unique, so this reliably finds
-    // notifications belonging to the logged-in account.
     const notifications =
       await Notification.find({
         recipient: userId,
       })
         .populate("appointment")
         .sort({ createdAt: -1 });
-
     console.log("=================================");
     console.log("GET MY NOTIFICATIONS");
     console.log("User ID:", userId);
@@ -50,25 +41,18 @@ const getMyNotifications = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// GET UNREAD COUNT
-// ==========================================
 const getUnreadCount = async (req, res) => {
   try {
     const userId = req.user.id;
-
     const count =
       await Notification.countDocuments({
         recipient: userId,
         isRead: false,
       });
-
     console.log(
       "UNREAD NOTIFICATION COUNT:",
       count
     );
-
     return res.json({
       success: true,
       count,
@@ -86,9 +70,6 @@ const getUnreadCount = async (req, res) => {
   }
 };
 
-// ==========================================
-// MARK ONE AS READ
-// ==========================================
 const markNotificationAsRead = async (
   req,
   res
@@ -96,7 +77,6 @@ const markNotificationAsRead = async (
   try {
     const userId = req.user.id;
     const { notificationId } = req.params;
-
     const notification =
       await Notification.findOneAndUpdate(
         {
@@ -139,9 +119,6 @@ const markNotificationAsRead = async (
   }
 };
 
-// ==========================================
-// MARK ALL AS READ
-// ==========================================
 const markAllNotificationsAsRead =
   async (req, res) => {
     try {
@@ -177,9 +154,6 @@ const markAllNotificationsAsRead =
     }
   };
 
-// ==========================================
-// CREATE NOTIFICATION
-// ==========================================
 const createNotification = async ({
   recipient,
   recipientModel,
