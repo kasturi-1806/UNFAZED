@@ -1,11 +1,7 @@
 const express = require("express");
-
 const router = express.Router();
-
 const authMiddleware = require("../middleware/authMiddleware");
-
 const requireRole = require("../middleware/roleMiddleware");
-
 const {
   getAvailability,
   updateAvailability,
@@ -14,7 +10,6 @@ const {
   getPublicCalendarAvailability,
 } = require("../controllers/availabilityController");
 
-// Therapist gets their availability
 router.get(
   "/",
   authMiddleware,
@@ -22,7 +17,6 @@ router.get(
   getAvailability
 );
 
-// Therapist updates their availability
 router.put(
   "/",
   authMiddleware,
@@ -30,7 +24,6 @@ router.put(
   updateAvailability
 );
 
-// Therapist gets their available slots
 router.get(
   "/slots",
   authMiddleware,
@@ -38,13 +31,11 @@ router.get(
   getAvailableSlots
 );
 
-// Public calendar availability
 router.get(
   "/public/:slug/calendar",
   getPublicCalendarAvailability
 );
 
-// Public available slots
 router.get(
   "/public/:slug/slots",
   getPublicAvailableSlots
