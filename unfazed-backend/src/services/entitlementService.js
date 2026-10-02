@@ -1,5 +1,4 @@
 const Therapist = require("../models/Therapist");
-
 const canAccess = async (
   therapistId,
   featureKey,
@@ -8,27 +7,20 @@ const canAccess = async (
   const therapist = await Therapist.findById(
     therapistId
   ).populate("subscriptionTier");
-
   if (!therapist) {
     return {
       allowed: false,
       reason: "Therapist not found.",
     };
   }
-
   const tier = therapist.subscriptionTier;
-
   if (!tier || !tier.isActive) {
     return {
       allowed: false,
       reason: "No active subscription tier assigned.",
     };
   }
-
   switch (featureKey) {
-    // =========================================
-    // ACTIVE CLIENT LIMIT
-    // =========================================
     case "active-client-cap": {
       if (
         requestedValue === null ||
@@ -52,10 +44,6 @@ const canAccess = async (
           : `Your ${tier.name} plan allows a maximum of ${tier.activeClientLimit} active clients.`,
       };
     }
-
-    // =========================================
-    // SESSION NOTE TEMPLATE
-    // =========================================
     case "note-template": {
       const templateAccess = {
         basic: ["basic"],
@@ -89,30 +77,22 @@ const canAccess = async (
           : `${requestedValue?.toUpperCase()} note template is not available on your ${tier.name} plan.`,
       };
     }
-
-    // =========================================
-    // ANALYTICS DEPTH
-    // =========================================
     case "analytics-depth": {
       const depthOrder = {
         basic: 1,
         standard: 2,
         advanced: 3,
       };
-
       const currentLevel =
         depthOrder[
           tier.analyticsDepth
         ] || 0;
-
       const requestedLevel =
         depthOrder[
           requestedValue
         ] || 0;
-
       const allowed =
         currentLevel >= requestedLevel;
-
       return {
         allowed,
         currentDepth:
@@ -122,10 +102,6 @@ const canAccess = async (
           : `Advanced analytics are not available on your ${tier.name} plan.`,
       };
     }
-
-    // =========================================
-    // FEATURE FLAGS
-    // =========================================
     case "chat":
       return {
         allowed:
@@ -135,7 +111,6 @@ const canAccess = async (
             ? null
             : "Chat is not available on your current plan.",
       };
-
     case "packages":
       return {
         allowed:
@@ -145,7 +120,6 @@ const canAccess = async (
             ? null
             : "Packages are not available on your current plan.",
       };
-
     case "analytics":
       return {
         allowed:
@@ -155,7 +129,6 @@ const canAccess = async (
             ? null
             : "Analytics are not available on your current plan.",
       };
-
     case "advanced-analytics":
       return {
         allowed:
@@ -165,7 +138,6 @@ const canAccess = async (
             ? null
             : "Advanced analytics require a higher subscription tier.",
       };
-
     default:
       return {
         allowed: false,
