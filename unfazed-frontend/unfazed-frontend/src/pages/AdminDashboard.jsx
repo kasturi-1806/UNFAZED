@@ -1,29 +1,22 @@
-
 import { useEffect, useState } from "react";
-
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     therapists: 0,
     users: 0,
   });
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const adminData = JSON.parse(
     localStorage.getItem("adminData") || "{}"
   );
-
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
         const token = localStorage.getItem("adminToken");
-
         if (!token) {
           window.location.href = "/admin/login";
           return;
         }
-
         const response = await fetch(
           "http://localhost:5000/api/admin/dashboard",
           {
@@ -33,15 +26,12 @@ const AdminDashboard = () => {
             },
           }
         );
-
         const data = await response.json();
-
         if (!response.ok || !data.success) {
           throw new Error(
             data.message || "Failed to load dashboard"
           );
         }
-
         setStats(data.stats);
       } catch (error) {
         console.error("Admin dashboard error:", error);
@@ -55,23 +45,19 @@ const AdminDashboard = () => {
           window.location.href = "/admin/login";
           return;
         }
-
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchDashboard();
   }, []);
-
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminData");
 
     window.location.href = "/admin/login";
   };
-
   return (
     <div
       style={{
@@ -80,7 +66,6 @@ const AdminDashboard = () => {
         color: "#203d35",
       }}
     >
-      {/* Header */}
       <header
         style={{
           background: "#ffffff",
@@ -101,7 +86,6 @@ const AdminDashboard = () => {
           >
             UNFAZED
           </h1>
-
           <p
             style={{
               margin: "4px 0 0",
@@ -112,7 +96,6 @@ const AdminDashboard = () => {
             Admin Dashboard
           </p>
         </div>
-
         <div
           style={{
             display: "flex",
@@ -156,8 +139,6 @@ const AdminDashboard = () => {
           </button>
         </div>
       </header>
-
-      {/* Main */}
       <main
         style={{
           maxWidth: "1100px",
@@ -184,8 +165,6 @@ const AdminDashboard = () => {
             Manage and monitor the UNFAZED platform.
           </p>
         </div>
-
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -199,8 +178,6 @@ const AdminDashboard = () => {
             {error}
           </div>
         )}
-
-        {/* Statistics */}
         <div
           style={{
             display: "grid",
@@ -209,7 +186,6 @@ const AdminDashboard = () => {
             gap: "20px",
           }}
         >
-          {/* Therapists */}
           <div
             style={{
               background: "#ffffff",
@@ -228,7 +204,6 @@ const AdminDashboard = () => {
             >
               Total Therapists
             </p>
-
             <h3
               style={{
                 margin: "12px 0 0",
@@ -239,8 +214,6 @@ const AdminDashboard = () => {
               {loading ? "..." : stats.therapists}
             </h3>
           </div>
-
-          {/* Users */}
           <div
             style={{
               background: "#ffffff",
@@ -259,7 +232,6 @@ const AdminDashboard = () => {
             >
               Total Users
             </p>
-
             <h3
               style={{
                 margin: "12px 0 0",
@@ -271,8 +243,6 @@ const AdminDashboard = () => {
             </h3>
           </div>
         </div>
-
-        {/* Management sections */}
         <div
           style={{
             marginTop: "35px",
@@ -282,7 +252,6 @@ const AdminDashboard = () => {
             gap: "20px",
           }}
         >
-          {/* Therapist Management */}
           <div
             style={{
               background: "#dfeae3",
@@ -293,7 +262,6 @@ const AdminDashboard = () => {
             <h3 style={{ marginTop: 0 }}>
               Therapist Management
             </h3>
-
             <p
               style={{
                 color: "#315f51",
@@ -303,7 +271,6 @@ const AdminDashboard = () => {
               View and manage therapists registered on
               the UNFAZED platform.
             </p>
-
             <button
               onClick={() => {
                 window.location.href = "/admin/therapists";
@@ -322,8 +289,6 @@ const AdminDashboard = () => {
               View Therapists
             </button>
           </div>
-
-          {/* User Management */}
           <div
             style={{
               background: "#dfeae3",
@@ -344,7 +309,6 @@ const AdminDashboard = () => {
               View registered users and monitor platform
               activity.
             </p>
-
             <button
               onClick={() => {
                 window.location.href = "/admin/users";
@@ -368,5 +332,4 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
 export default AdminDashboard;
