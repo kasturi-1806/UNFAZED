@@ -12,12 +12,6 @@ const messageRoutes = require("./routes/messageRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const app = express();
 const paymentRoutes = require("./routes/paymentRoutes");
-// ==========================================
-// MIDDLEWARE
-// ==========================================
-
-// Keep raw request body for Razorpay webhook
-// so the webhook signature can be verified.
 app.use(
   express.json({
     verify: (req, res, buf) => {
@@ -37,74 +31,32 @@ app.use(
     credentials: true,
   })
 );
-
-// ==========================================
-// MESSAGE ROUTES
-// ==========================================
-
 app.use("/api/messages", messageRoutes);
-
-// ==========================================
-// SIMPLE TEST ROUTE
-// ==========================================
-
 app.get("/", (req, res) => {
   res.json({
     success: true,
     message: "THIS IS MY NEW BACKEND",
   });
 });
-
-// ==========================================
-// AUTHENTICATION ROUTES
-// ==========================================
-
 app.use("/api/auth", authRoutes);
-
-// ==========================================
-// EXISTING ROUTES
-// ==========================================
-
 app.use("/api/therapists", therapistRoutes);
-
 app.use("/api/appointments", appointmentRoutes);
-
 app.use("/api/intake", intakeRoutes);
-
 app.use("/api/availability", availabilityRoutes);
-
 app.use("/api/clients", clientRoutes);
-
 app.use("/api/notifications", notificationRoutes);
-
-// ==========================================
-// ADMIN ROUTES
-// ==========================================
-
 app.use("/api/admin", adminRoutes);
 app.use(
   "/api/analytics",
   analyticsRoutes
 );
-// ==========================================
-// AVAILABILITY TEST
-// ==========================================
-
 app.get("/api/availability-test", (req, res) => {
   res.json({
     success: true,
     message: "Availability routes are loaded",
   });
 });
-// ==========================================
-// PAYMENT ROUTES
-// ==========================================
-
 app.use("/api/payments", paymentRoutes);
-// ==========================================
-// ROUTE DEBUG
-// ==========================================
-
 console.log(
   "ROUTE DETAILS:",
   app.router.stack
@@ -114,5 +66,4 @@ console.log(
       methods: layer.route.methods,
     }))
 );
-
 module.exports = app;
