@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { io } from "socket.io-client";
 import NotificationBell from "../pages/NotificationBell";
-
 function UserDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [packages, setPackages] = useState([]);
   const [myPackages, setMyPackages] = useState([]);
   const [payments, setPayments] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
-
   const [loadingMessages, setLoadingMessages] =
     useState(false);
   const [loading, setLoading] = useState(true);
@@ -19,7 +17,6 @@ function UserDashboard() {
     useState(false);
   const [loadingPayments, setLoadingPayments] =
     useState(false);
-
   const [error, setError] = useState("");
   const [packageMessage, setPackageMessage] =
     useState("");
@@ -27,10 +24,6 @@ function UserDashboard() {
     useState("");
   const [purchasingPackage, setPurchasingPackage] =
     useState(null);
-
-  // =========================================
-  // GET TOKEN
-  // =========================================
   const getToken = () => {
     return (
       localStorage.getItem("token") ||
@@ -38,21 +31,15 @@ function UserDashboard() {
       localStorage.getItem("jwt")
     );
   };
-
-  // =========================================
-  // FETCH APPOINTMENTS
-  // =========================================
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const token = getToken();
-
         if (!token) {
           setError("Please log in again.");
           setLoading(false);
           return;
         }
-
         const response = await fetch(
           "http://localhost:5000/api/appointments/user",
           {
@@ -109,9 +96,6 @@ function UserDashboard() {
     fetchAppointments();
   }, []);
 
-  // =========================================
-  // FETCH MY PACKAGES
-  // =========================================
   const fetchMyPackages = async () => {
     const token = getToken();
 
@@ -167,9 +151,6 @@ function UserDashboard() {
     fetchMyPackages();
   }, []);
 
-  // =========================================
-  // FETCH PAYMENT HISTORY
-  // =========================================
   useEffect(() => {
     const fetchPayments = async () => {
       const token = getToken();
@@ -216,10 +197,6 @@ function UserDashboard() {
 
     fetchPayments();
   }, []);
-
-  // =========================================
-  // APPOINTMENT DATE/TIME
-  // =========================================
   const getAppointmentDateTime = (
     appointment
   ) => {
@@ -274,10 +251,6 @@ function UserDashboard() {
 
     return date;
   };
-
-  // =========================================
-  // UPCOMING APPOINTMENT
-  // =========================================
   const upcomingAppointments =
     appointments
       .filter((appointment) => {
@@ -304,9 +277,6 @@ function UserDashboard() {
   const upcomingAppointment =
     upcomingAppointments[0];
 
-  // =========================================
-  // RECENT SESSION
-  // =========================================
   const completedAppointments =
     appointments
       .filter(
@@ -322,10 +292,6 @@ function UserDashboard() {
 
   const recentAppointment =
     completedAppointments[0];
-
-  // =========================================
-  // FETCH THERAPIST PACKAGES
-  // =========================================
   useEffect(() => {
     const fetchPackages = async () => {
       if (!upcomingAppointment) {
@@ -407,9 +373,6 @@ function UserDashboard() {
     fetchPackages();
   }, [upcomingAppointment]);
 
-  // =========================================
-  // CHECK PURCHASED PACKAGE
-  // =========================================
   const getPurchasedPackage = (
     packageId
   ) => {
@@ -434,9 +397,7 @@ function UserDashboard() {
       getPurchasedPackage(packageId)
     );
   };
-// =========================================
-// PURCHASE PACKAGE WITH RAZORPAY
-// =========================================
+
 const handlePurchasePackage = async (
   packageId
 ) => {
@@ -446,7 +407,6 @@ const handlePurchasePackage = async (
     );
     return;
   }
-
   try {
     const token = getToken();
 
@@ -461,9 +421,6 @@ const handlePurchasePackage = async (
     setPackageMessage("");
     setPackageError("");
 
-    // =========================================
-    // STEP 1: CREATE CLIENT PACKAGE
-    // =========================================
     const purchaseResponse =
       await fetch(
         "http://localhost:5000/api/client-packages/purchase",
@@ -498,9 +455,6 @@ const handlePurchasePackage = async (
       );
     }
 
-    // =========================================
-    // STEP 2: LOAD RAZORPAY CHECKOUT
-    // =========================================
     if (!window.Razorpay) {
       await new Promise((resolve, reject) => {
         const script =
@@ -521,10 +475,6 @@ const handlePurchasePackage = async (
         document.body.appendChild(script);
       });
     }
-
-    // =========================================
-    // STEP 3: CREATE RAZORPAY PACKAGE ORDER
-    // =========================================
     const orderResponse =
       await fetch(
         "http://localhost:5000/api/client-packages/razorpay/order",
@@ -560,26 +510,17 @@ const handlePurchasePackage = async (
         "Invalid Razorpay order response."
       );
     }
-
-    // =========================================
-    // STEP 4: OPEN RAZORPAY CHECKOUT
-    // =========================================
     const options = {
       key: orderData.keyId,
-
       amount: orderData.order.amount,
-
       currency:
-        orderData.order.currency || "INR",
-
+       orderData.order.currency || "INR",
       name: "UNFAZED",
-
       description:
         "Therapy Session Package",
 
       order_id:
         orderData.order.id,
-
       handler: async function (response) {
         try {
           setPackageMessage(
@@ -587,10 +528,6 @@ const handlePurchasePackage = async (
           );
 
           setPackageError("");
-
-          // =========================================
-          // STEP 5: VERIFY PAYMENT
-          // =========================================
           const verifyResponse =
             await fetch(
               "http://localhost:5000/api/client-packages/razorpay/verify",
@@ -631,23 +568,13 @@ const handlePurchasePackage = async (
             );
           }
 
-          // =========================================
-          // STEP 6: SUCCESS
-          // =========================================
           setPackageMessage(
             verifyData.invoice
               ? "Package purchased successfully! Payment verified and invoice generated."
               : "Package purchased successfully! Payment verified."
           );
 
-          // =========================================
-          // STEP 7: REFRESH ACTIVE PACKAGES
-          // =========================================
           await fetchMyPackages();
-
-          // =========================================
-          // STEP 8: REFRESH PAYMENT HISTORY
-          // =========================================
           await refreshPayments();
         } catch (error) {
           console.error(
@@ -684,9 +611,6 @@ const handlePurchasePackage = async (
     const razorpay =
       new window.Razorpay(options);
 
-    // =========================================
-    // PAYMENT FAILED
-    // =========================================
     razorpay.on(
       "payment.failed",
       function (response) {
@@ -723,9 +647,7 @@ const handlePurchasePackage = async (
     setPurchasingPackage(null);
   }
 };
-  // =========================================
-  // REFRESH PAYMENT HISTORY
-  // =========================================
+ 
   const refreshPayments = async () => {
     const token = getToken();
 
@@ -765,9 +687,6 @@ const handlePurchasePackage = async (
     }
   };
 
-  // =========================================
-  // DOWNLOAD INVOICE
-  // =========================================
   const handleDownloadInvoice = async (
     fileName
   ) => {
@@ -801,7 +720,7 @@ const handlePurchasePackage = async (
           message =
             data.message || message;
         } catch {
-          // Ignore JSON parsing error
+         
         }
 
         throw new Error(message);
@@ -839,9 +758,6 @@ const handlePurchasePackage = async (
     }
   };
 
-  // =========================================
-  // DATE FORMAT
-  // =========================================
   const formatDate = (date) => {
     if (!date) {
       return "Date unavailable";
@@ -878,10 +794,6 @@ const handlePurchasePackage = async (
       }
     );
   };
-
-  // =========================================
-  // THERAPIST NAME
-  // =========================================
   const getTherapistName = (
     appointment
   ) => {
@@ -891,10 +803,6 @@ const handlePurchasePackage = async (
       "Therapist"
     );
   };
-
-  // =========================================
-  // THERAPIST ID
-  // =========================================
   const getTherapistId = (
     appointment
   ) => {
@@ -906,9 +814,6 @@ const handlePurchasePackage = async (
     );
   };
 
-  // =========================================
-  // CHAT APPOINTMENT
-  // =========================================
   const chatAppointment =
     upcomingAppointment ||
     recentAppointment ||
@@ -922,9 +827,6 @@ const handlePurchasePackage = async (
   const chatTherapistId =
     getTherapistId(chatAppointment);
 
-  // =========================================
-  // FETCH CHAT MESSAGES
-  // =========================================
   useEffect(() => {
     if (!appointments.length) {
       setChatMessages([]);
@@ -985,10 +887,6 @@ const handlePurchasePackage = async (
       );
       return;
     }
-
-    // =========================================
-    // FETCH EXISTING MESSAGES
-    // =========================================
     const fetchMessages = async () => {
       try {
         setLoadingMessages(true);
@@ -1037,9 +935,6 @@ const handlePurchasePackage = async (
 
     fetchMessages();
 
-    // =========================================
-    // SOCKET.IO
-    // =========================================
     const socket = io(
       "http://localhost:5000",
       {
@@ -1100,9 +995,6 @@ const handlePurchasePackage = async (
     chatTherapistId,
   ]);
 
-  // =========================================
-  // SPECIALIZATION
-  // =========================================
   const getSpecialization = (
     appointment
   ) => {
@@ -1123,10 +1015,6 @@ const handlePurchasePackage = async (
       "Therapist"
     );
   };
-
-  // =========================================
-  // STATUS
-  // =========================================
   const getStatus = (
     appointment
   ) => {
@@ -1140,7 +1028,6 @@ const handlePurchasePackage = async (
   return (
     <div className="user-dashboard">
 
-      {/* HEADER */}
       <header className="dashboard-header">
         <div>
           <h1>UNFAZED</h1>
@@ -1167,7 +1054,6 @@ const handlePurchasePackage = async (
         </div>
       </header>
 
-      {/* UPCOMING SESSION */}
       <section className="upcoming-session-section">
 
         <div className="section-heading">
@@ -1283,7 +1169,6 @@ const handlePurchasePackage = async (
 
       </section>
 
-      {/* MESSAGES */}
       <section className="messages-section">
 
         <div className="section-heading">
@@ -1380,8 +1265,6 @@ const handlePurchasePackage = async (
         )}
 
       </section>
-
-      {/* MY ACTIVE PACKAGES */}
       {myPackages.length > 0 && (
         <section className="packages-section">
 
@@ -1512,8 +1395,6 @@ const handlePurchasePackage = async (
           </div>
         </section>
       )}
-
-      {/* PAYMENT HISTORY */}
       <section className="payment-history-section">
 
         <div className="section-heading">
@@ -1679,8 +1560,6 @@ const handlePurchasePackage = async (
         )}
 
       </section>
-
-      {/* AVAILABLE SESSION PACKAGES */}
       <section className="packages-section">
 
         <div className="section-heading">
@@ -1861,8 +1740,6 @@ const handlePurchasePackage = async (
         )}
 
       </section>
-
-      {/* QUICK ACTIONS */}
       <section className="quick-actions-section">
 
         <div className="section-heading">
@@ -1904,8 +1781,6 @@ const handlePurchasePackage = async (
         </div>
 
       </section>
-
-      {/* RECENT SESSION */}
       <section className="recent-session-section">
 
         <div className="section-heading">
@@ -1971,7 +1846,6 @@ const handlePurchasePackage = async (
 
       </section>
 
-      {/* SUPPORT */}
       <section className="support-section">
 
         <div className="support-content">
@@ -1999,5 +1873,4 @@ const handlePurchasePackage = async (
     </div>
   );
 }
-
 export default UserDashboard;
