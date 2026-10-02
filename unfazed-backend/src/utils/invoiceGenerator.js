@@ -1,7 +1,6 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
-
 const generateInvoice = (payment, user, therapist, clientPackage = null) => {
   return new Promise((resolve, reject) => {
     try {
@@ -29,36 +28,21 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
       });
 
       const stream = fs.createWriteStream(filePath);
-
       doc.pipe(stream);
-
-      // ==============================
-      // HEADER
-      // ==============================
-
       doc
         .fontSize(24)
         .fillColor("#203d35")
         .text("UNFAZED", { align: "left" });
-
       doc
         .fontSize(10)
         .fillColor("#6f7f78")
         .text("Mental Health Practice Platform");
-
       doc.moveDown(2);
-
-      // ==============================
-      // INVOICE TITLE
-      // ==============================
-
       doc
         .fontSize(20)
         .fillColor("#203d35")
         .text("TAX INVOICE");
-
       doc.moveDown(0.5);
-
       doc
         .fontSize(10)
         .fillColor("#555555")
@@ -68,74 +52,46 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
             payment.createdAt || Date.now()
           ).toLocaleDateString("en-IN")}`
         );
-
       doc.moveDown(1.5);
-
-      // ==============================
-      // CUSTOMER DETAILS
-      // ==============================
-
       doc
         .fontSize(12)
         .fillColor("#203d35")
         .text("Bill To");
-
       doc.moveDown(0.3);
-
       doc
         .fontSize(10)
         .fillColor("#444444")
         .text(`Name: ${user?.name || "Client"}`)
         .text(`Email: ${user?.email || "N/A"}`);
-
       doc.moveDown(1);
-
-      // ==============================
-      // THERAPIST DETAILS
-      // ==============================
-
       doc
         .fontSize(12)
         .fillColor("#203d35")
         .text("Therapist");
 
       doc.moveDown(0.3);
-
       doc
         .fontSize(10)
         .fillColor("#444444")
         .text(
           `Name: ${therapist?.name || "Therapist"}`
         );
-
       doc.moveDown(1.5);
-
-      // ==============================
-      // PAYMENT DETAILS
-      // ==============================
-
       doc
         .fontSize(12)
         .fillColor("#203d35")
         .text("Payment Details");
-
       doc.moveDown(0.7);
-
       const description = clientPackage
         ? `${clientPackage.package?.name || "Session Package"}`
         : "Therapy Session";
-
       const amount = Number(payment.amount || 0);
-
       const platformFee = Number(
         payment.platformFee || 0
       );
-
       const netAmount = Number(
         payment.netAmount || amount
       );
-
-      // Table header
 
       doc
         .fontSize(10)
@@ -156,11 +112,7 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
         });
 
       doc.moveDown(2);
-
-      // Table row
-
       const rowY = doc.y;
-
       doc
         .fontSize(10)
         .fillColor("#333333")
@@ -171,13 +123,7 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
           width: 130,
           align: "right",
         });
-
       doc.moveDown(2);
-
-      // ==============================
-      // AMOUNT SUMMARY
-      // ==============================
-
       doc
         .fontSize(10)
         .fillColor("#555555")
@@ -190,9 +136,7 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
             align: "right",
           }
         );
-
       doc.moveDown(0.5);
-
       doc
         .fontSize(12)
         .fillColor("#203d35")
@@ -205,9 +149,7 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
             align: "right",
           }
         );
-
       doc.moveDown(1);
-
       doc
         .fontSize(10)
         .fillColor("#315f51")
@@ -224,11 +166,6 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
         );
 
       doc.moveDown(2);
-
-      // ==============================
-      // PACKAGE INFORMATION
-      // ==============================
-
       if (clientPackage) {
         doc
           .fontSize(12)
@@ -236,7 +173,6 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
           .text("Package Information");
 
         doc.moveDown(0.5);
-
         doc
           .fontSize(10)
           .fillColor("#444444")
@@ -254,14 +190,8 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
                 : "N/A"
             }`
           );
-
         doc.moveDown(1.5);
       }
-
-      // ==============================
-      // FOOTER
-      // ==============================
-
       doc
         .fontSize(9)
         .fillColor("#777777")
@@ -274,7 +204,6 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
             width: 495,
           }
         );
-
       doc
         .fontSize(9)
         .text(
@@ -288,7 +217,6 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
         );
 
       doc.end();
-
       stream.on("finish", () => {
         resolve({
           invoiceNumber,
@@ -296,12 +224,10 @@ const generateInvoice = (payment, user, therapist, clientPackage = null) => {
           filePath,
         });
       });
-
       stream.on("error", reject);
     } catch (error) {
       reject(error);
     }
   });
 };
-
 module.exports = generateInvoice;
