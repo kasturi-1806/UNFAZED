@@ -1,24 +1,37 @@
 import React, { useEffect, useState } from "react";
+
+const API_BASE_URL = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : "https://unfazed-692q.onrender.com";
+
 function Packages() {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState(null);
+
   const [form, setForm] = useState({
     name: "",
     sessions: "3",
     pricePerSession: "",
     expiryDays: "30",
   });
+
   const token = localStorage.getItem("token");
+
   const fetchPackages = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/packages/my", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/packages/my`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       const data = await response.json();
 
       if (data.success) {
@@ -72,8 +85,8 @@ function Packages() {
       setSaving(true);
 
       const url = editingId
-        ? `http://localhost:5000/api/packages/${editingId}`
-        : "http://localhost:5000/api/packages";
+        ? `${API_BASE_URL}/api/packages/${editingId}`
+        : `${API_BASE_URL}/api/packages`;
 
       const method = editingId ? "PUT" : "POST";
 
@@ -116,12 +129,16 @@ function Packages() {
 
   const handleEdit = (packageItem) => {
     setEditingId(packageItem._id);
+
     setForm({
       name: packageItem.name,
       sessions: String(packageItem.sessions),
-      pricePerSession: String(packageItem.pricePerSession),
+      pricePerSession: String(
+        packageItem.pricePerSession
+      ),
       expiryDays: String(packageItem.expiryDays),
     });
+
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -131,7 +148,7 @@ function Packages() {
   const handleToggle = async (packageItem) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/packages/${packageItem._id}`,
+        `${API_BASE_URL}/api/packages/${packageItem._id}`,
         {
           method: "PUT",
           headers: {
@@ -168,7 +185,7 @@ function Packages() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/packages/${packageId}`,
+        `${API_BASE_URL}/api/packages/${packageId}`,
         {
           method: "DELETE",
           headers: {
@@ -180,7 +197,9 @@ function Packages() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        alert(data.message || "Failed to delete package.");
+        alert(
+          data.message || "Failed to delete package."
+        );
         return;
       }
 
@@ -195,9 +214,10 @@ function Packages() {
       <div className="packages-header">
         <div>
           <h1>Packages</h1>
+
           <p>
-            Create session packages for your clients and manage
-            their availability.
+            Create session packages for your clients and
+            manage their availability.
           </p>
         </div>
       </div>
@@ -306,6 +326,7 @@ function Packages() {
         <div className="section-heading">
           <div>
             <h2>Your Packages</h2>
+
             <p>
               Packages available for your clients.
             </p>
@@ -319,8 +340,10 @@ function Packages() {
         ) : packages.length === 0 ? (
           <div className="packages-empty">
             <h3>No packages yet</h3>
+
             <p>
-              Create your first package using the form above.
+              Create your first package using the form
+              above.
             </p>
           </div>
         ) : (
@@ -376,6 +399,7 @@ function Packages() {
                 <div className="package-details">
                   <div>
                     <span>Sessions</span>
+
                     <strong>
                       {packageItem.sessions}
                     </strong>
@@ -383,6 +407,7 @@ function Packages() {
 
                   <div>
                     <span>Expiry</span>
+
                     <strong>
                       {packageItem.expiryDays} days
                     </strong>
@@ -709,4 +734,6 @@ function Packages() {
     </div>
   );
 }
+
 export default Packages;
+

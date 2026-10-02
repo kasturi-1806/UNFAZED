@@ -1,7 +1,25 @@
 const Package = require("../models/Package");
+const { canAccess } = require("../services/entitlementService");
+
+const checkPackagesAccess = async (therapistId) => {
+  return await canAccess(therapistId, "packages");
+};
+
 const createPackage = async (req, res) => {
   try {
     const therapistId = req.user.id;
+
+    const entitlement = await checkPackagesAccess(
+      therapistId
+    );
+
+    if (!entitlement.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: entitlement.reason,
+      });
+    }
+
     const {
       name,
       sessions,
@@ -46,7 +64,8 @@ const createPackage = async (req, res) => {
       });
     }
 
-    const totalPrice = price * Number(sessions);
+    const totalPrice =
+      price * Number(sessions);
 
     const newPackage = await Package.create({
       therapist: therapistId,
@@ -63,7 +82,10 @@ const createPackage = async (req, res) => {
       package: newPackage,
     });
   } catch (error) {
-    console.error("Create package error:", error);
+    console.error(
+      "Create package error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -75,6 +97,18 @@ const createPackage = async (req, res) => {
 const getMyPackages = async (req, res) => {
   try {
     const therapistId = req.user.id;
+
+    const entitlement = await checkPackagesAccess(
+      therapistId
+    );
+
+    if (!entitlement.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: entitlement.reason,
+      });
+    }
+
     const packages = await Package.find({
       therapist: therapistId,
     }).sort({
@@ -86,16 +120,33 @@ const getMyPackages = async (req, res) => {
       packages,
     });
   } catch (error) {
-    console.error("Get packages error:", error);
+    console.error(
+      "Get packages error:",
+      error
+    );
+
     return res.status(500).json({
       success: false,
       message: "Failed to fetch packages",
     });
   }
 };
+
 const getTherapistPackages = async (req, res) => {
   try {
     const { therapistId } = req.params;
+
+    const entitlement = await checkPackagesAccess(
+      therapistId
+    );
+
+    if (!entitlement.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: entitlement.reason,
+      });
+    }
+
     const packages = await Package.find({
       therapist: therapistId,
       isActive: true,
@@ -115,14 +166,27 @@ const getTherapistPackages = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch therapist packages",
+      message:
+        "Failed to fetch therapist packages",
     });
   }
 };
+
 const updatePackage = async (req, res) => {
   try {
     const therapistId = req.user.id;
     const { packageId } = req.params;
+
+    const entitlement = await checkPackagesAccess(
+      therapistId
+    );
+
+    if (!entitlement.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: entitlement.reason,
+      });
+    }
 
     const packageItem = await Package.findOne({
       _id: packageId,
@@ -149,10 +213,13 @@ const updatePackage = async (req, res) => {
     }
 
     if (sessions !== undefined) {
-      if (![3, 6, 12].includes(Number(sessions))) {
+      if (
+        ![3, 6, 12].includes(Number(sessions))
+      ) {
         return res.status(400).json({
           success: false,
-          message: "Sessions must be 3, 6, or 12",
+          message:
+            "Sessions must be 3, 6, or 12",
         });
       }
 
@@ -165,7 +232,8 @@ const updatePackage = async (req, res) => {
       if (!Number.isFinite(price) || price < 0) {
         return res.status(400).json({
           success: false,
-          message: "Invalid price per session",
+          message:
+            "Invalid price per session",
         });
       }
 
@@ -175,7 +243,10 @@ const updatePackage = async (req, res) => {
     if (expiryDays !== undefined) {
       const expiry = Number(expiryDays);
 
-      if (!Number.isFinite(expiry) || expiry <= 0) {
+      if (
+        !Number.isFinite(expiry) ||
+        expiry <= 0
+      ) {
         return res.status(400).json({
           success: false,
           message: "Invalid expiry period",
@@ -186,7 +257,8 @@ const updatePackage = async (req, res) => {
     }
 
     if (isActive !== undefined) {
-      packageItem.isActive = Boolean(isActive);
+      packageItem.isActive =
+        Boolean(isActive);
     }
 
     packageItem.totalPrice =
@@ -201,7 +273,10 @@ const updatePackage = async (req, res) => {
       package: packageItem,
     });
   } catch (error) {
-    console.error("Update package error:", error);
+    console.error(
+      "Update package error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -209,14 +284,28 @@ const updatePackage = async (req, res) => {
     });
   }
 };
+
 const deletePackage = async (req, res) => {
   try {
     const therapistId = req.user.id;
     const { packageId } = req.params;
-    const packageItem = await Package.findOneAndDelete({
-      _id: packageId,
-      therapist: therapistId,
-    });
+
+    const entitlement = await checkPackagesAccess(
+      therapistId
+    );
+
+    if (!entitlement.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: entitlement.reason,
+      });
+    }
+
+    const packageItem =
+      await Package.findOneAndDelete({
+        _id: packageId,
+        therapist: therapistId,
+      });
 
     if (!packageItem) {
       return res.status(404).json({
@@ -230,7 +319,10 @@ const deletePackage = async (req, res) => {
       message: "Package deleted successfully",
     });
   } catch (error) {
-    console.error("Delete package error:", error);
+    console.error(
+      "Delete package error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -246,3 +338,4 @@ module.exports = {
   updatePackage,
   deletePackage,
 };
+

@@ -673,6 +673,7 @@ setTherapists((prev) => [
                     >
                       <th style={headerStyle}>Name</th>
                       <th style={headerStyle}>Email</th>
+                      <th style={headerStyle}>Subscription Tier</th>
                       <th style={headerStyle}>
                         Specializations
                       </th>
@@ -697,7 +698,9 @@ setTherapists((prev) => [
                         <td style={cellStyle}>
                           {therapist.email || "—"}
                         </td>
-
+                        <td style={cellStyle}>
+                          {therapist.subscriptionTier?.name || "Not assigned"}
+                        </td>
                         <td style={cellStyle}>
                           {therapist.specializations?.length
                             ? therapist.specializations.join(

@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const Admin = require("../models/Admin");
 const User = require("../models/User");
 const Therapist = require("../models/Therapist");
+const SubscriptionTierConfig = require("../models/SubscriptionTierConfig");
 
 const loginAdmin = async (req, res) => {
   try {
@@ -27,7 +28,10 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, admin.password);
+    const isMatch = await bcrypt.compare(
+      password,
+      admin.password
+    );
 
     if (!isMatch) {
       return res.status(401).json({
@@ -67,7 +71,9 @@ const loginAdmin = async (req, res) => {
 
 const getAdminDashboard = async (req, res) => {
   try {
-    const therapistCount = await Therapist.countDocuments();
+    const therapistCount =
+      await Therapist.countDocuments();
+
     const userCount = await User.countDocuments();
 
     return res.json({
@@ -78,7 +84,10 @@ const getAdminDashboard = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Admin dashboard error:", error);
+    console.error(
+      "Admin dashboard error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -86,50 +95,72 @@ const getAdminDashboard = async (req, res) => {
     });
   }
 };
-
 const getAllTherapists = async (req, res) => {
   try {
-    const therapists = await Therapist.find({}).lean();
+    const therapists = await Therapist.find({})
+      .populate("subscriptionTier", "name")
+      .lean();
 
     console.log(
       "ADMIN THERAPIST DATA:",
       therapists.map((t) => ({
         id: t._id,
         name: t.name,
+        subscriptionTier: t.subscriptionTier,
         specializations: t.specializations,
         languages: t.languages,
       }))
     );
 
-    const formattedTherapists = therapists.map((therapist) => ({
-      _id: therapist._id,
-      name: therapist.name || "",
-      email: therapist.email || "",
-      slug: therapist.slug || "",
-      therapistCode: therapist.therapistCode || "",
-      bio: therapist.bio || "",
-      specializations: Array.isArray(therapist.specializations)
-        ? therapist.specializations
-        : [],
-      languages: Array.isArray(therapist.languages)
-        ? therapist.languages
-        : [],
-      createdAt: therapist.createdAt,
-    }));
+    const formattedTherapists = therapists.map(
+      (therapist) => ({
+        _id: therapist._id,
+        name: therapist.name || "",
+        email: therapist.email || "",
+        slug: therapist.slug || "",
+        therapistCode:
+          therapist.therapistCode || "",
+        bio: therapist.bio || "",
+        specializations:
+          Array.isArray(
+            therapist.specializations
+          )
+            ? therapist.specializations
+            : [],
+        languages:
+          Array.isArray(therapist.languages)
+            ? therapist.languages
+            : [],
+        subscriptionTier:
+          therapist.subscriptionTier
+            ? {
+                _id: therapist.subscriptionTier._id,
+                name:
+                  therapist.subscriptionTier.name,
+              }
+            : null,
+        createdAt: therapist.createdAt,
+      })
+    );
 
     return res.json({
       success: true,
       therapists: formattedTherapists,
     });
   } catch (error) {
-    console.error("Get therapists error:", error);
+    console.error(
+      "Get therapists error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch therapists",
+      message:
+        "Failed to fetch therapists",
     });
   }
 };
+
 
 const getAllUsers = async (req, res) => {
   try {
@@ -142,7 +173,10 @@ const getAllUsers = async (req, res) => {
       users,
     });
   } catch (error) {
-    console.error("Get users error:", error);
+    console.error(
+      "Get users error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -162,7 +196,10 @@ const assignTherapistCode = async (req, res) => {
       });
     }
 
-    const therapist = await Therapist.findById(therapistId);
+    const therapist =
+      await Therapist.findById(
+        therapistId
+      );
 
     if (!therapist) {
       return res.status(404).json({
@@ -182,31 +219,39 @@ const assignTherapistCode = async (req, res) => {
 
       therapistCode = `TH-${randomPart}`;
 
-      existingCode = await Therapist.findOne({
-        therapistCode,
-      });
+      existingCode =
+        await Therapist.findOne({
+          therapistCode,
+        });
     } while (existingCode);
 
-    therapist.therapistCode = therapistCode;
+    therapist.therapistCode =
+      therapistCode;
 
     await therapist.save();
 
     return res.json({
       success: true,
-      message: "Therapist code assigned successfully",
+      message:
+        "Therapist code assigned successfully",
       therapist: {
         id: therapist._id,
         name: therapist.name,
         email: therapist.email,
-        therapistCode: therapist.therapistCode,
+        therapistCode:
+          therapist.therapistCode,
       },
     });
   } catch (error) {
-    console.error("Assign therapist code error:", error);
+    console.error(
+      "Assign therapist code error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Failed to assign therapist code",
+      message:
+        "Failed to assign therapist code",
     });
   }
 };
@@ -226,20 +271,38 @@ const createTherapist = async (req, res) => {
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Name, email and password are required",
+        message:
+          "Name, email and password are required",
       });
     }
 
-    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedEmail =
+      email.toLowerCase().trim();
 
-    const existingTherapist = await Therapist.findOne({
-      email: normalizedEmail,
-    });
+    const existingTherapist =
+      await Therapist.findOne({
+        email: normalizedEmail,
+      });
 
     if (existingTherapist) {
       return res.status(409).json({
         success: false,
-        message: "Therapist with this email already exists",
+        message:
+          "Therapist with this email already exists",
+      });
+    }
+
+    const basicTier =
+      await SubscriptionTierConfig.findOne({
+        name: "Basic",
+        isActive: true,
+      });
+
+    if (!basicTier) {
+      return res.status(500).json({
+        success: false,
+        message:
+          "Basic subscription tier is not configured",
       });
     }
 
@@ -255,7 +318,9 @@ const createTherapist = async (req, res) => {
     const toArray = (value) => {
       if (Array.isArray(value)) {
         return value
-          .map((item) => item.toString().trim())
+          .map((item) =>
+            item.toString().trim()
+          )
           .filter(Boolean);
       }
 
@@ -269,65 +334,86 @@ const createTherapist = async (req, res) => {
       return [];
     };
 
-    const baseSlug = makeSlug(slug || name);
+    const baseSlug = makeSlug(
+      slug || name
+    );
 
     if (!baseSlug) {
       return res.status(400).json({
         success: false,
-        message: "A valid therapist name or slug is required",
+        message:
+          "A valid therapist name or slug is required",
       });
     }
 
     let therapistSlug = baseSlug;
 
-    let slugExists = await Therapist.findOne({
-      slug: therapistSlug,
-    });
+    let slugExists =
+      await Therapist.findOne({
+        slug: therapistSlug,
+      });
 
     let counter = 2;
 
     while (slugExists) {
-      therapistSlug = `${baseSlug}-${counter}`;
+      therapistSlug =
+        `${baseSlug}-${counter}`;
 
-      slugExists = await Therapist.findOne({
-        slug: therapistSlug,
-      });
+      slugExists =
+        await Therapist.findOne({
+          slug: therapistSlug,
+        });
 
       counter++;
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash =
+      await bcrypt.hash(password, 10);
 
-    const therapist = await Therapist.create({
-      name: name.trim(),
-      email: normalizedEmail,
-      password_hash: passwordHash,
-      slug: therapistSlug,
-      bio: bio ? bio.trim() : "",
-      specializations: toArray(specializations),
-      languages: toArray(languages),
-    });
+    const therapist =
+      await Therapist.create({
+        name: name.trim(),
+        email: normalizedEmail,
+        password_hash: passwordHash,
+        slug: therapistSlug,
+        subscriptionTier:
+          basicTier._id,
+        bio: bio ? bio.trim() : "",
+        specializations:
+          toArray(specializations),
+        languages:
+          toArray(languages),
+      });
 
     return res.status(201).json({
       success: true,
-      message: "Therapist created successfully",
+      message:
+        "Therapist created successfully",
       therapist: {
+        _id: therapist._id,
         id: therapist._id,
         name: therapist.name,
         email: therapist.email,
         slug: therapist.slug,
-        therapistCode: therapist.therapistCode || "",
+        therapistCode:
+          therapist.therapistCode || "",
         bio: therapist.bio,
-        specializations: therapist.specializations,
-        languages: therapist.languages,
+        specializations:
+          therapist.specializations,
+        languages:
+          therapist.languages,
       },
     });
   } catch (error) {
-    console.error("Create therapist error:", error);
+    console.error(
+      "Create therapist error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Failed to create therapist",
+      message:
+        "Failed to create therapist",
     });
   }
 };
@@ -340,3 +426,4 @@ module.exports = {
   assignTherapistCode,
   createTherapist,
 };
+
