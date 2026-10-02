@@ -1,14 +1,9 @@
 const SessionNote = require("../models/SessionNote");
 const Appointment = require("../models/Appointment");
 const { canAccess } = require("../services/entitlementService");
-// ==========================================
-// CREATE SESSION NOTE
-// ==========================================
-
 const createSessionNote = async (req, res) => {
   try {
     const therapistId = req.user.id;
-
     const {
       user,
       appointment,
@@ -29,10 +24,6 @@ const createSessionNote = async (req, res) => {
 
     const noteType =
       type === "shared" ? "shared" : "private";
-    // ==========================================
-// CHECK NOTE TEMPLATE ACCESS
-// ==========================================
-
 const selectedTemplate =
   templateType || "basic";
 
@@ -51,8 +42,6 @@ if (!templateAccess.allowed) {
       templateAccess.allowedTemplates,
   });
 }
-    // If appointment is provided, verify that it belongs
-    // to this therapist and client.
     if (appointment) {
       const existingAppointment =
         await Appointment.findOne({
@@ -97,15 +86,9 @@ if (!templateAccess.allowed) {
     });
   }
 };
-
-// ==========================================
-// GET THERAPIST SESSION NOTES
-// ==========================================
-
 const getTherapistNotes = async (req, res) => {
   try {
     const therapistId = req.user.id;
-
     const notes = await SessionNote.find({
       therapist: therapistId,
     })
@@ -133,10 +116,6 @@ const getTherapistNotes = async (req, res) => {
   }
 };
 
-// ==========================================
-// GET NOTES FOR ONE CLIENT — THERAPIST
-// ==========================================
-
 const getClientNotesForTherapist = async (
   req,
   res
@@ -144,7 +123,6 @@ const getClientNotesForTherapist = async (
   try {
     const therapistId = req.user.id;
     const { userId } = req.params;
-
     const notes = await SessionNote.find({
       therapist: therapistId,
       user: userId,
@@ -172,20 +150,12 @@ const getClientNotesForTherapist = async (
   }
 };
 
-// ==========================================
-// GET SHARED NOTES — CLIENT
-// ==========================================
-
 const getSharedNotesForClient = async (
   req,
   res
 ) => {
   try {
     const userId = req.user.id;
-
-    // IMPORTANT:
-    // Only shared notes are queried.
-    // Private notes can NEVER be returned from this route.
     const notes = await SessionNote.find({
       user: userId,
       type: "shared",
@@ -214,15 +184,10 @@ const getSharedNotesForClient = async (
   }
 };
 
-// ==========================================
-// UPDATE SESSION NOTE
-// ==========================================
-
 const updateSessionNote = async (req, res) => {
   try {
     const therapistId = req.user.id;
     const { noteId } = req.params;
-
     const {
       sessionDate,
       title,
@@ -285,11 +250,6 @@ const updateSessionNote = async (req, res) => {
     });
   }
 };
-
-// ==========================================
-// DELETE SESSION NOTE
-// ==========================================
-
 const deleteSessionNote = async (req, res) => {
   try {
     const therapistId = req.user.id;
