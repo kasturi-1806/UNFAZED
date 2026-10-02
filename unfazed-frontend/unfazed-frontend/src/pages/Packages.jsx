@@ -1,34 +1,24 @@
 import React, { useEffect, useState } from "react";
-
 function Packages() {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [editingId, setEditingId] = useState(null);
-
   const [form, setForm] = useState({
     name: "",
     sessions: "3",
     pricePerSession: "",
     expiryDays: "30",
   });
-
   const token = localStorage.getItem("token");
-
   const fetchPackages = async () => {
     try {
       setLoading(true);
-
-      const response = await fetch(
-        "http://localhost:5000/api/packages/my",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      const response = await fetch("http://localhost:5000/api/packages/my", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -126,14 +116,12 @@ function Packages() {
 
   const handleEdit = (packageItem) => {
     setEditingId(packageItem._id);
-
     setForm({
       name: packageItem.name,
       sessions: String(packageItem.sessions),
       pricePerSession: String(packageItem.pricePerSession),
       expiryDays: String(packageItem.expiryDays),
     });
-
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -721,5 +709,4 @@ function Packages() {
     </div>
   );
 }
-
 export default Packages;
