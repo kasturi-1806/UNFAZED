@@ -1,6 +1,4 @@
 const Therapist = require("../models/Therapist");
-
-// GET ALL THERAPISTS
 const getAllTherapists = async (req, res) => {
   try {
     const therapists = await Therapist.find(
@@ -9,7 +7,6 @@ const getAllTherapists = async (req, res) => {
         password_hash: 0,
       }
     );
-
     res.json({
       success: true,
       count: therapists.length,
@@ -25,7 +22,6 @@ const getAllTherapists = async (req, res) => {
   }
 };
 
-// GET THERAPIST BY SLUG
 const getTherapistBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -57,7 +53,6 @@ const getTherapistBySlug = async (req, res) => {
     });
   }
 };
-// UPDATE THERAPIST PROFILE
 const updateTherapistProfile = async (req, res) => {
   try {
     const therapistId = req.user.id;
@@ -78,20 +73,13 @@ const updateTherapistProfile = async (req, res) => {
 
     console.log("PROFILE UPDATE ID:", therapistId);
     console.log("PROFILE UPDATE BODY:", req.body);
-
-    // Find the existing therapist first
     const therapist = await Therapist.findById(therapistId);
-
     if (!therapist) {
       return res.status(404).json({
         success: false,
         message: "Therapist not found",
       });
     }
-
-    // Only update name when a valid name is provided.
-    // This prevents an empty frontend value from
-    // violating the required name field.
     if (name !== undefined && name.trim()) {
       therapist.name = name.trim();
     }
