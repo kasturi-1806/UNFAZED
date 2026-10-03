@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { io } from "socket.io-client";
 import NotificationBell from "../pages/NotificationBell";
+
 function UserDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [packages, setPackages] = useState([]);
   const [myPackages, setMyPackages] = useState([]);
   const [payments, setPayments] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
+
   const [loadingMessages, setLoadingMessages] =
     useState(false);
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,7 @@ function UserDashboard() {
     useState(false);
   const [loadingPayments, setLoadingPayments] =
     useState(false);
+
   const [error, setError] = useState("");
   const [packageMessage, setPackageMessage] =
     useState("");
@@ -24,6 +27,7 @@ function UserDashboard() {
     useState("");
   const [purchasingPackage, setPurchasingPackage] =
     useState(null);
+
   const getToken = () => {
     return (
       localStorage.getItem("token") ||
@@ -31,15 +35,18 @@ function UserDashboard() {
       localStorage.getItem("jwt")
     );
   };
+
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const token = getToken();
+
         if (!token) {
           setError("Please log in again.");
           setLoading(false);
           return;
         }
+
         const response = await fetch(
           "https://unfazed-692q.onrender.com/api/appointments/user",
           {
@@ -50,11 +57,6 @@ function UserDashboard() {
         );
 
         const data = await response.json();
-
-        console.log(
-          "USER APPOINTMENTS API RESPONSE:",
-          data
-        );
 
         if (!response.ok) {
           throw new Error(
@@ -67,15 +69,6 @@ function UserDashboard() {
           data.appointments ||
           data.data ||
           (Array.isArray(data) ? data : []);
-
-        console.log(
-          "FIRST APPOINTMENT OBJECT:",
-          JSON.stringify(
-            appointmentList[0],
-            null,
-            2
-          )
-        );
 
         setAppointments(appointmentList);
       } catch (err) {
@@ -197,6 +190,7 @@ function UserDashboard() {
 
     fetchPayments();
   }, []);
+
   const getAppointmentDateTime = (
     appointment
   ) => {
@@ -251,6 +245,7 @@ function UserDashboard() {
 
     return date;
   };
+
   const upcomingAppointments =
     appointments
       .filter((appointment) => {
@@ -292,6 +287,7 @@ function UserDashboard() {
 
   const recentAppointment =
     completedAppointments[0];
+
   useEffect(() => {
     const fetchPackages = async () => {
       if (!upcomingAppointment) {
@@ -308,10 +304,6 @@ function UserDashboard() {
         upcomingAppointment.therapistId;
 
       if (!therapistId) {
-        console.log(
-          "No therapist ID found for upcoming appointment."
-        );
-
         setPackages([]);
         return;
       }
@@ -336,7 +328,7 @@ function UserDashboard() {
           )
         ) {
           throw new Error(
-            "Unable to load session packages. Please make sure the backend is running on port 5000."
+            "Unable to load session packages."
           );
         }
 
@@ -398,256 +390,271 @@ function UserDashboard() {
     );
   };
 
-const handlePurchasePackage = async (
-  packageId
-) => {
-  if (isPackagePurchased(packageId)) {
-    setPackageMessage(
-      "You already have this package active."
-    );
-    return;
-  }
-  try {
-    const token = getToken();
-
-    if (!token) {
-      setPackageError(
-        "Please log in again."
+  const handlePurchasePackage = async (
+    packageId
+  ) => {
+    if (isPackagePurchased(packageId)) {
+      setPackageMessage(
+        "You already have this package active."
       );
       return;
     }
 
-    setPurchasingPackage(packageId);
-    setPackageMessage("");
-    setPackageError("");
+    try {
+      const token = getToken();
 
-    const purchaseResponse =
-      await fetch(
-        "https://unfazed-692q.onrender.com/api/client-packages/purchase",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            packageId,
-          }),
-        }
-      );
+      if (!token) {
+        setPackageError(
+          "Please log in again."
+        );
+        return;
+      }
 
-    const purchaseData =
-      await purchaseResponse.json();
+      setPurchasingPackage(packageId);
+      setPackageMessage("");
+      setPackageError("");
 
-    if (!purchaseResponse.ok) {
-      throw new Error(
-        purchaseData.message ||
-          "Unable to purchase package"
-      );
-    }
+      const purchaseResponse =
+        await fetch(
+          "https://unfazed-692q.onrender.com/api/client-packages/purchase",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              packageId,
+            }),
+          }
+        );
 
-    const clientPackage =
-      purchaseData.clientPackage;
+      const purchaseData =
+        await purchaseResponse.json();
 
-    if (!clientPackage?._id) {
-      throw new Error(
-        "Package was created but Client Package ID was not returned."
-      );
-    }
+      if (!purchaseResponse.ok) {
+        throw new Error(
+          purchaseData.message ||
+            "Unable to purchase package"
+        );
+      }
 
-    if (!window.Razorpay) {
-      await new Promise((resolve, reject) => {
-        const script =
-          document.createElement("script");
+      const clientPackage =
+        purchaseData.clientPackage;
 
-        script.src =
-          "https://checkout.razorpay.com/v1/checkout.js";
+      if (!clientPackage?._id) {
+        throw new Error(
+          "Package was created but Client Package ID was not returned."
+        );
+      }
 
-        script.onload = resolve;
+      if (!window.Razorpay) {
+        await new Promise(
+          (resolve, reject) => {
+            const script =
+              document.createElement(
+                "script"
+              );
 
-        script.onerror = () =>
-          reject(
-            new Error(
-              "Unable to load Razorpay checkout."
-            )
-          );
+            script.src =
+              "https://checkout.razorpay.com/v1/checkout.js";
 
-        document.body.appendChild(script);
-      });
-    }
-    const orderResponse =
-      await fetch(
-        "https://unfazed-692q.onrender.com/api/client-packages/razorpay/order",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            clientPackageId:
-              clientPackage._id,
-          }),
-        }
-      );
+            script.onload = resolve;
 
-    const orderData =
-      await orderResponse.json();
+            script.onerror = () =>
+              reject(
+                new Error(
+                  "Unable to load Razorpay checkout."
+                )
+              );
 
-    if (!orderResponse.ok) {
-      throw new Error(
-        orderData.message ||
-          "Unable to create Razorpay order."
-      );
-    }
-
-    if (
-      !orderData.success ||
-      !orderData.order?.id ||
-      !orderData.keyId
-    ) {
-      throw new Error(
-        "Invalid Razorpay order response."
-      );
-    }
-    const options = {
-      key: orderData.keyId,
-      amount: orderData.order.amount,
-      currency:
-       orderData.order.currency || "INR",
-      name: "UNFAZED",
-      description:
-        "Therapy Session Package",
-
-      order_id:
-        orderData.order.id,
-      handler: async function (response) {
-        try {
-          setPackageMessage(
-            "Payment received. Verifying your payment..."
-          );
-
-          setPackageError("");
-          const verifyResponse =
-            await fetch(
-              "https://unfazed-692q.onrender.com/api/client-packages/razorpay/verify",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  razorpay_order_id:
-                    response.razorpay_order_id,
-
-                  razorpay_payment_id:
-                    response.razorpay_payment_id,
-
-                  razorpay_signature:
-                    response.razorpay_signature,
-                }),
-              }
-            );
-
-          const verifyData =
-            await verifyResponse.json();
-
-          if (!verifyResponse.ok) {
-            throw new Error(
-              verifyData.message ||
-                "Package payment verification failed."
+            document.body.appendChild(
+              script
             );
           }
+        );
+      }
 
-          if (!verifyData.success) {
-            throw new Error(
-              verifyData.message ||
-                "Package payment verification failed."
+      const orderResponse =
+        await fetch(
+          "https://unfazed-692q.onrender.com/api/client-packages/razorpay/order",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              clientPackageId:
+                clientPackage._id,
+            }),
+          }
+        );
+
+      const orderData =
+        await orderResponse.json();
+
+      if (!orderResponse.ok) {
+        throw new Error(
+          orderData.message ||
+            "Unable to create Razorpay order."
+        );
+      }
+
+      if (
+        !orderData.success ||
+        !orderData.order?.id ||
+        !orderData.keyId
+      ) {
+        throw new Error(
+          "Invalid Razorpay order response."
+        );
+      }
+
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.order.amount,
+        currency:
+          orderData.order.currency ||
+          "INR",
+        name: "UNFAZED",
+        description:
+          "Therapy Session Package",
+        order_id:
+          orderData.order.id,
+
+        handler: async function (
+          response
+        ) {
+          try {
+            setPackageMessage(
+              "Payment received. Verifying your payment..."
+            );
+
+            setPackageError("");
+
+            const verifyResponse =
+              await fetch(
+                "https://unfazed-692q.onrender.com/api/client-packages/razorpay/verify",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type":
+                      "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    razorpay_order_id:
+                      response.razorpay_order_id,
+
+                    razorpay_payment_id:
+                      response.razorpay_payment_id,
+
+                    razorpay_signature:
+                      response.razorpay_signature,
+                  }),
+                }
+              );
+
+            const verifyData =
+              await verifyResponse.json();
+
+            if (!verifyResponse.ok) {
+              throw new Error(
+                verifyData.message ||
+                  "Package payment verification failed."
+              );
+            }
+
+            if (!verifyData.success) {
+              throw new Error(
+                verifyData.message ||
+                  "Package payment verification failed."
+              );
+            }
+
+            setPackageMessage(
+              verifyData.invoice
+                ? "Package purchased successfully! Payment verified and invoice generated."
+                : "Package purchased successfully! Payment verified."
+            );
+
+            await fetchMyPackages();
+            await refreshPayments();
+          } catch (error) {
+            console.error(
+              "PACKAGE PAYMENT VERIFICATION ERROR:",
+              error
+            );
+
+            setPackageError(
+              error.message ||
+                "Payment verification failed. Please contact support if money was deducted."
+            );
+
+            setPackageMessage("");
+          } finally {
+            setPurchasingPackage(
+              null
             );
           }
+        },
 
-          setPackageMessage(
-            verifyData.invoice
-              ? "Package purchased successfully! Payment verified and invoice generated."
-              : "Package purchased successfully! Payment verified."
-          );
+        modal: {
+          ondismiss: function () {
+            setPackageMessage(
+              "Payment was cancelled."
+            );
 
-          await fetchMyPackages();
-          await refreshPayments();
-        } catch (error) {
+            setPurchasingPackage(null);
+          },
+        },
+
+        theme: {
+          color: "#315f51",
+        },
+      };
+
+      const razorpay =
+        new window.Razorpay(options);
+
+      razorpay.on(
+        "payment.failed",
+        function (response) {
           console.error(
-            "PACKAGE PAYMENT VERIFICATION ERROR:",
-            error
+            "RAZORPAY PACKAGE PAYMENT FAILED:",
+            response
           );
 
           setPackageError(
-            error.message ||
-              "Payment verification failed. Please contact support if money was deducted."
+            response.error?.description ||
+              "Package payment failed."
           );
 
           setPackageMessage("");
-        } finally {
+
           setPurchasingPackage(null);
         }
-      },
+      );
 
-      modal: {
-        ondismiss: function () {
-          setPackageMessage(
-            "Payment was cancelled."
-          );
+      razorpay.open();
+    } catch (err) {
+      console.error(
+        "PACKAGE PURCHASE ERROR:",
+        err
+      );
 
-          setPurchasingPackage(null);
-        },
-      },
+      setPackageError(
+        err.message ||
+          "Unable to purchase package."
+      );
 
-      theme: {
-        color: "#315f51",
-      },
-    };
+      setPackageMessage("");
 
-    const razorpay =
-      new window.Razorpay(options);
+      setPurchasingPackage(null);
+    }
+  };
 
-    razorpay.on(
-      "payment.failed",
-      function (response) {
-        console.error(
-          "RAZORPAY PACKAGE PAYMENT FAILED:",
-          response
-        );
-
-        setPackageError(
-          response.error?.description ||
-            "Package payment failed."
-        );
-
-        setPackageMessage("");
-
-        setPurchasingPackage(null);
-      }
-    );
-
-    razorpay.open();
-  } catch (err) {
-    console.error(
-      "PACKAGE PURCHASE ERROR:",
-      err
-    );
-
-    setPackageError(
-      err.message ||
-        "Unable to purchase package."
-    );
-
-    setPackageMessage("");
-
-    setPurchasingPackage(null);
-  }
-};
- 
   const refreshPayments = async () => {
     const token = getToken();
 
@@ -720,7 +727,7 @@ const handlePurchasePackage = async (
           message =
             data.message || message;
         } catch {
-         
+          // Ignore non-JSON response
         }
 
         throw new Error(message);
@@ -739,9 +746,7 @@ const handlePurchasePackage = async (
       link.download = fileName;
 
       document.body.appendChild(link);
-
       link.click();
-
       link.remove();
 
       window.URL.revokeObjectURL(url);
@@ -765,15 +770,12 @@ const handlePurchasePackage = async (
 
     return new Date(
       date
-    ).toLocaleDateString(
-      "en-US",
-      {
-        weekday: "long",
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }
-    );
+    ).toLocaleDateString("en-US", {
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   const formatShortDate = (
@@ -785,15 +787,13 @@ const handlePurchasePackage = async (
 
     return new Date(
       date
-    ).toLocaleDateString(
-      "en-US",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }
-    );
+    ).toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   };
+
   const getTherapistName = (
     appointment
   ) => {
@@ -803,6 +803,7 @@ const handlePurchasePackage = async (
       "Therapist"
     );
   };
+
   const getTherapistId = (
     appointment
   ) => {
@@ -812,6 +813,37 @@ const handlePurchasePackage = async (
       appointment?.therapistId ||
       null
     );
+  };
+
+  const getSpecialization = (
+    appointment
+  ) => {
+    if (
+      Array.isArray(
+        appointment?.therapist
+          ?.specializations
+      )
+    ) {
+      return appointment.therapist.specializations.join(
+        ", "
+      );
+    }
+
+    return (
+      appointment?.therapist
+        ?.specialization ||
+      "Therapist"
+    );
+  };
+
+  const getStatus = (
+    appointment
+  ) => {
+    if (!appointment?.status) {
+      return "PENDING";
+    }
+
+    return appointment.status.toUpperCase();
   };
 
   const chatAppointment =
@@ -836,31 +868,7 @@ const handlePurchasePackage = async (
     const therapistId =
       chatTherapistId;
 
-    console.log(
-      "CHAT THERAPIST ID:",
-      therapistId
-    );
-
-    console.log(
-      "CHAT APPOINTMENT:",
-      chatAppointment
-    );
-
-    console.log(
-      "UPCOMING APPOINTMENT:",
-      upcomingAppointment
-    );
-
-    console.log(
-      "RECENT APPOINTMENT:",
-      recentAppointment
-    );
-
     if (!therapistId) {
-      console.log(
-        "CHAT: No therapist ID found."
-      );
-
       setChatMessages([]);
       return;
     }
@@ -869,24 +877,17 @@ const handlePurchasePackage = async (
 
     const storedUser =
       JSON.parse(
-        localStorage.getItem("user")
-      ) || {};
+        localStorage.getItem("user") || "{}"
+      );
 
     const currentUserId =
       storedUser.id ||
       storedUser._id;
 
-    console.log(
-      "CHAT CURRENT USER ID:",
-      currentUserId
-    );
-
     if (!token || !currentUserId) {
-      console.log(
-        "CHAT: Token or current user ID missing."
-      );
       return;
     }
+
     const fetchMessages = async () => {
       try {
         setLoadingMessages(true);
@@ -902,16 +903,6 @@ const handlePurchasePackage = async (
 
         const data =
           await response.json();
-
-        console.log(
-          "CHAT API STATUS:",
-          response.status
-        );
-
-        console.log(
-          "CHAT API RESPONSE:",
-          data
-        );
 
         if (!response.ok) {
           throw new Error(
@@ -943,11 +934,6 @@ const handlePurchasePackage = async (
     );
 
     socket.on("connect", () => {
-      console.log(
-        "USER CHAT SOCKET CONNECTED:",
-        socket.id
-      );
-
       socket.emit("joinRoom", {
         userId: currentUserId,
         role: "user",
@@ -957,11 +943,6 @@ const handlePurchasePackage = async (
     socket.on(
       "newMessage",
       (newMessage) => {
-        console.log(
-          "NEW CHAT MESSAGE RECEIVED:",
-          newMessage
-        );
-
         if (
           String(newMessage.senderId) ===
             String(therapistId) &&
@@ -978,15 +959,6 @@ const handlePurchasePackage = async (
       }
     );
 
-    socket.on(
-      "disconnect",
-      () => {
-        console.log(
-          "USER CHAT SOCKET DISCONNECTED"
-        );
-      }
-    );
-
     return () => {
       socket.disconnect();
     };
@@ -995,614 +967,1496 @@ const handlePurchasePackage = async (
     chatTherapistId,
   ]);
 
-  const getSpecialization = (
-    appointment
-  ) => {
-    if (
-      Array.isArray(
-        appointment?.therapist
-          ?.specializations
-      )
-    ) {
-      return appointment.therapist.specializations.join(
-        ", "
-      );
-    }
+  const statUpcoming =
+    upcomingAppointment
+      ? formatShortDate(
+          upcomingAppointment.date
+        )
+      : "—";
 
-    return (
-      appointment?.therapist
-        ?.specialization ||
-      "Therapist"
-    );
-  };
-  const getStatus = (
-    appointment
-  ) => {
-    if (!appointment?.status) {
-      return "PENDING";
-    }
+  const statCompleted =
+    completedAppointments.length;
 
-    return appointment.status.toUpperCase();
-  };
+  const statPayments =
+    payments.length;
 
   return (
-    <div className="user-dashboard">
+    <div className="ud-page">
+      <style>{`
+        .ud-page {
+          min-height: 100vh;
+          background:
+            radial-gradient(
+              circle at top right,
+              rgba(49, 95, 81, 0.08),
+              transparent 28%
+            ),
+            #f7f8f5;
+          color: #203d35;
+          padding: 28px 24px 50px;
+          box-sizing: border-box;
+        }
 
-      <header className="dashboard-header">
-        <div>
-          <h1>UNFAZED</h1>
+        .ud-shell {
+          width: min(1180px, 100%);
+          margin: 0 auto;
+        }
 
-          <h2>
-            Welcome back 👋
-          </h2>
+        .ud-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 24px;
+          margin-bottom: 26px;
+          padding: 28px;
+          border-radius: 24px;
+          background: linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #eef5f1 100%
+          );
+          border: 1px solid #dfeae3;
+          box-shadow: 0 10px 30px rgba(32, 61, 53, 0.06);
+        }
 
-          <p>
-            Your mental wellness journey,
-            all in one place.
-          </p>
-        </div>
+        .ud-brand {
+          display: inline-flex;
+          align-items: center;
+          gap: 9px;
+          margin-bottom: 12px;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 1.6px;
+          color: #315f51;
+        }
 
-        <div className="user-header-actions">
-          <NotificationBell />
+        .ud-brand-dot {
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+          background: #315f51;
+        }
 
-          <Link
-            to="/login"
-            className="logout-link"
-          >
-            Logout
-          </Link>
-        </div>
-      </header>
+        .ud-header h1 {
+          margin: 0;
+          font-size: clamp(28px, 4vw, 40px);
+          line-height: 1.08;
+          letter-spacing: -0.8px;
+        }
 
-      <section className="upcoming-session-section">
+        .ud-header p {
+          margin: 10px 0 0;
+          color: #71807a;
+          font-size: 15px;
+          line-height: 1.6;
+          max-width: 560px;
+        }
 
-        <div className="section-heading">
-          <h2>
-            Upcoming Session
-          </h2>
-        </div>
+        .ud-header-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
 
-        {loading ? (
-          <div className="session-card">
-            <p>
-              Loading your upcoming session...
-            </p>
-          </div>
-        ) : error ? (
-          <div className="session-card">
-            <p>{error}</p>
-          </div>
-        ) : upcomingAppointment ? (
-          <div className="session-card">
+        .ud-logout {
+          border: 1px solid #d5e1db;
+          background: #ffffff;
+          color: #315f51;
+          text-decoration: none;
+          padding: 10px 15px;
+          border-radius: 10px;
+          font-weight: 600;
+          font-size: 13px;
+        }
 
-            <div className="session-info">
+        .ud-section {
+          margin-top: 24px;
+        }
 
-              <div className="therapist-info">
+        .ud-section-title {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 18px;
+          margin-bottom: 14px;
+        }
 
-                <div className="therapist-avatar">
-                  {getTherapistName(
-                    upcomingAppointment
-                  )
-                    .charAt(0)
-                    .toUpperCase()}
-                </div>
+        .ud-section-title h2 {
+          margin: 0;
+          font-size: 20px;
+          letter-spacing: -0.2px;
+        }
 
-                <div>
-                  <h3>
-                    {getTherapistName(
-                      upcomingAppointment
-                    )}
-                  </h3>
+        .ud-section-title p {
+          margin: 5px 0 0;
+          color: #7b8983;
+          font-size: 13px;
+        }
 
-                  <p>
-                    {getSpecialization(
-                      upcomingAppointment
-                    )}
-                  </p>
-                </div>
+        .ud-stat-grid {
+          display: grid;
+          grid-template-columns: repeat(
+            4,
+            minmax(0, 1fr)
+          );
+          gap: 14px;
+        }
 
-              </div>
+        .ud-stat {
+          background: #ffffff;
+          border: 1px solid #dfeae3;
+          border-radius: 18px;
+          padding: 19px;
+          box-shadow: 0 7px 22px rgba(32, 61, 53, 0.04);
+        }
 
-              <div className="session-status">
-                <span>
-                  {getStatus(
-                    upcomingAppointment
-                  )}
-                </span>
-              </div>
+        .ud-stat-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+        }
 
-            </div>
+        .ud-stat-label {
+          color: #7a8b85;
+          font-size: 12px;
+          font-weight: 600;
+        }
 
-            <div className="session-details">
+        .ud-stat-icon {
+          width: 32px;
+          height: 32px;
+          display: grid;
+          place-items: center;
+          border-radius: 10px;
+          background: #eef5f1;
+          color: #315f51;
+          font-size: 15px;
+        }
 
-              <div>
-                <strong>
-                  Date
-                </strong>
+        .ud-stat-value {
+          display: block;
+          margin-top: 14px;
+          font-size: 22px;
+          font-weight: 800;
+          color: #203d35;
+        }
 
-                <p>
-                  {formatDate(
-                    upcomingAppointment.date
-                  )}
-                </p>
-              </div>
+        .ud-card {
+          background: #ffffff;
+          border: 1px solid #dfeae3;
+          border-radius: 20px;
+          padding: 22px;
+          box-shadow: 0 7px 22px rgba(32, 61, 53, 0.04);
+        }
 
-              <div>
-                <strong>
-                  Time
-                </strong>
+        .ud-upcoming {
+          display: grid;
+          grid-template-columns: 1.5fr 1fr;
+          gap: 18px;
+        }
 
-                <p>
-                  {upcomingAppointment.time ||
-                    "Time unavailable"}
-                </p>
-              </div>
+        .ud-session-main {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 240px;
+        }
 
-              <div>
-                <strong>
-                  Duration
-                </strong>
+        .ud-kicker {
+          display: inline-flex;
+          width: fit-content;
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: #eef5f1;
+          color: #315f51;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.8px;
+        }
 
-                <p>
-                  {upcomingAppointment.duration ||
-                    50}{" "}
-                  minutes
-                </p>
-              </div>
+        .ud-therapist {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-top: 18px;
+        }
 
-            </div>
+        .ud-avatar {
+          width: 58px;
+          height: 58px;
+          border-radius: 16px;
+          display: grid;
+          place-items: center;
+          flex: 0 0 auto;
+          background: #dfeae3;
+          color: #315f51;
+          font-size: 22px;
+          font-weight: 800;
+        }
 
-          </div>
-        ) : (
-          <div className="session-card">
+        .ud-therapist h3 {
+          margin: 0;
+          font-size: 19px;
+        }
 
-            <p>
-              No upcoming sessions.
-            </p>
+        .ud-therapist p {
+          margin: 5px 0 0;
+          color: #788983;
+          font-size: 13px;
+        }
 
-            <Link to="/therapists">
-              Find a Therapist
-            </Link>
+        .ud-session-bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 18px;
+          margin-top: 25px;
+        }
 
-          </div>
-        )}
+        .ud-session-meta {
+          display: grid;
+          grid-template-columns: repeat(
+            3,
+            minmax(0, 1fr)
+          );
+          gap: 10px;
+          flex: 1;
+        }
 
-      </section>
+        .ud-meta-item {
+          padding: 12px;
+          background: #f7faf8;
+          border-radius: 12px;
+        }
 
-      <section className="messages-section">
+        .ud-meta-item span {
+          display: block;
+          color: #84938d;
+          font-size: 11px;
+          margin-bottom: 5px;
+        }
 
-        <div className="section-heading">
+        .ud-meta-item strong {
+          display: block;
+          font-size: 12px;
+          color: #315f51;
+          line-height: 1.4;
+        }
+
+        .ud-status {
+          padding: 7px 10px;
+          border-radius: 999px;
+          background: #e5f3ea;
+          color: #28704c;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.7px;
+          white-space: nowrap;
+        }
+
+        .ud-side-panel {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 14px;
+          background: #203d35;
+          color: #ffffff;
+          border-radius: 18px;
+          padding: 22px;
+        }
+
+        .ud-side-panel span {
+          font-size: 11px;
+          color: #c4d6ce;
+        }
+
+        .ud-side-panel h3 {
+          margin: 8px 0 0;
+          font-size: 20px;
+        }
+
+        .ud-side-panel p {
+          margin: 7px 0 0;
+          color: #d4e0db;
+          font-size: 13px;
+          line-height: 1.5;
+        }
+
+        .ud-dark-link {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          width: fit-content;
+          text-decoration: none;
+          padding: 10px 14px;
+          border-radius: 10px;
+          background: #ffffff;
+          color: #203d35;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .ud-empty {
+          text-align: center;
+          padding: 34px 18px;
+        }
+
+        .ud-empty-icon {
+          width: 46px;
+          height: 46px;
+          margin: 0 auto 13px;
+          border-radius: 14px;
+          background: #eef5f1;
+          color: #315f51;
+          display: grid;
+          place-items: center;
+          font-size: 20px;
+        }
+
+        .ud-empty h3 {
+          margin: 0;
+          font-size: 17px;
+        }
+
+        .ud-empty p {
+          margin: 7px 0 15px;
+          color: #7b8983;
+          font-size: 13px;
+        }
+
+        .ud-primary-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 14px;
+          background: #315f51;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 10px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .ud-message {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 18px;
+        }
+
+        .ud-message-main {
+          min-width: 0;
+        }
+
+        .ud-message-main h3 {
+          margin: 7px 0 5px;
+          font-size: 17px;
+        }
+
+        .ud-message-main p {
+          margin: 0;
+          color: #71807a;
+          font-size: 13px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 650px;
+        }
+
+        .ud-message-time {
+          margin-top: 9px;
+          display: block;
+          color: #9aa7a2;
+          font-size: 11px;
+        }
+
+        .ud-action-link {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          text-decoration: none;
+          padding: 10px 14px;
+          border: 1px solid #d5e1db;
+          color: #315f51;
+          background: #ffffff;
+          border-radius: 10px;
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
+        .ud-package-grid {
+          display: grid;
+          grid-template-columns: repeat(
+            3,
+            minmax(0, 1fr)
+          );
+          gap: 15px;
+        }
+
+        .ud-package {
+          padding: 19px;
+          border-radius: 17px;
+          background: #ffffff;
+          border: 1px solid #dfeae3;
+          box-shadow: 0 7px 22px rgba(32, 61, 53, 0.04);
+        }
+
+        .ud-package-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .ud-package-label {
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          color: #315f51;
+        }
+
+        .ud-package h3 {
+          margin: 7px 0 0;
+          font-size: 17px;
+        }
+
+        .ud-count {
+          min-width: 40px;
+          height: 40px;
+          padding: 0 8px;
+          border-radius: 12px;
+          background: #eef5f1;
+          color: #315f51;
+          display: grid;
+          place-items: center;
+          font-size: 15px;
+          font-weight: 800;
+        }
+
+        .ud-package-price {
+          margin-top: 19px;
+        }
+
+        .ud-package-price strong {
+          display: block;
+          font-size: 27px;
+          color: #203d35;
+        }
+
+        .ud-package-price span {
+          color: #83928c;
+          font-size: 11px;
+        }
+
+        .ud-package-details {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-top: 17px;
+          padding-top: 15px;
+          border-top: 1px solid #edf2ef;
+        }
+
+        .ud-package-details span {
+          display: block;
+          color: #8a9792;
+          font-size: 10px;
+          margin-bottom: 5px;
+        }
+
+        .ud-package-details strong {
+          font-size: 11px;
+        }
+
+        .ud-buy {
+          width: 100%;
+          margin-top: 16px;
+          border: none;
+          padding: 11px;
+          border-radius: 10px;
+          background: #315f51;
+          color: #ffffff;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .ud-buy:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+        }
+
+        .ud-success {
+          margin-bottom: 14px;
+          padding: 12px 14px;
+          border-radius: 10px;
+          background: #e8f5ed;
+          color: #28704c;
+          font-size: 13px;
+        }
+
+        .ud-error {
+          margin-bottom: 14px;
+          padding: 12px 14px;
+          border-radius: 10px;
+          background: #fdecec;
+          color: #a34b4b;
+          font-size: 13px;
+        }
+
+        .ud-payment-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .ud-payment {
+          padding: 17px;
+          border: 1px solid #e3ebe6;
+          border-radius: 14px;
+          background: #fbfcfb;
+        }
+
+        .ud-payment-main {
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          align-items: flex-start;
+        }
+
+        .ud-payment-label {
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 0.9px;
+          color: #315f51;
+        }
+
+        .ud-payment h3 {
+          margin: 6px 0 4px;
+          font-size: 15px;
+        }
+
+        .ud-payment p {
+          margin: 0;
+          color: #82918b;
+          font-size: 12px;
+        }
+
+        .ud-payment-amount {
+          font-size: 18px;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+
+        .ud-payment-details {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          margin-top: 14px;
+          padding-top: 13px;
+          border-top: 1px solid #e9efeb;
+        }
+
+        .ud-payment-details span {
+          display: block;
+          color: #8a9792;
+          font-size: 10px;
+          margin-bottom: 4px;
+        }
+
+        .ud-payment-details strong {
+          display: block;
+          font-size: 11px;
+          word-break: break-word;
+        }
+
+        .ud-payment-success {
+          color: #28704c;
+        }
+
+        .ud-invoice {
+          margin-top: 13px;
+          border: 1px solid #d5e1db;
+          background: #ffffff;
+          color: #315f51;
+          border-radius: 9px;
+          padding: 9px 12px;
+          font-weight: 700;
+          font-size: 11px;
+          cursor: pointer;
+        }
+
+        .ud-actions {
+          display: grid;
+          grid-template-columns: repeat(
+            4,
+            minmax(0, 1fr)
+          );
+          gap: 12px;
+        }
+
+        .ud-action-card {
+          text-decoration: none;
+          background: #ffffff;
+          border: 1px solid #dfeae3;
+          border-radius: 16px;
+          padding: 18px;
+          color: #203d35;
+          transition:
+            transform 0.18s ease,
+            border-color 0.18s ease;
+        }
+
+        .ud-action-card:hover {
+          transform: translateY(-2px);
+          border-color: #b7cec3;
+        }
+
+        .ud-action-icon {
+          width: 38px;
+          height: 38px;
+          display: grid;
+          place-items: center;
+          border-radius: 11px;
+          background: #eef5f1;
+          color: #315f51;
+          margin-bottom: 12px;
+          font-size: 17px;
+        }
+
+        .ud-action-card strong {
+          display: block;
+          font-size: 13px;
+        }
+
+        .ud-action-card span {
+          display: block;
+          margin-top: 4px;
+          color: #83918c;
+          font-size: 11px;
+          line-height: 1.4;
+        }
+
+        .ud-recent {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr auto;
+          align-items: center;
+          gap: 18px;
+        }
+
+        .ud-recent h3 {
+          margin: 0;
+          font-size: 16px;
+        }
+
+        .ud-recent p {
+          margin: 5px 0 0;
+          color: #82908b;
+          font-size: 12px;
+        }
+
+        .ud-recent-date strong {
+          font-size: 12px;
+        }
+
+        .ud-recent-date p {
+          margin: 4px 0 0;
+        }
+
+        .ud-completed {
+          padding: 7px 10px;
+          border-radius: 999px;
+          background: #e5f3ea;
+          color: #28704c;
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 0.8px;
+          white-space: nowrap;
+        }
+
+        .ud-support {
+          margin-top: 26px;
+          padding: 24px;
+          border-radius: 20px;
+          background: #315f51;
+          color: #ffffff;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 18px;
+        }
+
+        .ud-support h2 {
+          margin: 0;
+          font-size: 20px;
+        }
+
+        .ud-support p {
+          margin: 6px 0 0;
+          color: #d4e0db;
+          font-size: 13px;
+        }
+
+        .ud-support a {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 11px 15px;
+          border-radius: 10px;
+          background: #ffffff;
+          color: #315f51;
+          text-decoration: none;
+          font-size: 12px;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 1000px) {
+          .ud-stat-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .ud-package-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .ud-actions {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .ud-upcoming {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 680px) {
+          .ud-page {
+            padding: 16px 14px 35px;
+          }
+
+          .ud-header {
+            padding: 21px;
+            border-radius: 20px;
+            flex-direction: column;
+          }
+
+          .ud-header-actions {
+            width: 100%;
+            justify-content: flex-end;
+          }
+
+          .ud-stat-grid,
+          .ud-package-grid,
+          .ud-actions {
+            grid-template-columns: 1fr;
+          }
+
+          .ud-session-bottom {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .ud-session-meta {
+            grid-template-columns: 1fr;
+          }
+
+          .ud-message {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .ud-message-main p {
+            max-width: 100%;
+          }
+
+          .ud-payment-main {
+            flex-direction: column;
+          }
+
+          .ud-payment-details {
+            grid-template-columns: 1fr;
+          }
+
+          .ud-recent {
+            grid-template-columns: 1fr;
+            align-items: flex-start;
+          }
+
+          .ud-support {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .ud-support a {
+            width: 100%;
+          }
+        }
+      `}</style>
+
+      <div className="ud-shell">
+        {/* HEADER */}
+        <header className="ud-header">
           <div>
-            <h2>
-              Messages
-            </h2>
-
-            <p>
-              Stay connected with your therapist.
-            </p>
-          </div>
-        </div>
-
-        {loadingMessages ? (
-          <div className="session-card">
-            <p>
-              Loading messages...
-            </p>
-          </div>
-        ) : chatMessages.length === 0 ? (
-          <div className="session-card">
-            <p>
-              No messages yet.
-            </p>
-
-            {chatTherapistId && (
-              <Link
-                to={`/chat/therapist/${chatTherapistId}`}
-              >
-                Start a conversation
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="session-card">
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "space-between",
-                alignItems: "center",
-                gap: "20px",
-              }}
-            >
-
-              <div>
-                <h3>
-                  {getTherapistName(
-                    chatAppointment
-                  )}
-                </h3>
-
-                <p>
-                  {
-                    chatMessages[
-                      chatMessages.length - 1
-                    ]?.message
-                  }
-                </p>
-              </div>
-
-              {chatTherapistId && (
-                <Link
-                  to={`/chat/therapist/${chatTherapistId}`}
-                  className="quick-action"
-                  style={{
-                    textDecoration:
-                      "none",
-                    whiteSpace:
-                      "nowrap",
-                  }}
-                >
-                  Open Chat
-                </Link>
-              )}
-
+            <div className="ud-brand">
+              <span className="ud-brand-dot" />
+              UNFAZED
             </div>
 
-            <small>
-              {chatMessages[
-                chatMessages.length - 1
-              ]?.createdAt
-                ? new Date(
-                    chatMessages[
-                      chatMessages.length - 1
-                    ].createdAt
-                  ).toLocaleString()
-                : ""}
-            </small>
+            <h1>Welcome back 👋</h1>
 
+            <p>
+              Your mental wellness journey,
+              thoughtfully organized in one
+              place.
+            </p>
           </div>
-        )}
 
-      </section>
-      {myPackages.length > 0 && (
-        <section className="packages-section">
+          <div className="ud-header-actions">
+            <NotificationBell />
 
-          <div className="section-heading">
+            <Link
+              to="/login"
+              className="ud-logout"
+            >
+              Logout
+            </Link>
+          </div>
+        </header>
+
+        {/* SUMMARY */}
+        <section className="ud-section">
+          <div className="ud-stat-grid">
+            <div className="ud-stat">
+              <div className="ud-stat-top">
+                <span className="ud-stat-label">
+                  Next Session
+                </span>
+
+                <div className="ud-stat-icon">
+                  📅
+                </div>
+              </div>
+
+              <strong className="ud-stat-value">
+                {statUpcoming}
+              </strong>
+            </div>
+
+            <div className="ud-stat">
+              <div className="ud-stat-top">
+                <span className="ud-stat-label">
+                  Active Packages
+                </span>
+
+                <div className="ud-stat-icon">
+                  🎟
+                </div>
+              </div>
+
+              <strong className="ud-stat-value">
+                {loadingMyPackages
+                  ? "..."
+                  : myPackages.length}
+              </strong>
+            </div>
+
+            <div className="ud-stat">
+              <div className="ud-stat-top">
+                <span className="ud-stat-label">
+                  Completed Sessions
+                </span>
+
+                <div className="ud-stat-icon">
+                  ✓
+                </div>
+              </div>
+
+              <strong className="ud-stat-value">
+                {statCompleted}
+              </strong>
+            </div>
+
+            <div className="ud-stat">
+              <div className="ud-stat-top">
+                <span className="ud-stat-label">
+                  Payments
+                </span>
+
+                <div className="ud-stat-icon">
+                  ₹
+                </div>
+              </div>
+
+              <strong className="ud-stat-value">
+                {statPayments}
+              </strong>
+            </div>
+          </div>
+        </section>
+
+        {/* UPCOMING SESSION */}
+        <section className="ud-section">
+          <div className="ud-section-title">
             <div>
-              <h2>
-                My Active Packages
-              </h2>
-
+              <h2>Upcoming Session</h2>
               <p>
-                Your available session packages.
+                Your next scheduled therapy
+                session.
               </p>
             </div>
           </div>
 
-          <div className="packages-grid">
+          {loading ? (
+            <div className="ud-card ud-empty">
+              <p>Loading your upcoming session...</p>
+            </div>
+          ) : error ? (
+            <div className="ud-card ud-empty">
+              <p>{error}</p>
+            </div>
+          ) : upcomingAppointment ? (
+            <div className="ud-upcoming">
+              <div className="ud-card ud-session-main">
+                <div>
+                  <span className="ud-kicker">
+                    UPCOMING APPOINTMENT
+                  </span>
 
-            {myPackages.map(
-              (clientPackage) => {
-
-                const packageData =
-                  clientPackage.package || {};
-
-                return (
-                  <div
-                    className="user-package-card"
-                    key={
-                      clientPackage._id
-                    }
-                  >
-
-                    <div className="package-card-header">
-
-                      <div>
-                        <span className="package-label">
-                          ACTIVE PACKAGE
-                        </span>
-
-                        <h3>
-                          {packageData.name ||
-                            "Session Package"}
-                        </h3>
-                      </div>
-
-                      <div className="package-session-count">
-                        {
-                          clientPackage.sessionsRemaining
-                        }
-                      </div>
-
-                    </div>
-
-                    <div className="package-main-price">
-
-                      <strong>
-                        {
-                          clientPackage.sessionsRemaining
-                        }
-                      </strong>
-
-                      <span>
-                        sessions remaining
-                      </span>
-
-                    </div>
-
-                    <div className="package-details">
-
-                      <div>
-                        <span>
-                          Purchased
-                        </span>
-
-                        <strong>
-                          {formatShortDate(
-                            clientPackage.purchaseDate
-                          )}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>
-                          Expires
-                        </span>
-
-                        <strong>
-                          {formatShortDate(
-                            clientPackage.expiryDate
-                          )}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>
-                          Status
-                        </span>
-
-                        <strong>
-                          ACTIVE
-                        </strong>
-                      </div>
-
-                    </div>
-
-                    <Link
-                      to={
+                  <div className="ud-therapist">
+                    <div className="ud-avatar">
+                      {getTherapistName(
                         upcomingAppointment
-                          ?.therapist?.slug
-                          ? `/therapists/${upcomingAppointment.therapist.slug}`
-                          : "/therapists"
-                      }
-                      className="package-buy-button"
-                      style={{
-                        textDecoration:
-                          "none",
-                        textAlign:
-                          "center",
-                      }}
-                    >
-                      Book a Session
-                    </Link>
-
-                  </div>
-                );
-              }
-            )}
-
-          </div>
-        </section>
-      )}
-      <section className="payment-history-section">
-
-        <div className="section-heading">
-          <div>
-            <h2>
-              Payment History
-            </h2>
-
-            <p>
-              View your session and package payments.
-            </p>
-          </div>
-        </div>
-
-        {loadingPayments ? (
-          <div className="session-card">
-            <p>
-              Loading payment history...
-            </p>
-          </div>
-        ) : payments.length === 0 ? (
-          <div className="session-card">
-            <p>
-              No payments yet.
-            </p>
-          </div>
-        ) : (
-          <div className="payment-history-list">
-
-            {payments.map((payment) => {
-
-              const isPackage =
-                Boolean(
-                  payment.clientPackage
-                );
-
-              const packageData =
-                payment.clientPackage?.package;
-
-              const appointment =
-                payment.appointment;
-
-              const paymentDescription =
-                isPackage
-                  ? packageData?.name ||
-                    "Session Package"
-                  : "Therapy Session";
-
-              return (
-                <div
-                  className="payment-history-card"
-                  key={payment._id}
-                >
-
-                  <div className="payment-history-main">
+                      )
+                        .charAt(0)
+                        .toUpperCase()}
+                    </div>
 
                     <div>
-                      <span className="payment-label">
-                        {isPackage
-                          ? "PACKAGE PAYMENT"
-                          : "SESSION PAYMENT"}
-                      </span>
-
                       <h3>
-                        {paymentDescription}
+                        {getTherapistName(
+                          upcomingAppointment
+                        )}
                       </h3>
 
-                      {isPackage ? (
-                        <p>
-                          {payment.clientPackage
-                            ?.sessionsPurchased ||
-                            0}{" "}
-                          sessions purchased
-                        </p>
-                      ) : (
-                        <p>
-                          {appointment?.date
-                            ? formatShortDate(
-                                appointment.date
-                              )
-                            : "Session payment"}
-                        </p>
-                      )}
+                      <p>
+                        {getSpecialization(
+                          upcomingAppointment
+                        )}
+                      </p>
                     </div>
-
-                    <div className="payment-amount">
-                      ₹
-                      {Number(
-                        payment.amount || 0
-                      ).toLocaleString(
-                        "en-IN"
-                      )}
-                    </div>
-
                   </div>
+                </div>
 
-                  <div className="payment-history-details">
-
-                    <div>
-                      <span>
-                        Date
-                      </span>
-
+                <div className="ud-session-bottom">
+                  <div className="ud-session-meta">
+                    <div className="ud-meta-item">
+                      <span>Date</span>
                       <strong>
-                        {formatShortDate(
-                          payment.createdAt
+                        {formatDate(
+                          upcomingAppointment.date
                         )}
                       </strong>
                     </div>
 
-                    <div>
-                      <span>
-                        Status
-                      </span>
-
-                      <strong
-                        className={
-                          payment.status ===
-                          "captured"
-                            ? "payment-status-success"
-                            : ""
-                        }
-                      >
-                        {(
-                          payment.status ||
-                          "unknown"
-                        ).toUpperCase()}
-                      </strong>
-                    </div>
-
-                    <div>
-                      <span>
-                        Payment ID
-                      </span>
-
+                    <div className="ud-meta-item">
+                      <span>Time</span>
                       <strong>
-                        {payment.gatewayTransactionId ||
-                          "N/A"}
+                        {upcomingAppointment.time ||
+                          "Time unavailable"}
                       </strong>
                     </div>
 
+                    <div className="ud-meta-item">
+                      <span>Duration</span>
+                      <strong>
+                        {upcomingAppointment.duration ||
+                          50}{" "}
+                        minutes
+                      </strong>
+                    </div>
                   </div>
 
-                  {payment.invoiceFileName && (
-                    <button
-                      type="button"
-                      className="payment-invoice-button"
-                      onClick={() =>
-                        handleDownloadInvoice(
-                          payment.invoiceFileName
-                        )
-                      }
-                    >
-                      Download Invoice
-                    </button>
-                  )}
-
+                  <span className="ud-status">
+                    {getStatus(
+                      upcomingAppointment
+                    )}
+                  </span>
                 </div>
-              );
-            })}
+              </div>
 
-          </div>
-        )}
+              <div className="ud-side-panel">
+                <div>
+                  <span>SESSION CARE</span>
 
-      </section>
-      <section className="packages-section">
+                  <h3>
+                    Stay connected with your
+                    therapist.
+                  </h3>
 
-        <div className="section-heading">
-          <div>
-            <h2>
-              Session Packages
-            </h2>
+                  <p>
+                    Send a message before your
+                    next session or continue your
+                    conversation.
+                  </p>
+                </div>
 
-            <p>
-              Save with a package of
-              sessions from your therapist.
-            </p>
-          </div>
-        </div>
+                {chatTherapistId && (
+                  <Link
+                    to={`/chat/therapist/${chatTherapistId}`}
+                    className="ud-dark-link"
+                  >
+                    Open Chat
+                  </Link>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="ud-card ud-empty">
+              <div className="ud-empty-icon">
+                📅
+              </div>
 
-        {packageMessage && (
-          <div className="package-success">
-            {packageMessage}
-          </div>
-        )}
+              <h3>
+                No upcoming sessions
+              </h3>
 
-        {packageError && (
-          <div className="package-error">
-            {packageError}
-          </div>
-        )}
-
-        {loadingPackages ? (
-
-          <div className="packages-container">
-            <div className="package-empty">
               <p>
-                Loading available packages...
+                Find a therapist and schedule
+                your next session.
+              </p>
+
+              <Link
+                to="/therapists"
+                className="ud-primary-link"
+              >
+                Find a Therapist
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {/* MESSAGES */}
+        <section className="ud-section">
+          <div className="ud-section-title">
+            <div>
+              <h2>Messages</h2>
+              <p>
+                Stay connected with your therapist.
               </p>
             </div>
           </div>
 
-        ) : packages.length === 0 ? (
+          <div className="ud-card">
+            {loadingMessages ? (
+              <div className="ud-empty">
+                <p>Loading messages...</p>
+              </div>
+            ) : chatMessages.length === 0 ? (
+              <div className="ud-empty">
+                <div className="ud-empty-icon">
+                  💬
+                </div>
 
-          <div className="packages-container">
-            <div className="package-empty">
+                <h3>
+                  No messages yet
+                </h3>
 
-              <div className="package-empty-icon">
+                <p>
+                  Start a conversation with your
+                  therapist.
+                </p>
+
+                {chatTherapistId && (
+                  <Link
+                    to={`/chat/therapist/${chatTherapistId}`}
+                    className="ud-primary-link"
+                  >
+                    Start a Conversation
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="ud-message">
+                <div className="ud-message-main">
+                  <span className="ud-package-label">
+                    LATEST MESSAGE
+                  </span>
+
+                  <h3>
+                    {getTherapistName(
+                      chatAppointment
+                    )}
+                  </h3>
+
+                  <p>
+                    {
+                      chatMessages[
+                        chatMessages.length - 1
+                      ]?.message
+                    }
+                  </p>
+
+                  <small className="ud-message-time">
+                    {chatMessages[
+                      chatMessages.length - 1
+                    ]?.createdAt
+                      ? new Date(
+                          chatMessages[
+                            chatMessages.length - 1
+                          ].createdAt
+                        ).toLocaleString()
+                      : ""}
+                  </small>
+                </div>
+
+                {chatTherapistId && (
+                  <Link
+                    to={`/chat/therapist/${chatTherapistId}`}
+                    className="ud-action-link"
+                  >
+                    Open Chat
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* MY ACTIVE PACKAGES */}
+        {myPackages.length > 0 && (
+          <section className="ud-section">
+            <div className="ud-section-title">
+              <div>
+                <h2>
+                  My Active Packages
+                </h2>
+
+                <p>
+                  Your available session
+                  packages.
+                </p>
+              </div>
+            </div>
+
+            <div className="ud-package-grid">
+              {myPackages.map(
+                (clientPackage) => {
+                  const packageData =
+                    clientPackage.package || {};
+
+                  return (
+                    <div
+                      className="ud-package"
+                      key={
+                        clientPackage._id
+                      }
+                    >
+                      <div className="ud-package-top">
+                        <div>
+                          <span className="ud-package-label">
+                            ACTIVE PACKAGE
+                          </span>
+
+                          <h3>
+                            {packageData.name ||
+                              "Session Package"}
+                          </h3>
+                        </div>
+
+                        <div className="ud-count">
+                          {
+                            clientPackage.sessionsRemaining
+                          }
+                        </div>
+                      </div>
+
+                      <div className="ud-package-price">
+                        <strong>
+                          {
+                            clientPackage.sessionsRemaining
+                          }
+                        </strong>
+
+                        <span>
+                          sessions remaining
+                        </span>
+                      </div>
+
+                      <div className="ud-package-details">
+                        <div>
+                          <span>
+                            Purchased
+                          </span>
+
+                          <strong>
+                            {formatShortDate(
+                              clientPackage.purchaseDate
+                            )}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            Expires
+                          </span>
+
+                          <strong>
+                            {formatShortDate(
+                              clientPackage.expiryDate
+                            )}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            Status
+                          </span>
+
+                          <strong>
+                            ACTIVE
+                          </strong>
+                        </div>
+                      </div>
+
+                      <Link
+                        to={
+                          upcomingAppointment
+                            ?.therapist?.slug
+                            ? `/therapists/${upcomingAppointment.therapist.slug}`
+                            : "/therapists"
+                        }
+                        className="ud-buy"
+                        style={{
+                          textDecoration:
+                            "none",
+                          textAlign:
+                            "center",
+                          display:
+                            "block",
+                          boxSizing:
+                            "border-box",
+                        }}
+                      >
+                        Book a Session
+                      </Link>
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* PAYMENT HISTORY */}
+        <section className="ud-section">
+          <div className="ud-section-title">
+            <div>
+              <h2>
+                Payment History
+              </h2>
+
+              <p>
+                View your session and package
+                payments.
+              </p>
+            </div>
+          </div>
+
+          <div className="ud-card">
+            {loadingPayments ? (
+              <div className="ud-empty">
+                <p>
+                  Loading payment history...
+                </p>
+              </div>
+            ) : payments.length === 0 ? (
+              <div className="ud-empty">
+                <div className="ud-empty-icon">
+                  ₹
+                </div>
+
+                <h3>
+                  No payments yet
+                </h3>
+
+                <p>
+                  Your completed payments will
+                  appear here.
+                </p>
+              </div>
+            ) : (
+              <div className="ud-payment-list">
+                {payments.map((payment) => {
+                  const isPackage =
+                    Boolean(
+                      payment.clientPackage
+                    );
+
+                  const packageData =
+                    payment.clientPackage
+                      ?.package;
+
+                  const appointment =
+                    payment.appointment;
+
+                  const paymentDescription =
+                    isPackage
+                      ? packageData?.name ||
+                        "Session Package"
+                      : "Therapy Session";
+
+                  return (
+                    <div
+                      className="ud-payment"
+                      key={payment._id}
+                    >
+                      <div className="ud-payment-main">
+                        <div>
+                          <span className="ud-payment-label">
+                            {isPackage
+                              ? "PACKAGE PAYMENT"
+                              : "SESSION PAYMENT"}
+                          </span>
+
+                          <h3>
+                            {
+                              paymentDescription
+                            }
+                          </h3>
+
+                          {isPackage ? (
+                            <p>
+                              {payment
+                                .clientPackage
+                                ?.sessionsPurchased ||
+                                0}{" "}
+                              sessions purchased
+                            </p>
+                          ) : (
+                            <p>
+                              {appointment?.date
+                                ? formatShortDate(
+                                    appointment.date
+                                  )
+                                : "Session payment"}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="ud-payment-amount">
+                          ₹
+                          {Number(
+                            payment.amount || 0
+                          ).toLocaleString(
+                            "en-IN"
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="ud-payment-details">
+                        <div>
+                          <span>
+                            Date
+                          </span>
+
+                          <strong>
+                            {formatShortDate(
+                              payment.createdAt
+                            )}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            Status
+                          </span>
+
+                          <strong
+                            className={
+                              payment.status ===
+                              "captured"
+                                ? "ud-payment-success"
+                                : ""
+                            }
+                          >
+                            {(
+                              payment.status ||
+                              "unknown"
+                            ).toUpperCase()}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            Payment ID
+                          </span>
+
+                          <strong>
+                            {payment.gatewayTransactionId ||
+                              "N/A"}
+                          </strong>
+                        </div>
+                      </div>
+
+                      {payment.invoiceFileName && (
+                        <button
+                          type="button"
+                          className="ud-invoice"
+                          onClick={() =>
+                            handleDownloadInvoice(
+                              payment.invoiceFileName
+                            )
+                          }
+                        >
+                          Download Invoice
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* AVAILABLE PACKAGES */}
+        <section className="ud-section">
+          <div className="ud-section-title">
+            <div>
+              <h2>
+                Session Packages
+              </h2>
+
+              <p>
+                Save with a package of sessions
+                from your therapist.
+              </p>
+            </div>
+          </div>
+
+          {packageMessage && (
+            <div className="ud-success">
+              {packageMessage}
+            </div>
+          )}
+
+          {packageError && (
+            <div className="ud-error">
+              {packageError}
+            </div>
+          )}
+
+          {loadingPackages ? (
+            <div className="ud-card ud-empty">
+              <p>
+                Loading available packages...
+              </p>
+            </div>
+          ) : packages.length === 0 ? (
+            <div className="ud-card ud-empty">
+              <div className="ud-empty-icon">
                 ▤
               </div>
 
@@ -1614,263 +2468,298 @@ const handlePurchasePackage = async (
                 Your therapist hasn't added
                 any session packages yet.
               </p>
-
             </div>
-          </div>
+          ) : (
+            <div className="ud-package-grid">
+              {packages.map((pkg) => {
+                const purchased =
+                  isPackagePurchased(
+                    pkg._id
+                  );
 
-        ) : (
+                return (
+                  <div
+                    className="ud-package"
+                    key={pkg._id}
+                  >
+                    <div className="ud-package-top">
+                      <div>
+                        <span className="ud-package-label">
+                          SESSION PACKAGE
+                        </span>
 
-          <div className="packages-grid">
+                        <h3>
+                          {pkg.name}
+                        </h3>
+                      </div>
 
-            {packages.map((pkg) => {
-
-              const purchased =
-                isPackagePurchased(
-                  pkg._id
-                );
-
-              return (
-                <div
-                  className="user-package-card"
-                  key={pkg._id}
-                >
-
-                  <div className="package-card-header">
-
-                    <div>
-
-                      <span className="package-label">
-                        SESSION PACKAGE
-                      </span>
-
-                      <h3>
-                        {pkg.name}
-                      </h3>
-
-                    </div>
-
-                    <div className="package-session-count">
-                      {pkg.sessions}
-                    </div>
-
-                  </div>
-
-                  <div className="package-main-price">
-
-                    <strong>
-                      ₹
-                      {Number(
-                        pkg.pricePerSession || 0
-                      ).toLocaleString(
-                        "en-IN"
-                      )}
-                    </strong>
-
-                    <span>
-                      / session
-                    </span>
-
-                  </div>
-
-                  <div className="package-details">
-
-                    <div>
-                      <span>
-                        Sessions
-                      </span>
-
-                      <strong>
+                      <div className="ud-count">
                         {pkg.sessions}
-                      </strong>
+                      </div>
                     </div>
 
-                    <div>
-                      <span>
-                        Total
-                      </span>
-
+                    <div className="ud-package-price">
                       <strong>
                         ₹
                         {Number(
-                          pkg.totalPrice || 0
+                          pkg.pricePerSession || 0
                         ).toLocaleString(
                           "en-IN"
                         )}
                       </strong>
-                    </div>
 
-                    <div>
                       <span>
-                        Valid for
+                        / session
                       </span>
-
-                      <strong>
-                        {pkg.expiryDays} days
-                      </strong>
                     </div>
 
+                    <div className="ud-package-details">
+                      <div>
+                        <span>
+                          Sessions
+                        </span>
+
+                        <strong>
+                          {pkg.sessions}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>
+                          Total
+                        </span>
+
+                        <strong>
+                          ₹
+                          {Number(
+                            pkg.totalPrice || 0
+                          ).toLocaleString(
+                            "en-IN"
+                          )}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>
+                          Valid for
+                        </span>
+
+                        <strong>
+                          {pkg.expiryDays} days
+                        </strong>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="ud-buy"
+                      onClick={() =>
+                        handlePurchasePackage(
+                          pkg._id
+                        )
+                      }
+                      disabled={
+                        purchased ||
+                        purchasingPackage ===
+                          pkg._id
+                      }
+                    >
+                      {purchasingPackage ===
+                      pkg._id
+                        ? "Processing..."
+                        : purchased
+                        ? "✓ Package Active"
+                        : "Buy Package"}
+                    </button>
                   </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
 
-                  <button
-                    className="package-buy-button"
-                    onClick={() =>
-                      handlePurchasePackage(
-                        pkg._id
-                      )
-                    }
-                    disabled={
-                      purchased ||
-                      purchasingPackage ===
-                        pkg._id
-                    }
-                  >
-                    {purchasingPackage ===
-                    pkg._id
-                      ? "Processing..."
-                      : purchased
-                      ? "✓ Package Active"
-                      : "Buy Package"}
-                  </button>
-
-                </div>
-              );
-            })}
-
-          </div>
-        )}
-
-      </section>
-      <section className="quick-actions-section">
-
-        <div className="section-heading">
-          <h2>
-            Quick Actions
-          </h2>
-        </div>
-
-        <div className="quick-actions">
-
-          <Link
-            to="/therapists"
-            className="quick-action"
-          >
-            Find a Therapist
-          </Link>
-
-          <Link
-            to="/sessions"
-            className="quick-action"
-          >
-            My Sessions
-          </Link>
-
-          <Link
-            to="/intake-form"
-            className="quick-action"
-          >
-            Intake Form
-          </Link>
-
-          <Link
-            to="/user-profile"
-            className="quick-action"
-          >
-            My Profile
-          </Link>
-
-        </div>
-
-      </section>
-      <section className="recent-session-section">
-
-        <div className="section-heading">
-          <h2>
-            Recent Session
-          </h2>
-        </div>
-
-        {loading ? (
-
-          <div className="recent-session-card">
-            <p>
-              Loading...
-            </p>
-          </div>
-
-        ) : recentAppointment ? (
-
-          <div className="recent-session-card">
-
+        {/* QUICK ACTIONS */}
+        <section className="ud-section">
+          <div className="ud-section-title">
             <div>
-              <h3>
-                {getTherapistName(
-                  recentAppointment
-                )}
-              </h3>
+              <h2>
+                Quick Actions
+              </h2>
 
               <p>
-                {getSpecialization(
-                  recentAppointment
-                )}
+                Jump directly to the things you
+                use most.
               </p>
             </div>
+          </div>
 
-            <div>
+          <div className="ud-actions">
+            <Link
+              to="/therapists"
+              className="ud-action-card"
+            >
+              <div className="ud-action-icon">
+                🔎
+              </div>
+
               <strong>
-                {formatShortDate(
-                  recentAppointment.date
-                )}
+                Find a Therapist
               </strong>
 
+              <span>
+                Explore therapists and book a
+                session.
+              </span>
+            </Link>
+
+            <Link
+              to="/sessions"
+              className="ud-action-card"
+            >
+              <div className="ud-action-icon">
+                📅
+              </div>
+
+              <strong>
+                My Sessions
+              </strong>
+
+              <span>
+                Review your appointments and
+                sessions.
+              </span>
+            </Link>
+
+            <Link
+              to="/intake-form"
+              className="ud-action-card"
+            >
+              <div className="ud-action-icon">
+                📝
+              </div>
+
+              <strong>
+                Intake Form
+              </strong>
+
+              <span>
+                Update your therapy intake
+                information.
+              </span>
+            </Link>
+
+            <Link
+              to="/user-profile"
+              className="ud-action-card"
+            >
+              <div className="ud-action-icon">
+                👤
+              </div>
+
+              <strong>
+                My Profile
+              </strong>
+
+              <span>
+                View and manage your profile.
+              </span>
+            </Link>
+          </div>
+        </section>
+
+        {/* RECENT SESSION */}
+        <section className="ud-section">
+          <div className="ud-section-title">
+            <div>
+              <h2>
+                Recent Session
+              </h2>
+
               <p>
-                {recentAppointment.time ||
-                  "Time unavailable"}
+                Your latest completed therapy
+                session.
               </p>
             </div>
-
-            <span className="completed-status">
-              COMPLETED
-            </span>
-
           </div>
 
-        ) : (
+          <div className="ud-card">
+            {loading ? (
+              <div className="ud-empty">
+                <p>Loading...</p>
+              </div>
+            ) : recentAppointment ? (
+              <div className="ud-recent">
+                <div>
+                  <h3>
+                    {getTherapistName(
+                      recentAppointment
+                    )}
+                  </h3>
 
-          <div className="recent-session-card">
-            <p>
-              No completed sessions yet.
-            </p>
+                  <p>
+                    {getSpecialization(
+                      recentAppointment
+                    )}
+                  </p>
+                </div>
+
+                <div className="ud-recent-date">
+                  <strong>
+                    {formatShortDate(
+                      recentAppointment.date
+                    )}
+                  </strong>
+
+                  <p>
+                    {recentAppointment.time ||
+                      "Time unavailable"}
+                  </p>
+                </div>
+
+                <span className="ud-completed">
+                  COMPLETED
+                </span>
+              </div>
+            ) : (
+              <div className="ud-empty">
+                <div className="ud-empty-icon">
+                  ✓
+                </div>
+
+                <h3>
+                  No completed sessions yet
+                </h3>
+
+                <p>
+                  Your completed sessions will
+                  appear here.
+                </p>
+              </div>
+            )}
           </div>
+        </section>
 
-        )}
-
-      </section>
-
-      <section className="support-section">
-
-        <div className="support-content">
-
+        {/* SUPPORT */}
+        <section className="ud-support">
           <div>
             <h2>
               Need support?
             </h2>
 
             <p>
-              Connect with a therapist
-              who understands what
-              you're going through.
+              Connect with a therapist who
+              understands what you're going
+              through.
             </p>
           </div>
 
           <Link to="/therapists">
             Find a Therapist
           </Link>
-
-        </div>
-
-      </section>
-
+        </section>
+      </div>
     </div>
   );
 }
+
 export default UserDashboard;
